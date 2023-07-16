@@ -40,7 +40,7 @@ public class ScheduleService {
                 schedule.setScheduleCode("E"+num+1);
             }
         }
-
+        scheduleRepository.save(schedule);
     }
 
     public void addNewSchedule(Schedule schedule) {

@@ -68,11 +68,11 @@ public class Schedule {
 
     @Override
     public String toString() {
-        return "Schedule{" +
-                "scheduleCode='" + scheduleCode + '\'' +
-                ", classCode='" + classCode + '\'' +
-                ", subjectSchedule=" + subjectSchedule +
-                ", scheduleType='" + scheduleType + '\'' +
+        return "Schedule{" +"\n" +
+                "scheduleCode='" + scheduleCode + '\'' +"\n" +
+                ", classCode='" + classCode + '\'' +"\n" +
+                ", subjectSchedule=" + subjectSchedule +"\n" +
+                ", scheduleType='" + scheduleType + '\'' +"\n" +
                 ", scheduleStatus=" + scheduleStatus +
                 '}';
     }
