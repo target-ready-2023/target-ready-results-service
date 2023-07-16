@@ -3,6 +3,7 @@ package com.target.targetreadyresultsservice.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+//initial model
 @Document(collation = "Student")
 public class Student {
 
