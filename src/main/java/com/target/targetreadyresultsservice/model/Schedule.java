@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
-@Document(collation = "Schedule")
+@Document(collection = "schedule")
 public class Schedule {
 
     @Id
@@ -21,9 +21,6 @@ public class Schedule {
         this.subjectSchedule = subjectSchedule;
         this.scheduleType = scheduleType;
         this.scheduleStatus = scheduleStatus;
-    }
-
-    public Schedule() {
     }
 
     public String getScheduleCode() {

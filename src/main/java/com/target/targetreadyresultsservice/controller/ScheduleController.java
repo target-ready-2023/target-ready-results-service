@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.controller;
 
 import com.target.targetreadyresultsservice.model.Schedule;
+import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.service.ScheduleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/schedule/v1")
+@RequestMapping("/results/v1/schedule")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
@@ -21,7 +22,7 @@ public class ScheduleController {
     @PostMapping
     public ResponseEntity<String> addNewSchedule(@RequestBody Schedule schedule){
         try{
-            scheduleService.addNewScheduleTest(schedule);
+            scheduleService.addNewSchedule(schedule);
             return new ResponseEntity<>("Successful", HttpStatus.OK);
         }catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
