@@ -64,4 +64,13 @@ public class ScheduleService {
         }
         return "T"+ Integer.toString(num);
     }
+
+    public String deleteSchedule(String scheduleCode) {
+        Schedule schedule = scheduleRepository.findById(scheduleCode).orElse(null);
+        if(schedule == null){
+            return null;
+        }
+        scheduleRepository.delete(schedule);
+        return "Deleted";
+    }
 }
