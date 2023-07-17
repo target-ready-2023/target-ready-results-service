@@ -3,10 +3,12 @@ package com.target.targetreadyresultsservice.controller;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ScheduleService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -17,9 +19,22 @@ public class ScheduleController {
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
-    @GetMapping
+
+    @GetMapping("/all")
+    public ResponseEntity<List<Schedule>> getallSchedule(){
+
+
+        List<Schedule> ScheduleList = scheduleService.findAll();
+        if (ScheduleList.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(ScheduleList, HttpStatus.OK);
+    }
+
+    @GetMapping("/{scheduleCode}")
     public ResponseEntity<String> getSchedule(
-            @RequestParam ("scheduleCode") String scheduleCode
+            @PathVariable String scheduleCode
+//            @RequestParam ("scheduleCode") String scheduleCode
     ){
         try {
             Optional<Schedule> scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
@@ -34,6 +49,7 @@ public class ScheduleController {
                 return new ResponseEntity<>("Error", HttpStatus.EXPECTATION_FAILED);
             }
         }
+
 
 
     @PostMapping

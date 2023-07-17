@@ -4,10 +4,13 @@ import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
+import org.springframework.data.mongodb.core.mapping.Unwrapped;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class ScheduleService {
@@ -18,6 +21,14 @@ public class ScheduleService {
         this.scheduleRepository = scheduleRepository;
     }
 
+    //get all schedule
+    public List<Schedule> findAll(){
+        return scheduleRepository.findAll()
+                .stream()
+                .collect(Collectors.toList());
+
+    }
+    //Get schedule by id
     public Optional<Schedule> getScheduleDetails(String scheduleCode) {
         return scheduleRepository.findById(scheduleCode);
     }
