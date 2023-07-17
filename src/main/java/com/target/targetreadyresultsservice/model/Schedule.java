@@ -55,7 +55,7 @@ public class Schedule {
         this.scheduleType = scheduleType;
     }
 
-    public boolean isScheduleStatus() {
+    public boolean getScheduleStatus() {
         return scheduleStatus;
     }
 

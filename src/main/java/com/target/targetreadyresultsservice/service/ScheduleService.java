@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ScheduleService {
@@ -72,5 +73,18 @@ public class ScheduleService {
         }
         scheduleRepository.delete(schedule);
         return "Deleted";
+    }
+
+    public Optional<Schedule> updateSchedule(String scheduleCode, Schedule schedule) {
+        Schedule sc = scheduleRepository.findById(scheduleCode).orElse(null);
+        if(sc==null){
+            return Optional.empty();
+        }
+        sc.setClassCode(schedule.getClassCode());
+        sc.setSubjectSchedule(schedule.getSubjectSchedule());
+        sc.setScheduleType(schedule.getScheduleType());
+        sc.setScheduleStatus(schedule.getScheduleStatus());
+        scheduleRepository.save(sc);
+        return Optional.of(sc);
     }
 }
