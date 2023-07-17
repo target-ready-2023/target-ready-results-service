@@ -1,10 +1,7 @@
 package com.target.targetreadyresultsservice.controller;
 
-import ch.qos.logback.core.encoder.EchoEncoder;
 import com.target.targetreadyresultsservice.model.Schedule;
-import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ScheduleService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +22,11 @@ public class ScheduleController {
 
     @GetMapping("/all")
     public ResponseEntity<List<Schedule>> getallSchedule(){
-
-
-        List<Schedule> ScheduleList = scheduleService.findAll();
-        if (ScheduleList.isEmpty()) {
+        List<Schedule> scheduleList = scheduleService.findAll();
+        if (scheduleList.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(ScheduleList, HttpStatus.OK);
+        return new ResponseEntity<>(scheduleList, HttpStatus.OK);
     }
 
     @GetMapping("/{scheduleCode}")

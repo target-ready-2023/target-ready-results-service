@@ -22,10 +22,7 @@ public class ScheduleService {
 
     //get all schedule
     public List<Schedule> findAll(){
-        return scheduleRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
-
+        return scheduleRepository.findAll();
     }
     //Get schedule by id
     public Optional<Schedule> getScheduleDetails(String scheduleCode) {
