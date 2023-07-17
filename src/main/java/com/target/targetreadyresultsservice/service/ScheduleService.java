@@ -1,16 +1,15 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.model.Schedule;
-import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.integration.IntegrationProperties;
-import org.springframework.data.mongodb.core.mapping.Unwrapped;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+
 import java.util.stream.Collectors;
+
 
 @Service
 public class ScheduleService {
@@ -33,62 +32,73 @@ public class ScheduleService {
         return scheduleRepository.findById(scheduleCode);
     }
 
-    public void addNewScheduleTest(Schedule schedule){
+    public void addNewSchedule(Schedule schedule) {
+        String code = addScheduleCode(schedule);
+        schedule.setScheduleCode(code);
+        scheduleRepository.save(schedule);
+    }
+
+    public String addScheduleCode(Schedule schedule) {
         long num = scheduleRepository.count();
         if(num==0){
             if(schedule.getScheduleType().contains("Test")){
-                schedule.setScheduleCode("T1");
+                return "T1";
             }
             else{
-                schedule.setScheduleCode("E1");
+                return "E1";
             }
         }
         else{
             if(schedule.getScheduleType().contains("Test")){
-                schedule.setScheduleCode("T"+num+1);
+                return setTestCode();
             }
             else{
-                schedule.setScheduleCode("E"+num+1);
+                return setExamCode();
             }
         }
-        scheduleRepository.save(schedule);
     }
 
-    public void addNewSchedule(Schedule schedule) {
-        if(schedule.getScheduleType().contains("Test")){
-            schedule.setScheduleCode(setTestCode());
-        }
-        else{
-            schedule.setScheduleCode(setExamCode());
-        }
-        scheduleRepository.save(schedule);
-    }
-
-    private String setExamCode() {
+    public String setExamCode() {
         List<Schedule> scheduleList = scheduleRepository.findAll();
-        if(scheduleList.isEmpty()){
-            return "E1";
-        }
         int num=1;
         for (Schedule s: scheduleList) {
             if(s.getScheduleType().contains("Exam")){
                 num++;
             }
         }
-        return "E"+num;
+        return "E"+ Integer.toString(num);
     }
 
-    private String setTestCode() {
+    public String setTestCode() {
         List<Schedule> scheduleList = scheduleRepository.findAll();
-        if(scheduleList.isEmpty()){
-            return "T1";
-        }
         int num=1;
         for (Schedule s: scheduleList) {
             if(s.getScheduleType().contains("Test")){
                 num++;
             }
         }
-        return "T"+num;
+        return "T"+ Integer.toString(num);
+    }
+
+    public String deleteSchedule(String scheduleCode) {
+        Schedule schedule = scheduleRepository.findById(scheduleCode).orElse(null);
+        if(schedule == null){
+            return null;
+        }
+        scheduleRepository.delete(schedule);
+        return "Deleted";
+    }
+
+    public Optional<Schedule> updateSchedule(String scheduleCode, Schedule schedule) {
+        Schedule sc = scheduleRepository.findById(scheduleCode).orElse(null);
+        if(sc==null){
+            return Optional.empty();
+        }
+        sc.setClassCode(schedule.getClassCode());
+        sc.setSubjectSchedule(schedule.getSubjectSchedule());
+        sc.setScheduleType(schedule.getScheduleType());
+        sc.setScheduleStatus(schedule.getScheduleStatus());
+        scheduleRepository.save(sc);
+        return Optional.of(sc);
     }
 }
