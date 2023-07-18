@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.stream.Collectors;
 
 
 @Service
@@ -22,14 +21,19 @@ public class ScheduleService {
 
     //get all schedule
     public List<Schedule> findAll(){
-        return scheduleRepository.findAll()
-                .stream()
-                .collect(Collectors.toList());
+        return scheduleRepository.findAll();
 
     }
+    // get active Schedules
+    public List<Schedule> getactiveSchedule(String classCode){
+    List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
+        activeList.removeIf(s -> !s.getScheduleStatus());
+        return activeList;
+    }
+
     //Get schedule by id
-    public Optional<Schedule> getScheduleDetails(String scheduleCode) {
-        return scheduleRepository.findById(scheduleCode);
+    public Schedule getScheduleDetails(String scheduleCode) {
+        return scheduleRepository.findById(scheduleCode).orElse(null);
     }
 
     public void addNewSchedule(Schedule schedule) {
@@ -66,7 +70,7 @@ public class ScheduleService {
                 num++;
             }
         }
-        return "E"+ Integer.toString(num);
+        return "E"+ num;
     }
 
     public String setTestCode() {
@@ -77,7 +81,7 @@ public class ScheduleService {
                 num++;
             }
         }
-        return "T"+ Integer.toString(num);
+        return "T"+ num;
     }
 
     public String deleteSchedule(String scheduleCode) {

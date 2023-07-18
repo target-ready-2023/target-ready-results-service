@@ -35,24 +35,39 @@ public class ScheduleController {
     }
 
     @GetMapping("/{scheduleCode}")
-    public ResponseEntity<String> getSchedule(
+    public ResponseEntity<Schedule> getSchedule(
             @PathVariable String scheduleCode
 //            @RequestParam ("scheduleCode") String scheduleCode
     ){
         try {
-            Optional<Schedule> scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
-            return scheduleInfo.map(
-                    schedule -> new ResponseEntity<>("Found : " + schedule.toString(), HttpStatus.OK)
-            ).orElseGet(
-                    () -> new ResponseEntity<>("Not Found : ", HttpStatus.NOT_FOUND)
-            );
+            Schedule scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
+            if(scheduleInfo== null)
+                return new ResponseEntity<>( HttpStatus.NOT_FOUND);
+            else
+                return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
             catch (Exception e) {
 //                log.info("exception occurred {}", e.getMessage());
-                return new ResponseEntity<>("Error", HttpStatus.EXPECTATION_FAILED);
+                return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
             }
         }
 
+       @GetMapping("/{classCode}/active")
+       public ResponseEntity<List<Schedule>> getactiveSchedule(
+               @PathVariable String classCode
+       ){
+        try{
+            List<Schedule> activeScheduleList = scheduleService.getactiveSchedule(classCode);
+            if (activeScheduleList.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            else
+            return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
+        }
+    catch(Exception e){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+       }
 
 
     @PostMapping

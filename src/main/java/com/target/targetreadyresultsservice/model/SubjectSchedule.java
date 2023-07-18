@@ -53,11 +53,11 @@ public class SubjectSchedule {
 
     @Override
     public String toString() {
-        return "subjectSchedule{" +"\n" +
-                "subjectCode='" + subjectCode + '\'' +"\n" +
-                ", date=" + date +"\n" +
-                ", time=" + time +"\n"+
-                ", status=" + status +
+        return "    \nsubjectSchedule{" +"\n" +
+                "   subjectCode='" + subjectCode + '\'' +",\n" +
+                "   date=" + date +",\n" +
+                "   time=" + time +",\n"+
+                "   status=" + status +"\n"+
                 '}';
     }
 }
