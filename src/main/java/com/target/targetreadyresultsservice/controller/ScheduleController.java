@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.List;
-import java.util.Optional;
-
 
 @RestController
 @RequestMapping("schedule/v1")
@@ -32,7 +30,6 @@ public class ScheduleController {
     @GetMapping("/{scheduleCode}")
     public ResponseEntity<Schedule> getSchedule(
             @PathVariable String scheduleCode
-//            @RequestParam ("scheduleCode") String scheduleCode
     ){
         try {
             Schedule scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
@@ -42,7 +39,6 @@ public class ScheduleController {
                 return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
             catch (Exception e) {
-//                log.info("exception occurred {}", e.getMessage());
                 return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
             }
         }
@@ -56,8 +52,9 @@ public class ScheduleController {
             if (activeScheduleList.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
-            else
-            return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
+            else {
+                return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
+            }
         }
     catch(Exception e){
             return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
@@ -75,8 +72,8 @@ public class ScheduleController {
         }
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteSchedule(@RequestParam("scheduleCode") String scheduleCode){
+    @DeleteMapping("{scheduleCode}")
+    public ResponseEntity<String> deleteSchedule(@PathVariable String scheduleCode){
         String response = scheduleService.deleteSchedule(scheduleCode);
         if(response == null){
             return new ResponseEntity<>("Schedule not found",HttpStatus.NOT_FOUND);

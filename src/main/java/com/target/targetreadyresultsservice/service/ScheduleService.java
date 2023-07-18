@@ -8,9 +8,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import java.util.stream.Collectors;
-
-
 @Service
 public class ScheduleService {
     private final ScheduleRepository scheduleRepository;
@@ -24,7 +21,7 @@ public class ScheduleService {
     public List<Schedule> findAll(){
         return scheduleRepository.findAll();
     }
-    // get active Schedules
+    // get active Schedules by class
     public List<Schedule> getactiveSchedule(String classCode){
     List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
         activeList.removeIf(s -> !s.getScheduleStatus());
@@ -36,12 +33,14 @@ public class ScheduleService {
         return scheduleRepository.findById(scheduleCode).orElse(null);
     }
 
+    //add new schedule
     public void addNewSchedule(Schedule schedule) {
         String code = addScheduleCode(schedule);
         schedule.setScheduleCode(code);
         scheduleRepository.save(schedule);
     }
 
+    //create schedule code
     public String addScheduleCode(Schedule schedule) {
         long num = scheduleRepository.count();
         if(num==0){
@@ -62,17 +61,19 @@ public class ScheduleService {
         }
     }
 
+    //create exam schedule code
     public String setExamCode() {
         List<Schedule> scheduleList = scheduleRepository.findAll();
         int num=1;
         for (Schedule s: scheduleList) {
-            if(s.getScheduleType().contains("Exam")){
+            if(s.getScheduleType().contains(" Exam")){
                 num++;
             }
         }
         return "E"+ num;
     }
 
+    //create test schedule code
     public String setTestCode() {
         List<Schedule> scheduleList = scheduleRepository.findAll();
         int num=1;
@@ -84,6 +85,7 @@ public class ScheduleService {
         return "T"+ num;
     }
 
+    //delete a schedule
     public String deleteSchedule(String scheduleCode) {
         Schedule schedule = scheduleRepository.findById(scheduleCode).orElse(null);
         if(schedule == null){
@@ -93,6 +95,7 @@ public class ScheduleService {
         return "Deleted";
     }
 
+    //update a schedule
     public Optional<Schedule> updateSchedule(String scheduleCode, Schedule schedule) {
         Schedule sc = scheduleRepository.findById(scheduleCode).orElse(null);
         if(sc==null){
