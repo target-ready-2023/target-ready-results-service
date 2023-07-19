@@ -3,6 +3,7 @@ package com.target.targetreadyresultsservice.service;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
+import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
@@ -32,6 +33,9 @@ public class ScheduleService {
     public List<Schedule> getactiveSchedule(String classCode){
     List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
         activeList.removeIf(s -> !s.getScheduleStatus());
+        if(activeList.isEmpty()){
+            throw new NullValueException("This class does not have any active schedules");
+        }
         return activeList;
     }
 
@@ -41,7 +45,7 @@ public class ScheduleService {
         if(sc==null)
             throw new NotFoundException("Schedule match not found!");
         else
-        return sc;
+            return sc;
     }
     //add new schedule
     public void addNewSchedule(Schedule schedule) {
@@ -67,7 +71,7 @@ public class ScheduleService {
             if(s.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
                 throw new InvalidValueException("This day is a Sunday. Please enter a working Day");
             }
-            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(9,0)) )){
+            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(16,0)))){
                 throw new InvalidValueException("Please enter a time between 9AM and 4PM");
             }
 
@@ -138,7 +142,7 @@ public class ScheduleService {
             if(s.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
                 throw new InvalidValueException("This day is a Sunday. Please enter a working Day");
             }
-            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(9,0)) )){
+            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(16,0)) )){
                 throw new InvalidValueException("Please enter a time between 9AM and 4PM");
             }
 

@@ -23,48 +23,51 @@ public class ScheduleController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<Schedule>> getallSchedule(){
+    public ResponseEntity getallSchedule(){
         List<Schedule> scheduleList = scheduleService.findAll();
-        if (scheduleList.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        try{
+            if (scheduleList.isEmpty()) {
+                throw new NotFoundException("No schedules found");
+            }
+            return new ResponseEntity<>(scheduleList, HttpStatus.OK);
         }
-        return new ResponseEntity<>(scheduleList, HttpStatus.OK);
+        catch (NotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>("Action failed",HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     @GetMapping("/{scheduleCode}")
-    public ResponseEntity<Schedule> getSchedule(
+    public ResponseEntity getSchedule(
             @PathVariable String scheduleCode
     ){
         try {
             Schedule scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
-//            if(scheduleInfo== null)
-//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//            else
-                return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
+            return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
-        catch (NullValueException e){
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        catch (NotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
-        }
+    }
 
        @GetMapping("/{classCode}/active")
-       public ResponseEntity<List<Schedule>> getactiveSchedule(
+       public ResponseEntity getactiveSchedule(
                @PathVariable String classCode
        ){
         try{
             List<Schedule> activeScheduleList = scheduleService.getactiveSchedule(classCode);
-            if (activeScheduleList.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            else {
-                return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
-            }
+            return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
-    catch(Exception e){
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        catch (NullValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(Exception e){
+            return new ResponseEntity<>("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
        }
 
@@ -75,13 +78,9 @@ public class ScheduleController {
             scheduleService.addNewSchedule(schedule);
             return new ResponseEntity<>("Successful", HttpStatus.OK);
         }
-        catch (BlankValueException e){
+        catch (BlankValueException | InvalidValueException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch (InvalidValueException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch (Exception e){
+        } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -106,14 +105,10 @@ public class ScheduleController {
         try{
             scheduleService.updateSchedule(scheduleCode, schedule);
             return new ResponseEntity<>("Successful",HttpStatus.OK);
-        }catch (BlankValueException e){
+        }catch (BlankValueException | InvalidValueException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch (InvalidValueException e){
+        } catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch (Exception e){
-            return new ResponseEntity<>("Error",HttpStatus.EXPECTATION_FAILED);
         }
     }
 }
