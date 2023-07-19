@@ -3,7 +3,7 @@ package com.target.targetreadyresultsservice.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "Student")
+@Document(collection = "Student")
 public class Student {
 
     @Id
