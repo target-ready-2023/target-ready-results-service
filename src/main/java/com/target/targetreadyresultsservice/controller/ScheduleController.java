@@ -1,6 +1,9 @@
 package com.target.targetreadyresultsservice.controller;
 
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
+import com.target.targetreadyresultsservice.Exception.InvalidValueException;
+import com.target.targetreadyresultsservice.Exception.NotFoundException;
+import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -34,14 +37,17 @@ public class ScheduleController {
     ){
         try {
             Schedule scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
-            if(scheduleInfo== null)
-                return new ResponseEntity<>( HttpStatus.NOT_FOUND);
-            else
+//            if(scheduleInfo== null)
+//                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+//            else
                 return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
-            catch (Exception e) {
-                return new ResponseEntity<>( HttpStatus.EXPECTATION_FAILED);
-            }
+        catch (NullValueException e){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+        }
         }
 
        @GetMapping("/{classCode}/active")
@@ -68,18 +74,31 @@ public class ScheduleController {
         try{
             scheduleService.addNewSchedule(schedule);
             return new ResponseEntity<>("Successful", HttpStatus.OK);
-        }catch (BlankValueException e){
+        }
+        catch (BlankValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (InvalidValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @DeleteMapping("{scheduleCode}")
     public ResponseEntity<String> deleteSchedule(@PathVariable String scheduleCode){
-        String response = scheduleService.deleteSchedule(scheduleCode);
-        if(response == null){
-            return new ResponseEntity<>("Schedule not found",HttpStatus.NOT_FOUND);
+        try {
+            scheduleService.deleteSchedule(scheduleCode);
+            return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
         }
-        return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
+      catch (NotFoundException e){
+        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
     @PutMapping("/{scheduleCode}")
@@ -87,7 +106,13 @@ public class ScheduleController {
         try{
             scheduleService.updateSchedule(scheduleCode, schedule);
             return new ResponseEntity<>("Successful",HttpStatus.OK);
-        }catch (Exception e){
+        }catch (BlankValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (InvalidValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
             return new ResponseEntity<>("Error",HttpStatus.EXPECTATION_FAILED);
         }
     }
