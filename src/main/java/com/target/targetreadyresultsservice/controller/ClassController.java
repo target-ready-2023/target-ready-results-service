@@ -1,9 +1,11 @@
 package com.target.targetreadyresultsservice.controller;
 
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ClassService;
+import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,47 +23,73 @@ public class ClassController {
     }
 
     @GetMapping("/classes")
-    public List<ClassLevel> getClassDetails(){
-       return classService.getAllClasses();
+    public ResponseEntity<String> getClassDetails(){
+        try {
+            List<ClassDto> classes = classService.getAllClasses();
+            return new ResponseEntity("successfully fetched\n"+classes, HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity("Error occurred during fetch",HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     @GetMapping("/classes/class")
     public ResponseEntity<ClassLevel> getClassDetailsById(@RequestParam("classCode") String code){
         try {
-            Optional<ClassLevel> classInfo = classService.getClassLevelById(code);
-            return classInfo.map(
-                    classInfo1 -> new ResponseEntity<>(classInfo1, HttpStatus.OK)
-            ).orElseGet(
-                    () -> new ResponseEntity<>(HttpStatus.NOT_FOUND)
-            );
+            ClassLevel classInfo = classService.getClassLevelById(code);
+            if(classInfo!=null) {
+                return new ResponseEntity<>(classInfo, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity("Data not found", HttpStatus.NOT_FOUND);
+            }
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred during fetch",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PostMapping("/class")
     public ResponseEntity<String> saveClassDetails(@RequestBody ClassLevel classLevel){
-        ClassLevel classInfo= classService.setClassLevelInfo(classLevel);
-        return new ResponseEntity("class code: "+ classInfo.getCode(),HttpStatus.CREATED);
+        try {
+            ClassLevel classInfo = classService.setClassLevelInfo(classLevel);
+            return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
+        } catch(Exception e){
+            return new ResponseEntity<>("Error occurred during save", HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     @PutMapping("/class")
     public ResponseEntity<String> UpdateClassDetails(@RequestParam("classCode") String code,
                                                      @RequestBody ClassLevel classLevel){
+        try{
         classService.updateClassLevelInfo(code,classLevel);
-        return new ResponseEntity(HttpStatus.OK);
+        return new ResponseEntity<>("Successfully updated",HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>("Error occurred during update",HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     @DeleteMapping("/class")
     public ResponseEntity<String> deleteClassDetails(@RequestParam("classCode") String code){
-        classService.deleteClassLevelInfo(code);
-        return new ResponseEntity(HttpStatus.OK);
+        try {
+            classService.deleteClassLevelInfo(code);
+            return new ResponseEntity<>("Successfully deleted",HttpStatus.OK);
+        } catch(Exception e){
+            return new ResponseEntity<>("Error occurred during delete",HttpStatus.EXPECTATION_FAILED);
+        }
     }
 
     @GetMapping("/class/search")
-    public List<ClassLevel> SearchClass(@RequestParam(required = false) String classCode,
-                                        @RequestParam(required = false) String className){
-        return classService.getClassLeveBySearch(classCode,className);
+    public ResponseEntity<String> SearchClassBYName(@RequestParam(value = "className", required = false) String className){
+        try {
+            List<ClassLevel> classInfo = classService.getClassLeveByName(className);
+            if (classInfo.isEmpty()) {
+                return new ResponseEntity<>("No data found", HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity(classInfo, HttpStatus.FOUND);
+            }
+        } catch(Exception e){
+            return new ResponseEntity<>("Error during search", HttpStatus.EXPECTATION_FAILED);
+        }
 
     }
 }

@@ -16,8 +16,6 @@ public class ClassLevel {
     @Id
     private String code;
     private String name;
-    private List<String> subjectCodes;
-
     public String getCode() {
         return code;
     }
@@ -34,20 +32,11 @@ public class ClassLevel {
         this.name = name;
     }
 
-    public List<String> getSubjectCodes() {
-        return subjectCodes;
-    }
-
-    public void setSubjectCodes(List<String> subjectCodes) {
-        this.subjectCodes = subjectCodes;
-    }
-
     @Override
     public String toString() {
         return "ClassLevel{" +
                 "code='" + code + '\'' +
                 ", name='" + name + '\'' +
-                ", subjectCodes=" + subjectCodes +
                 '}';
     }
 }
