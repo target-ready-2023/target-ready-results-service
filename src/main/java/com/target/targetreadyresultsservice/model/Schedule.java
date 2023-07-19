@@ -13,13 +13,15 @@ public class Schedule {
     private String classCode;
     private List<SubjectSchedule> subjectSchedule;
     private String scheduleType;
-    private boolean scheduleStatus; //1 - True(active) and 0 - False(inactive)
+    private String scheduleName;
+    private boolean scheduleStatus; // True(active) and  False(inactive)
 
     public Schedule(String classCode, List<SubjectSchedule> subjectSchedule,
-                    String scheduleType, boolean scheduleStatus) {
+                    String scheduleType, String scheduleName, boolean scheduleStatus) {
         this.classCode = classCode;
         this.subjectSchedule = subjectSchedule;
         this.scheduleType = scheduleType;
+        this.scheduleName = scheduleName;
         this.scheduleStatus = scheduleStatus;
     }
 
@@ -55,6 +57,14 @@ public class Schedule {
         this.scheduleType = scheduleType;
     }
 
+    public String getScheduleName() {
+        return scheduleName;
+    }
+
+    public void setScheduleName(String scheduleName) {
+        this.scheduleName = scheduleName;
+    }
+
     public boolean getScheduleStatus() {
         return scheduleStatus;
     }
@@ -65,12 +75,13 @@ public class Schedule {
 
     @Override
     public String toString() {
-        return "Schedule{" +"\n" +
-                "scheduleCode='" + scheduleCode + '\'' +",\n" +
-                "  classCode='" + classCode + '\'' +",\n" +
-                "  subjectSchedule=" + subjectSchedule +",\n" +
-                "  scheduleType='" + scheduleType + '\'' +",\n" +
-                "  scheduleStatus=" + scheduleStatus +
+        return "Schedule{" +
+                "scheduleCode='" + scheduleCode + '\'' +
+                ", classCode='" + classCode + '\'' +
+                ", subjectSchedule=" + subjectSchedule +
+                ", scheduleType='" + scheduleType + '\'' +
+                ", scheduleName='" + scheduleName + '\'' +
+                ", scheduleStatus=" + scheduleStatus +
                 '}';
     }
 }

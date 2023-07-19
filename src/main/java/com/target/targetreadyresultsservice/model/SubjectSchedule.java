@@ -10,7 +10,7 @@ public class SubjectSchedule {
     private String subjectCode;
     private LocalDate date;
     private LocalTime time;
-    private boolean status; //1 - True(active) and 0 - False(inactive)
+    private boolean status; //True(active) and False(inactive)
 
     public SubjectSchedule(String subjectCode, LocalDate date, LocalTime time, boolean status) {
         this.subjectCode = subjectCode;

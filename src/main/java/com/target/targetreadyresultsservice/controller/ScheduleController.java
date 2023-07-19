@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.controller;
 
+import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.service.ScheduleService;
 import org.springframework.http.HttpStatus;
@@ -67,7 +68,7 @@ public class ScheduleController {
         try{
             scheduleService.addNewSchedule(schedule);
             return new ResponseEntity<>("Successful", HttpStatus.OK);
-        }catch (Exception e){
+        }catch (BlankValueException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }

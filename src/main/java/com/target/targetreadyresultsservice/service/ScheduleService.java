@@ -1,10 +1,13 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
+import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,54 +38,36 @@ public class ScheduleService {
 
     //add new schedule
     public void addNewSchedule(Schedule schedule) {
+        if(schedule.getClassCode().isBlank()){
+            throw new BlankValueException("Class code cannot be blank");
+        }
         String code = addScheduleCode(schedule);
         schedule.setScheduleCode(code);
         scheduleRepository.save(schedule);
     }
 
-    //create schedule code
+    //create schedule code T/E-classCode-dateOfE/T
     public String addScheduleCode(Schedule schedule) {
-        long num = scheduleRepository.count();
-        if(num==0){
-            if(schedule.getScheduleType().contains("Test")){
-                return "T1";
-            }
-            else{
-                return "E1";
-            }
-        }
-        else{
-            if(schedule.getScheduleType().contains("Test")){
-                return setTestCode();
+            if(schedule.getScheduleType().equals("Test")){
+                return setTestCode(schedule);
             }
             else{
                 return setExamCode();
             }
-        }
     }
 
     //create exam schedule code
     public String setExamCode() {
-        List<Schedule> scheduleList = scheduleRepository.findAll();
-        int num=1;
-        for (Schedule s: scheduleList) {
-            if(s.getScheduleType().contains(" Exam")){
-                num++;
-            }
-        }
-        return "E"+ num;
+        return "E";
     }
 
     //create test schedule code
-    public String setTestCode() {
-        List<Schedule> scheduleList = scheduleRepository.findAll();
-        int num=1;
-        for (Schedule s: scheduleList) {
-            if(s.getScheduleType().contains("Test")){
-                num++;
-            }
-        }
-        return "T"+ num;
+    public String setTestCode(Schedule schedule) {
+        List<SubjectSchedule> subjectScheduleList = schedule.getSubjectSchedule();
+        LocalDate date = subjectScheduleList.get(0).getDate();
+        String month = String.valueOf(date.getMonth());
+        String year = String.valueOf(date.getYear());
+        return "T"+schedule.getClassCode()+month+year;
     }
 
     //delete a schedule
