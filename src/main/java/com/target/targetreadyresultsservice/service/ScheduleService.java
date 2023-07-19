@@ -119,7 +119,7 @@ public class ScheduleService {
     public Optional<Schedule> updateSchedule(String scheduleCode, Schedule schedule) {
         Schedule sc = scheduleRepository.findById(scheduleCode).orElse(null);
         if(sc==null){
-            throw new NotFoundException("Updation Failed ! Cannot find that Schedule.");
+            throw new NotFoundException("Update Failed ! Cannot find that Schedule.");
         }
         if(schedule.getClassCode().isBlank() || schedule.getClassCode().isEmpty() ){
             throw new BlankValueException("Class code cannot be blank");
