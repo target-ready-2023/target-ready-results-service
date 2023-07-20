@@ -34,7 +34,7 @@ public class SubjectService {
         List<String> subNames = new ArrayList<>();
         Query query = new Query();
         List<Criteria> criteria = new ArrayList<>();
-        criteria.add(Criteria.where("classLevel").is(code));
+        criteria.add(Criteria.where("classCode").is(code));
         if (!criteria.isEmpty())
             query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
         List<Subject> subInfo = mongoTemplate.find(query,Subject.class);
@@ -45,7 +45,7 @@ public class SubjectService {
     }
 
     public  String addSubject(Subject subject) throws Exception {
-        String code="S-"+subject.getSubjectName().substring(0,2)+subject.getClassLevel();
+        String code="S-"+subject.getSubjectName().substring(0,2)+subject.getClassCode();
         subject.setSubjectCode(code);
         subjectRepository.save(subject);
         return "Subject added successfully";
@@ -66,7 +66,7 @@ public class SubjectService {
             Subject sub = subject1.get();
             sub.setSubjectName(subject.getSubjectName());
             sub.setCredits(subject.getCredits());
-            sub.setClassLevel(subject.getClassLevel());
+            sub.setClassCode(subject.getClassCode());
             subjectRepository.save(sub);
         }
         else
