@@ -29,6 +29,21 @@ public class SubjectService {
     public SubjectService() {
     }
     private static final Logger log = LoggerFactory.getLogger(ResultsController.class);
+
+    public List<String> getSubjectsGivenClassCode(String code) {
+        List<String> subNames = new ArrayList<>();
+        Query query = new Query();
+        List<Criteria> criteria = new ArrayList<>();
+        criteria.add(Criteria.where("classLevel").is(code));
+        if (!criteria.isEmpty())
+            query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+        List<Subject> subInfo = mongoTemplate.find(query,Subject.class);
+        for(Subject s: subInfo){
+                subNames.add(s.getSubjectName());
+        }
+        return subNames;
+    }
+
     public  String addSubject(Subject subject) throws Exception {
         String code="S-"+subject.getSubjectName().substring(0,2)+subject.getClassLevel();
         subject.setSubjectCode(code);

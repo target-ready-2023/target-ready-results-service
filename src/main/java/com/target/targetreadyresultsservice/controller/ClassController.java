@@ -23,19 +23,19 @@ public class ClassController {
     }
 
     @GetMapping("/classes")
-    public ResponseEntity<String> getClassDetails(){
+    public ResponseEntity<ClassDto> getClassDetails(){
         try {
             List<ClassDto> classes = classService.getAllClasses();
-            return new ResponseEntity("successfully fetched\n"+classes, HttpStatus.OK);
+            return new ResponseEntity(classes, HttpStatus.OK);
         } catch(Exception e){
             return new ResponseEntity("Error occurred during fetch",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @GetMapping("/classes/class")
-    public ResponseEntity<ClassLevel> getClassDetailsById(@RequestParam("classCode") String code){
+    public ResponseEntity<ClassDto> getClassDetailsById(@RequestParam("classCode") String code){
         try {
-            ClassLevel classInfo = classService.getClassLevelById(code);
+            ClassDto classInfo = classService.getClassLevelById(code);
             if(classInfo!=null) {
                 return new ResponseEntity<>(classInfo, HttpStatus.OK);
             }
