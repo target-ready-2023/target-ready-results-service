@@ -22,7 +22,7 @@ public class Subject {
     private String credits;
 
 
-    private String classLevel;
+    private String classCode;
 
 
 
@@ -33,7 +33,7 @@ public class Subject {
                 "subjectCode='" + subjectCode + '\'' +
                 ", subjectName='" + subjectName + '\'' +
                 ", credits='" + credits + '\'' +
-                ", classLevel=" + classLevel +
+                ", classLevel=" + classCode +
                 '}';
     }
 
@@ -49,8 +49,8 @@ public class Subject {
         return credits;
     }
 
-    public String getClassLevel() {
-        return classLevel;
+    public String getClassCode() {
+        return classCode;
     }
 
     public void setSubjectCode(String subjectCode) {
@@ -65,7 +65,7 @@ public class Subject {
         this.credits = credits;
     }
 
-    public void setClassLevel(String classLevel) {
-        this.classLevel = classLevel;
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 }
