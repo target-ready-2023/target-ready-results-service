@@ -150,6 +150,7 @@ public class ScheduleService {
         sc.setClassCode(schedule.getClassCode());
         sc.setSubjectSchedule(schedule.getSubjectSchedule());
         sc.setScheduleType(schedule.getScheduleType());
+        sc.setScheduleName(schedule.getScheduleName());
         sc.setScheduleStatus(schedule.getScheduleStatus());
         scheduleRepository.save(sc);
         return Optional.of(sc);
