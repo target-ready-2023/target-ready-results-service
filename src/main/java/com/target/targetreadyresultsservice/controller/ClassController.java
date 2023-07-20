@@ -3,15 +3,12 @@ package com.target.targetreadyresultsservice.controller;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.model.ClassLevel;
-import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ClassService;
-import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/results/v1")
@@ -81,11 +78,11 @@ public class ClassController {
     @GetMapping("/class/search")
     public ResponseEntity<String> SearchClassBYName(@RequestParam(value = "className", required = false) String className){
         try {
-            List<ClassLevel> classInfo = classService.getClassLeveByName(className);
-            if (classInfo.isEmpty()) {
+            ClassDto classInfo = classService.getClassLeveByName(className);
+            if (classInfo==null) {
                 return new ResponseEntity<>("No data found", HttpStatus.NOT_FOUND);
             } else {
-                return new ResponseEntity(classInfo, HttpStatus.FOUND);
+                return new ResponseEntity(classInfo, HttpStatus.OK);
             }
         } catch(Exception e){
             return new ResponseEntity<>("Error during search", HttpStatus.EXPECTATION_FAILED);
