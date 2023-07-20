@@ -1,6 +1,6 @@
 package com.target.targetreadyresultsservice.controller;
 
-import com.target.targetreadyresultsservice.Exception.SubjectNotFoundException;
+
 import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
