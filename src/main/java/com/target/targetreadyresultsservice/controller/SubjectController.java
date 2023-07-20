@@ -1,6 +1,5 @@
 package com.target.targetreadyresultsservice.controller;
 
-import com.target.targetreadyresultsservice.Exception.SubjectNotFoundException;
 import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.service.SubjectService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,15 +35,15 @@ public class SubjectController {
     }
 
     @GetMapping("/subjects")
-    public ResponseEntity<String> getAllSubjects() {
+    public ResponseEntity<Subject> getAllSubjects() {
         try {
             List<Subject> allSubjects = subjectService.getSubjects();
-            return new ResponseEntity<>("Successfully fetched\n"+allSubjects, HttpStatus.OK);
+            return new ResponseEntity(allSubjects, HttpStatus.OK);
         }
         catch (Exception e)
         {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity<>("Error occurred", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred", HttpStatus.EXPECTATION_FAILED);
         }
 
 
@@ -52,18 +51,18 @@ public class SubjectController {
     }
 
     @GetMapping("/subject/{subjectCode}")
-    public ResponseEntity<String> getSubjectById(@PathVariable("subjectCode") String subjectCode) {
+    public ResponseEntity<Subject> getSubjectById(@PathVariable("subjectCode") String subjectCode) {
         try {
             Optional<Subject> subjectInfo=subjectService.getSubjectById(subjectCode);
             return subjectInfo.map(
-                    subject -> new ResponseEntity<>("Found : " + subject.toString(), HttpStatus.OK)
+                    subject -> new ResponseEntity<>(subject, HttpStatus.OK)
             ).orElseGet(
-                    () -> new ResponseEntity<>("Could not find the subject with code : "+subjectCode, HttpStatus.NOT_FOUND)
+                    () -> new ResponseEntity("Could not find the subject with code : "+subjectCode, HttpStatus.NOT_FOUND)
             );
 
         } catch (Exception e) {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity<>("Error occurred",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred",HttpStatus.EXPECTATION_FAILED);
         }
 
     }
@@ -97,22 +96,22 @@ public class SubjectController {
         return true;
     }
     @GetMapping("/search")
-    public ResponseEntity<String> searchSubjects(@RequestParam(required = false) String subjectName)  {
+    public ResponseEntity<Subject> searchSubjects(@RequestParam(required = false) String subjectName)  {
         try {
             List<Subject> filterSub=subjectService.searchSubjectsByFilters(subjectName);
             if(!filterSub.isEmpty()) {
-                return new ResponseEntity<>("Successfully fetched\n" + filterSub, HttpStatus.OK);
+                return new ResponseEntity(filterSub, HttpStatus.OK);
             }
             else
             {
-               return new ResponseEntity<>("Could not find any subject with name : "+subjectName, HttpStatus.NOT_FOUND);
+               return new ResponseEntity("Could not find any subject with name : "+subjectName, HttpStatus.NOT_FOUND);
             }
 
         }
         catch (Exception e)
         {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity<>("Error occurred while searching",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred while searching",HttpStatus.EXPECTATION_FAILED);
         }
     }
 

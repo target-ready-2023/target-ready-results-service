@@ -19,6 +19,9 @@ import java.util.List;
 public class ClassService {
     @Autowired
     private final ClassRepository classRepository;
+
+    @Autowired
+    private SubjectService subjectService;
     @Autowired
     MongoTemplate mongoTemplate;
 
@@ -31,26 +34,25 @@ public class ClassService {
     public List<ClassDto> getAllClasses(){
         log.info("Fetching all Class details from db");
         List<ClassLevel> classLevels=classRepository.findAll();
-        List<ClassDto> classes =null;
+        List<ClassDto> classes = new ArrayList<>();
         for (ClassLevel level:classLevels) {
-            ClassDto classInfo = null;
-//            List<String> subjects =SubjectService.getSubjectsGivenClassCode(level.getCode());
-//            classInfo.setCode(level.getCode());
-//            classInfo.setName(level.getName());
-//            classInfo.setSubjects=subjects;
+            List<String> subjects =subjectService.getSubjectsGivenClassCode(level.getCode());
+            ClassDto classInfo = new ClassDto(level.getCode(), level.getName(),subjects);
             classes.add(classInfo);
         }
         return classes;
     }
 
-    public ClassLevel getClassLevelById(String code){
-        ClassLevel classInfo = classRepository.findById(code)
+    public ClassDto getClassLevelById(String code){
+        ClassLevel classLevels = classRepository.findById(code)
                 .orElseThrow(() -> new RuntimeException());
-        if(classInfo==null){
+        if(classLevels==null){
             log.info("No class found with the class code {} in the db",code);
             return null;
         }
         else{
+            List<String> subjects =subjectService.getSubjectsGivenClassCode(code);
+            ClassDto classInfo = new ClassDto(classLevels.getCode(),classLevels.getName(),subjects);
             log.info("Fetching class details with class code {} from db", code);
             return classInfo;
         }
@@ -83,7 +85,6 @@ public class ClassService {
         List<Criteria> criteria = new ArrayList<>();
         if (className != null && !className.isEmpty())
             criteria.add(Criteria.where("name").is(className));
-
         if (!criteria.isEmpty())
             query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
         log.info("Searching class with class name {} in the db",className);
