@@ -29,6 +29,7 @@ public class ScheduleService {
     public List<Schedule> findAll(){
         return scheduleRepository.findAll();
     }
+
     // get active Schedules by class
     public List<Schedule> getactiveSchedule(String classCode){
     List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
@@ -39,6 +40,17 @@ public class ScheduleService {
         return activeList;
     }
 
+    //get schedule by class
+    public List<Schedule> getScheduleByClass(String classCode) {
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        if(scheduleList.isEmpty()){
+            throw new NullValueException("No schedules found for the given class");
+        }
+        else{
+            return scheduleList;
+        }
+    }
+
     //Get schedule by id
     public Schedule getScheduleDetails(String scheduleCode) {
         Schedule sc = scheduleRepository.findById(scheduleCode).orElse(null);
@@ -47,35 +59,10 @@ public class ScheduleService {
         else
             return sc;
     }
+
     //add new schedule
     public void addNewSchedule(Schedule schedule) {
-
-        if(schedule.getClassCode().isBlank() || schedule.getClassCode().isEmpty() ){
-            throw new BlankValueException("Class code cannot be blank");
-        }
-        if(schedule.getScheduleType().isBlank() || schedule.getScheduleType().isEmpty()){
-            throw new BlankValueException("Schedule Type cannot be blank");
-        }
-        if(schedule.getScheduleName().isBlank() ||schedule.getScheduleName().isEmpty()  ){
-            throw new BlankValueException("Schedule Name cannot be blank");
-        }
-        if(schedule.getSubjectSchedule().isEmpty()){
-            throw new BlankValueException("Provide at least one subject schedule");
-        }
-        List<SubjectSchedule> SubjectList = schedule.getSubjectSchedule();
-        for (SubjectSchedule s:
-                SubjectList) {
-            if(s.getSubjectCode().isBlank() || s.getSubjectCode().isEmpty()){
-                throw new BlankValueException("Schedule Code cannot be blank");
-            }
-            if(s.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
-                throw new InvalidValueException("This day is a Sunday. Please enter a working Day");
-            }
-            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(16,0)))){
-                throw new InvalidValueException("Please enter a time between 9AM and 4PM");
-            }
-
-        }
+        exceptionChecks(schedule);
         String code = addScheduleCode(schedule);
         schedule.setScheduleCode(code);
         scheduleRepository.save(schedule);
@@ -83,26 +70,18 @@ public class ScheduleService {
 
     //create schedule code T/E-classCode-dateOfE/T
     public String addScheduleCode(Schedule schedule) {
-            if(schedule.getScheduleType().equals("Test")){
-                return setTestCode(schedule);
-            }
-            else{
-                return setExamCode();
-            }
-    }
-
-    //create exam schedule code
-    public String setExamCode() {
-        return "E";
-    }
-
-    //create test schedule code
-    public String setTestCode(Schedule schedule) {
         List<SubjectSchedule> subjectScheduleList = schedule.getSubjectSchedule();
         LocalDate date = subjectScheduleList.get(0).getDate();
+        String day = String.valueOf(date.getDayOfMonth());
         String month = String.valueOf(date.getMonth());
         String year = String.valueOf(date.getYear());
-        return "T"+schedule.getClassCode()+month+year;
+
+        if(schedule.getScheduleType().equals("Test")){
+                return "T"+schedule.getClassCode()+day+month+year;
+        }
+        else{
+                return "E"+schedule.getClassCode()+day+month+year;
+        }
     }
 
     //delete a schedule
@@ -121,6 +100,18 @@ public class ScheduleService {
         if(sc==null){
             throw new NotFoundException("Update Failed ! Cannot find that Schedule.");
         }
+        exceptionChecks(schedule);
+        sc.setClassCode(schedule.getClassCode());
+        sc.setSubjectSchedule(schedule.getSubjectSchedule());
+        sc.setScheduleType(schedule.getScheduleType());
+        sc.setScheduleName(schedule.getScheduleName());
+        sc.setScheduleStatus(schedule.getScheduleStatus());
+        scheduleRepository.save(sc);
+        return Optional.of(sc);
+    }
+
+    //exception checks for post and put
+    public void exceptionChecks(Schedule schedule){
         if(schedule.getClassCode().isBlank() || schedule.getClassCode().isEmpty() ){
             throw new BlankValueException("Class code cannot be blank");
         }
@@ -139,20 +130,18 @@ public class ScheduleService {
             if(s.getSubjectCode().isBlank() || s.getSubjectCode().isEmpty()){
                 throw new BlankValueException("Schedule Code cannot be blank");
             }
+            if(s.getDate() == null){
+                throw new BlankValueException("Please enter a date");
+            }
             if(s.getDate().getDayOfWeek().equals(DayOfWeek.SUNDAY)){
                 throw new InvalidValueException("This day is a Sunday. Please enter a working Day");
+            }
+            if(s.getTime() == null){
+                throw new BlankValueException("Please enter a time");
             }
             if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(16,0)) )){
                 throw new InvalidValueException("Please enter a time between 9AM and 4PM");
             }
-
         }
-        sc.setClassCode(schedule.getClassCode());
-        sc.setSubjectSchedule(schedule.getSubjectSchedule());
-        sc.setScheduleType(schedule.getScheduleType());
-        sc.setScheduleName(schedule.getScheduleName());
-        sc.setScheduleStatus(schedule.getScheduleStatus());
-        scheduleRepository.save(sc);
-        return Optional.of(sc);
     }
 }

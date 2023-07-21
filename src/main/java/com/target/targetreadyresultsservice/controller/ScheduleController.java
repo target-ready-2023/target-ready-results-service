@@ -22,8 +22,9 @@ public class ScheduleController {
         this.scheduleService = scheduleService;
     }
 
+    //get all schedules
     @GetMapping("/all")
-    public ResponseEntity getallSchedule(){
+    public ResponseEntity<List<Schedule>> getallSchedule(){
         List<Schedule> scheduleList = scheduleService.findAll();
         try{
             if (scheduleList.isEmpty()) {
@@ -32,15 +33,16 @@ public class ScheduleController {
             return new ResponseEntity<>(scheduleList, HttpStatus.OK);
         }
         catch (NotFoundException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
-            return new ResponseEntity<>("Action failed",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Action failed",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
+    //get schedule by scheduleCode
     @GetMapping("/{scheduleCode}")
-    public ResponseEntity getSchedule(
+    public ResponseEntity<Schedule> getSchedule(
             @PathVariable String scheduleCode
     ){
         try {
@@ -48,15 +50,16 @@ public class ScheduleController {
             return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
         catch (NotFoundException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
-            return new ResponseEntity<>("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-       @GetMapping("/{classCode}/active")
-       public ResponseEntity getactiveSchedule(
+    //get active schedule by classCode
+    @GetMapping("/{classCode}/active")
+    public ResponseEntity<List<Schedule>> getactiveSchedule(
                @PathVariable String classCode
        ){
         try{
@@ -64,12 +67,27 @@ public class ScheduleController {
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
         catch (NullValueException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
-            return new ResponseEntity<>("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
-       }
+    }
+
+    //get all schedules by classCode
+    @GetMapping("/{classCode}/all")
+    public ResponseEntity<List<Schedule>> getScheduleByClass(@PathVariable String classCode){
+        try{
+            List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+            return new ResponseEntity<>(scheduleList,HttpStatus.OK);
+        }
+        catch(NullValueException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e){
+            return new ResponseEntity("Active failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
 
     @PostMapping
