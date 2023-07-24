@@ -24,8 +24,12 @@ public class Subject {
 
     private String classCode;
 
-
-
+    public Subject(String subjectCode, String subjectName, String credits, String classCode) {
+        this.subjectCode = subjectCode;
+        this.subjectName = subjectName;
+        this.credits = credits;
+        this.classCode = classCode;
+    }
 
     @Override
     public String toString() {
