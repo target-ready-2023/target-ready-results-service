@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 public class SubjectService {
     @Autowired
     private SubjectRepository subjectRepository;
+
     @Autowired
     MongoTemplate mongoTemplate;
     public SubjectService(SubjectRepository subjectRepository) {
@@ -32,14 +33,10 @@ public class SubjectService {
 
     public List<String> getSubjectsGivenClassCode(String code) {
         List<String> subNames = new ArrayList<>();
-        Query query = new Query();
-        List<Criteria> criteria = new ArrayList<>();
-        criteria.add(Criteria.where("classCode").is(code));
-        if (!criteria.isEmpty())
-            query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
-        List<Subject> subInfo = mongoTemplate.find(query,Subject.class);
+        List<Subject> subInfo = subjectRepository.findByClassCode(code);
         for(Subject s: subInfo){
-                subNames.add(s.getSubjectName());
+                String sub =s.getSubjectName();
+                subNames.add(sub);
         }
         return subNames;
     }

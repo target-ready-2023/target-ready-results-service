@@ -4,6 +4,7 @@ package com.target.targetreadyresultsservice.controller;
 import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.service.ClassService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/results/v1")
+@RequestMapping("/classes/v1")
 public class ClassController {
     private ClassService classService;
 
@@ -20,32 +21,37 @@ public class ClassController {
     }
 
     @GetMapping("/classes")
-    public ResponseEntity<ClassDto> getClassDetails(){
+    public ResponseEntity<List<ClassDto>> getClassDetails() {
         try {
             List<ClassDto> classes = classService.getAllClasses();
-            return new ResponseEntity(classes, HttpStatus.OK);
-        } catch(Exception e){
-            return new ResponseEntity("Error occurred during fetch",HttpStatus.EXPECTATION_FAILED);
+            if (classes != null && classes.toString() !="") {
+                return new ResponseEntity<>(classes, HttpStatus.OK);
+            }
+            else{
+                return new ResponseEntity("Data not found", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity("Error occurred during fetch", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @GetMapping("/classes/class")
-    public ResponseEntity<ClassDto> getClassDetailsById(@RequestParam("classCode") String code){
+    @GetMapping("classes/{classCode}")
+    public ResponseEntity<ClassDto> getClassDetailsById(@PathVariable("classCode") String code){
         try {
             ClassDto classInfo = classService.getClassLevelById(code);
-            if(classInfo!=null) {
+            if(classInfo!=null && classInfo.toString()!="") {
                 return new ResponseEntity<>(classInfo, HttpStatus.OK);
             }
             else{
                 return new ResponseEntity("Data not found", HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
-            return new ResponseEntity("Error occurred during fetch",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @PostMapping("/class")
-    public ResponseEntity<String> saveClassDetails(@RequestBody ClassLevel classLevel){
+    @PostMapping("/classes")
+    public ResponseEntity<String> saveClassDetails(@RequestBody @Valid ClassLevel classLevel){
         try {
             ClassLevel classInfo = classService.setClassLevelInfo(classLevel);
             return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
@@ -54,8 +60,8 @@ public class ClassController {
         }
     }
 
-    @PutMapping("/class")
-    public ResponseEntity<String> UpdateClassDetails(@RequestParam("classCode") String code,
+    @PutMapping("/classes/{classCode}")
+    public ResponseEntity<String> UpdateClassDetails(@PathVariable("classCode") String code,
                                                      @RequestBody ClassLevel classLevel){
         try{
         classService.updateClassLevelInfo(code,classLevel);
@@ -65,27 +71,27 @@ public class ClassController {
         }
     }
 
-    @DeleteMapping("/class")
-    public ResponseEntity<String> deleteClassDetails(@RequestParam("classCode") String code){
+    @DeleteMapping("/classes/{classCode}")
+    public ResponseEntity<String> deleteClassDetails(@PathVariable("classCode") String code){
         try {
             classService.deleteClassLevelInfo(code);
             return new ResponseEntity<>("Successfully deleted",HttpStatus.OK);
         } catch(Exception e){
-            return new ResponseEntity<>("Error occurred during delete",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @GetMapping("/class/search")
-    public ResponseEntity<String> SearchClassBYName(@RequestParam(value = "className", required = false) String className){
+    @GetMapping("/classes/search/{className}")
+    public ResponseEntity<String> SearchClassBYName(@PathVariable(value = "className", required = false) String className){
         try {
             ClassDto classInfo = classService.getClassLeveByName(className);
-            if (classInfo==null) {
+            if (classInfo==null || classInfo.toString() == "") {
                 return new ResponseEntity<>("No data found", HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity(classInfo, HttpStatus.OK);
             }
         } catch(Exception e){
-            return new ResponseEntity<>("Error during search", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
 
     }
