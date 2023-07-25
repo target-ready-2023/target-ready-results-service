@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("schedule/v1")
+@RequestMapping("/schedule/v1")
 public class ScheduleController {
     private final ScheduleService scheduleService;
 
@@ -94,11 +94,14 @@ public class ScheduleController {
     public ResponseEntity<String> addNewSchedule(@RequestBody Schedule schedule){
         try{
             scheduleService.addNewSchedule(schedule);
-            return new ResponseEntity<>("Successful", HttpStatus.OK);
+            return new ResponseEntity<>("Successful", HttpStatus.CREATED);
         }
         catch (BlankValueException | InvalidValueException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        } catch (Exception e){
+        }catch (NullValueException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }

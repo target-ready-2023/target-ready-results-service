@@ -25,6 +25,18 @@ public class Schedule {
         this.scheduleStatus = scheduleStatus;
     }
 
+    public Schedule(String scheduleCode, String classCode, List<SubjectSchedule> subjectSchedule, String scheduleType, String scheduleName, boolean scheduleStatus) {
+        this.scheduleCode = scheduleCode;
+        this.classCode = classCode;
+        this.subjectSchedule = subjectSchedule;
+        this.scheduleType = scheduleType;
+        this.scheduleName = scheduleName;
+        this.scheduleStatus = scheduleStatus;
+    }
+
+    public Schedule() {
+    }
+
     public String getScheduleCode() {
         return scheduleCode;
     }

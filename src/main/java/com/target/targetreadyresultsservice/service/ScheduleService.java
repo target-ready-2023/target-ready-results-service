@@ -61,11 +61,12 @@ public class ScheduleService {
     }
 
     //add new schedule
-    public void addNewSchedule(Schedule schedule) {
+    public Schedule addNewSchedule(Schedule schedule) {
         exceptionChecks(schedule);
         String code = addScheduleCode(schedule);
         schedule.setScheduleCode(code);
         scheduleRepository.save(schedule);
+        return schedule;
     }
 
     //create schedule code T/E-classCode-dateOfE/T
@@ -112,16 +113,19 @@ public class ScheduleService {
 
     //exception checks for post and put
     public void exceptionChecks(Schedule schedule){
+        if(schedule.getClassCode()==null){
+            throw new NullValueException("Please enter a class code");
+        }
         if(schedule.getClassCode().isBlank() || schedule.getClassCode().isEmpty() ){
             throw new BlankValueException("Class code cannot be blank");
         }
-        if(schedule.getScheduleType().isBlank() || schedule.getScheduleType().isEmpty()){
+        if(schedule.getScheduleType().isBlank() || schedule.getScheduleType().isEmpty() || schedule.getScheduleType() == null){
             throw new BlankValueException("Schedule Type cannot be blank");
         }
-        if(schedule.getScheduleName().isBlank() ||schedule.getScheduleName().isEmpty()  ){
+        if(schedule.getScheduleName().isBlank() ||schedule.getScheduleName().isEmpty() || schedule.getScheduleName() == null){
             throw new BlankValueException("Schedule Name cannot be blank");
         }
-        if(schedule.getSubjectSchedule().isEmpty()){
+        if(schedule.getSubjectSchedule().isEmpty() || schedule.getSubjectSchedule()==null){
             throw new BlankValueException("Provide at least one subject schedule");
         }
         List<SubjectSchedule> SubjectList = schedule.getSubjectSchedule();
