@@ -49,9 +49,8 @@ public class ClassControllerTest {
     }
 
     @Test
-    void savaClassShouldReturnError() throws Exception{
+    void savaClassShouldReturnException() throws Exception{
         classLevel = new ClassLevel(null,null);
-//        given(classService.setClassLevelInfo(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));
 
         ResultActions response = mockMvc.perform(post(END_POINT_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -72,7 +71,6 @@ public class ClassControllerTest {
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-//                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(classDto.getContent().size())));
     }
 
     @Test
@@ -85,7 +83,6 @@ public class ClassControllerTest {
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
-//              .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(classDto.getContent().size())));
     }
 
     @Test
@@ -114,15 +111,55 @@ public class ClassControllerTest {
     }
 
     @Test
+    void updateClassDetailsShouldReturnUpdated() throws Exception {
+        ClassLevel classLevel= new ClassLevel("C4","Four");
+        ClassLevel classLevel1 = new ClassLevel();
+        classLevel1.setName("Four");
+
+        when(classService.updateClassLevelInfo("C4",classLevel1)).thenReturn(classLevel);
+        ResultActions response = mockMvc.perform(put(END_POINT_PATH+"/"+"C4")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(classLevel)));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    void updateClassDetailsShouldReturnException() throws Exception {
+        ClassLevel classLevel= new ClassLevel("C4","Four");
+
+        when(classService.updateClassLevelInfo(any(String.class),any(ClassLevel.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(put(END_POINT_PATH+"/C4")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(classLevel)));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void deleteClassByIdShouldReturnString() throws Exception{
         classLevel = new ClassLevel("C4","4");
         String code="C4";
-        doNothing().when(classService).deleteClassLevelInfo("C4");
+        when(classService.deleteClassLevelInfo("C4")).thenReturn("deleted Successfully");
 
         ResultActions response = mockMvc.perform(delete(END_POINT_PATH+"/"+code)
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    void deleteClassByIdShouldReturnException() throws Exception{
+        classLevel = new ClassLevel("C4","4");
+        String code="C4";
+
+        when(classService.deleteClassLevelInfo(anyString())).thenThrow(RuntimeException.class);
+        ResultActions response = mockMvc.perform(delete(END_POINT_PATH+"/"+code)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed());
     }
 
     @Test

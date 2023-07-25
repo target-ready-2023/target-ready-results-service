@@ -34,7 +34,7 @@ public class ClassServiceTest {
 
 
     @Test
-    void setClassLevelInfoShouldReturnClassDto(){
+    void setClassLevelInfoShouldReturnClassLevel(){
         ClassLevel classLevel = new ClassLevel("C4","4");
         ClassLevel classLevel1 = new ClassLevel();
         classLevel1.setName("4");
@@ -93,6 +93,30 @@ public class ClassServiceTest {
     }
 
     @Test
+    void updateClassShouldReturnClassLevel(){
+        ClassLevel classLevel1 = new ClassLevel("C4", "4");
+        ClassLevel expectedClass = new ClassLevel("C4","Four");
+        ClassLevel classLevel2 = new ClassLevel();
+        classLevel2.setName("Four");
+
+        when(classRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(classLevel1));
+        when(classRepository.save(any(ClassLevel.class))).thenReturn(expectedClass);
+        ClassLevel actualClass= classService.updateClassLevelInfo("C4", classLevel2);
+        assertEquals(expectedClass,actualClass);
+    }
+
+    @Test
+    void updateClassShouldReturnException(){
+        ClassLevel expectedClass = new ClassLevel("C5","5");
+        ClassLevel classLevel2 = new ClassLevel();
+        classLevel2.setName("5");
+
+        when(classRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(classLevel));
+        when(classRepository.save(any(ClassLevel.class))).thenReturn(expectedClass);
+        assertThrows(RuntimeException.class, ()-> classService.updateClassLevelInfo("C4",classLevel2));
+    }
+
+    @Test
     void deleteClassByIdShouldReturnString(){
         when(classRepository.existsById(any(String.class))).thenReturn(true);
         classService.deleteClassLevelInfo("C4");
@@ -101,6 +125,7 @@ public class ClassServiceTest {
 
     @Test
     void deleteClassByIdShouldReturnNotFound(){
+        when(classRepository.existsById(any(String.class))).thenReturn(false);
         assertThrows(RuntimeException.class,()->classService.deleteClassLevelInfo("C4"));
     }
 
