@@ -1,7 +1,9 @@
 package com.target.targetreadyresultsservice.controller;
 
+
 import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.service.SubjectService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,16 +27,16 @@ public class SubjectController {
     }
     private static final Logger log = LoggerFactory.getLogger(SubjectController.class);
     @PostMapping("/subject")
-    public ResponseEntity<String> setSubjectDetails(@RequestBody Subject subject) {
+    public ResponseEntity<String> setSubjectDetails(@RequestBody @Valid Subject subject) {
         try {
             subjectService.addSubject(subject);
-            return new ResponseEntity<>("Successfully added", HttpStatus.OK);
+            return new ResponseEntity<>("Successfully added", HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>("Error occurred", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>("Error occurred "+e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-    @GetMapping("/subjects")
+    @GetMapping("/subject")
     public ResponseEntity<Subject> getAllSubjects() {
         try {
             List<Subject> allSubjects = subjectService.getSubjects();
@@ -43,7 +45,7 @@ public class SubjectController {
         catch (Exception e)
         {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity("Error occurred", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred "+e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
 
 
@@ -62,20 +64,20 @@ public class SubjectController {
 
         } catch (Exception e) {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity("Error occurred",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred "+e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
 
     }
 
 
     @PutMapping("/subject/{subjectCode}")
-    public ResponseEntity<String> updateSubjectById(@RequestBody Subject subject, @PathVariable("subjectCode") String subjectCode)  {
+    public ResponseEntity<String> updateSubjectById(@PathVariable("subjectCode") String subjectCode,@RequestBody Subject subject)  {
         try {
             subjectService.updateSubject(subjectCode, subject);
             return new ResponseEntity<>("Successfully updated", HttpStatus.OK);
         } catch (Exception e) {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity<>("Error occurred while updating",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>("Error occurred while updating "+e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -86,7 +88,7 @@ public class SubjectController {
             return new ResponseEntity<>("Successfully deleted", HttpStatus.OK);
         } catch (Exception e) {
             log.info("exception occurred {}", e.getMessage());
-       return new ResponseEntity<>("Error occurred while deleting",HttpStatus.EXPECTATION_FAILED);
+       return new ResponseEntity<>("Error occurred while deleting "+e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
     @DeleteMapping("/")
@@ -99,19 +101,19 @@ public class SubjectController {
     public ResponseEntity<Subject> searchSubjects(@RequestParam(required = false) String subjectName)  {
         try {
             List<Subject> filterSub=subjectService.searchSubjectsByFilters(subjectName);
-            if(!filterSub.isEmpty()) {
-                return new ResponseEntity(filterSub, HttpStatus.OK);
-            }
-            else
+            if(filterSub.isEmpty())
             {
                return new ResponseEntity("Could not find any subject with name : "+subjectName, HttpStatus.NOT_FOUND);
             }
-
+           else
+            {
+                return new ResponseEntity(filterSub, HttpStatus.OK);
+            }
         }
         catch (Exception e)
         {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity("Error occurred while searching",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred while searching, "+e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 

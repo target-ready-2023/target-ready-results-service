@@ -1,5 +1,10 @@
 package com.target.targetreadyresultsservice.Dto;
 
+
+import lombok.Data;
+import lombok.ToString;
+
+import java.util.List;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -7,8 +12,10 @@ import lombok.ToString;
 import java.util.List;
 import java.util.Objects;
 
+
 @ToString
 public class ClassDto {
+
     private String code;
     private String name;
     private List<String> subjects;
@@ -45,16 +52,5 @@ public class ClassDto {
         this.subjects = subjects;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ClassDto classDto = (ClassDto) o;
-        return Objects.equals(code, classDto.code) && Objects.equals(name, classDto.name) && Objects.equals(subjects, classDto.subjects);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(code, name, subjects);
-    }
 }

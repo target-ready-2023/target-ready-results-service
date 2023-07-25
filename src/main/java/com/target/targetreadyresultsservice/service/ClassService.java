@@ -71,18 +71,19 @@ public class ClassService {
             return classRepository.save(classLevel);
     }
 
-    public void updateClassLevelInfo(String code,ClassLevel classLevel) {
+    public ClassLevel updateClassLevelInfo(String code,ClassLevel classLevel) {
         ClassLevel isClass=classRepository.findById(code)
                 .orElseThrow(() -> new RuntimeException("Class with given code "+code+" is not found"));
         isClass.setName(classLevel.getName());
         log.info("Updating class info with class code {} in th db",code);
-        classRepository.save(isClass);
+        return classRepository.save(isClass);
     }
 
-    public void deleteClassLevelInfo(String code) {
+    public String deleteClassLevelInfo(String code) {
         boolean isClass=classRepository.existsById(code);
         if(isClass) {
-            classRepository.deleteById(code);
+           classRepository.deleteById(code);
+           return "deleted successfully";
         }
         else throw new RuntimeException("Class with given code "+code+" is not found");
     }

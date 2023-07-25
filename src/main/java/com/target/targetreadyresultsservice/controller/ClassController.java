@@ -64,7 +64,7 @@ public class ClassController {
     public ResponseEntity<String> UpdateClassDetails(@PathVariable("classCode") String code,
                                                      @RequestBody ClassLevel classLevel){
         try{
-        classService.updateClassLevelInfo(code,classLevel);
+            ClassLevel classLevel1 = classService.updateClassLevelInfo(code,classLevel);
         return new ResponseEntity<>("Successfully updated",HttpStatus.OK);
         } catch(Exception e){
             return new ResponseEntity<>("Error occurred during update",HttpStatus.EXPECTATION_FAILED);
