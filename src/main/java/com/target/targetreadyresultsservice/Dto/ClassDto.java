@@ -1,9 +1,16 @@
 package com.target.targetreadyresultsservice.Dto;
 
+
 import lombok.Data;
 import lombok.ToString;
 
 import java.util.List;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.util.List;
+import java.util.Objects;
 
 
 @ToString
@@ -15,7 +22,6 @@ public class ClassDto {
 
     public ClassDto() {
     }
-
     public String getCode() {
         return code;
     }
@@ -45,4 +51,6 @@ public class ClassDto {
         this.name = name;
         this.subjects = subjects;
     }
+
+
 }

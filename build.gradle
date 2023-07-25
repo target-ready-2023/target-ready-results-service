@@ -22,6 +22,13 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
     implementation 'org.projectlombok:lombok:1.18.22'
     implementation 'junit:junit:4.13.2'
+    implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
+    implementation 'junit:junit:4.13.2'
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'junit:junit:4.13.1'
+    testImplementation 'org.testng:testng:7.1.0'
+    testImplementation 'org.testng:testng:7.1.0'
+
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'

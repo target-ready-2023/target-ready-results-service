@@ -1,7 +1,6 @@
 package com.target.targetreadyresultsservice.model;
 
 
-//import com.mongodb.lang.NonNull;
 import com.mongodb.lang.Nullable;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -30,18 +29,21 @@ public class Subject {
 
     @NotNull private String classCode;
 
+
     public Subject(String subjectCode, @NotNull String subjectName, @NotNull String credits, @NotNull String classCode) {
+
+
+
         this.subjectCode = subjectCode;
         this.subjectName = subjectName;
         this.credits = credits;
         this.classCode = classCode;
     }
+
     public Subject()
     {
 
     }
-
-
     @Override
     public String toString() {
         return "Subject{" +
