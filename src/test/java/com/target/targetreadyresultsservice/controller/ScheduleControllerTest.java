@@ -57,7 +57,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("C99", subjectScheduleList, "Test", "Class Test 1", true);
 
         given(scheduleService.addNewSchedule(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));
@@ -88,7 +88,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         List<Schedule> scheduleList = List.of(new Schedule("C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
 
@@ -117,7 +117,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
         when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
@@ -145,7 +145,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
         when(scheduleService.getactiveSchedule(any(String.class))).thenReturn(scheduleList);
@@ -172,7 +172,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
         when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(scheduleList);
@@ -198,7 +198,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 
@@ -217,7 +217,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 16),
                 LocalTime.of(23, 00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("",subjectScheduleList,"","",true);
         when(scheduleService.updateSchedule(any(String.class),any(Schedule.class))).thenThrow(BlankValueException.class);
 
@@ -235,7 +235,7 @@ public class ScheduleControllerTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
                 LocalTime.of(10, 00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 

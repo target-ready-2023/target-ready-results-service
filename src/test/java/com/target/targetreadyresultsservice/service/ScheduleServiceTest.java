@@ -46,7 +46,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00), maxMarks, true));
+                LocalTime.of(10,00), 50, true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
@@ -73,7 +73,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00), maxMarks, true));
+                LocalTime.of(10,00), 50, true));
 
         schedule.setScheduleName("");
         schedule.setScheduleType("Test");
@@ -90,7 +90,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,16),
-                LocalTime.of(10,00), maxMarks, true));
+                LocalTime.of(10,00), 50, true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
@@ -106,7 +106,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,16),
                 LocalTime.of(10,00),
-                maxMarks, true));
+                50, true));
 
        List<Schedule> scheduleList = List.of(new Schedule("C99",subjectScheduleList,
                "Test","Class Test 1",true));
@@ -128,7 +128,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true);
 
@@ -150,7 +150,7 @@ class ScheduleServiceTest {
         List<Schedule> schedules = new ArrayList<>();
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
-                LocalTime.of(10,00), maxMarks, true));
+                LocalTime.of(10,00), 50, true));
         schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true));
 
@@ -174,7 +174,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                maxMarks, false));
+                50, false));
         schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",false));
 
@@ -196,7 +196,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                maxMarks, true));
+                50, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true);
         when(scheduleRepository.findById(any(String.class))).thenReturn(Optional.of(schedule));
@@ -214,7 +214,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,25),
                 LocalTime.of(10,00),
-                maxMarks, true));
+                50, true));
         schedule = new Schedule("TC9910JULY2023", "C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 
