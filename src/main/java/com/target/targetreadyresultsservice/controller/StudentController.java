@@ -1,35 +1,33 @@
- package com.target.targetreadyresultsservice.controller;
+package com.target.targetreadyresultsservice.controller;
 
 import com.target.targetreadyresultsservice.model.Student;
-import com.target.targetreadyresultsservice.model.Subject;
-import com.target.targetreadyresultsservice.service.ResultsService;
+import com.target.targetreadyresultsservice.service.StudentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/results/v1")
-public class ResultsController {
-    private final ResultsService resultsService;
+public class StudentController {
+    private final StudentService studentService;
 
-    public ResultsController(ResultsService resultsService) {
-        this.resultsService = resultsService;
+    public StudentController(StudentService resultsService) {
+        this.studentService = resultsService;
     }
 
-    private static final Logger log = LoggerFactory.getLogger(ResultsController.class);
+    private static final Logger log = LoggerFactory.getLogger(StudentController.class);
 
     @GetMapping("/student")
     public ResponseEntity<String> getStudentDetails(
-            @RequestParam("roll_no") String rollNumber
+            @RequestParam("studentId") String studentId
     ) {
         try {
-            log.info("get student info with roll number {}", rollNumber);
-            Optional<Student> studentInfo = resultsService.getStudentInfo(rollNumber);
+            log.info("get student info with Student Id {}", studentId);
+            Optional<Student> studentInfo = studentService.getStudentInfo(studentId);
             return studentInfo.map(
                     student -> new ResponseEntity<>("Found : " + student.toString(), HttpStatus.OK)
             ).orElseGet(
@@ -43,15 +41,17 @@ public class ResultsController {
 
     @PostMapping("/student")
     public ResponseEntity<String> setStudentDetails(
-            @RequestParam("roll_no") String rollNumber,
+            @RequestParam("studentId") String studentId,
             @RequestParam("name") String name,
-            @RequestParam("gender") String gender
+            @RequestParam("classCode") String classCode,
+             @RequestParam("rollNumber") String rollNumber
+
     ) {
         try {
-            Student student = new Student(rollNumber, name, gender);
+            Student student = new Student(studentId, name, classCode,rollNumber );
 
-            log.info("set student info with roll number {}", rollNumber);
-            resultsService.setStudentInfo(student);
+            log.info("set student info with studentId {}", studentId);
+            studentService.setStudentInfo(student);
 
             return new ResponseEntity<>("Successful", HttpStatus.OK);
         } catch (Exception e) {

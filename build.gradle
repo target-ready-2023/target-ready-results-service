@@ -24,6 +24,8 @@ dependencies {
     implementation 'junit:junit:4.13.2'
     implementation 'org.hibernate.validator:hibernate-validator:8.0.0.Final'
     implementation 'junit:junit:4.13.2'
+    implementation 'org.testng:testng:7.1.0'
+    implementation 'junit:junit:4.13.1'
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'junit:junit:4.13.1'
     testImplementation 'org.testng:testng:7.1.0'

@@ -35,7 +35,7 @@ public class ClassControllerTest {
     private ClassDto classDto;
 
 
-    @Test
+    @org.testng.annotations.Test
     void savaClassShouldReturnCreated() throws Exception{
         classLevel = new ClassLevel("C4","4");
         given(classService.setClassLevelInfo(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));

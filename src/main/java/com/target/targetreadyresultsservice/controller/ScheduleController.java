@@ -90,6 +90,26 @@ public class ScheduleController {
         }
     }
 
+//    @GetMapping("/viewSchedule")
+//    public ResponseEntity<Schedule> getScheduleforResults(
+//            @RequestParam String className,
+//            @RequestParam String scheduleName,
+//            @RequestParam String acYear
+//    ){
+//        try{
+//            Schedule schedule = scheduleService.getScheduleforResults(className,scheduleName,acYear);
+//            return new ResponseEntity<>(schedule,HttpStatus.OK);
+//        }
+//        catch(NullValueException | NotFoundException e){
+//            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+//        }
+//        catch (Exception e){
+//            return new ResponseEntity("Active failed!",HttpStatus.EXPECTATION_FAILED);
+//        }
+
+//    }
+
+
 
     @PostMapping
     public ResponseEntity<String> addNewSchedule(@RequestBody @Valid Schedule schedule){
