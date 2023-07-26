@@ -81,17 +81,18 @@ public class ClassController {
         }
     }
 
-    @GetMapping("/classes/search/{className}")
-    public ResponseEntity<String> SearchClassBYName(@PathVariable(value = "className", required = false) String className){
+    @GetMapping("/classes/search")
+    public ResponseEntity<List<ClassDto>> SearchClassBYName(@RequestParam(required = false) String classCode,
+                                                            @RequestParam(required = false) String className){
         try {
-            ClassDto classInfo = classService.getClassLeveByName(className);
-            if (classInfo==null || classInfo.toString() == "") {
-                return new ResponseEntity<>("No data found", HttpStatus.NOT_FOUND);
+            List<ClassDto> classInfo = classService.getClassLeveByName(classCode,className);
+            if (classInfo==null || classInfo.isEmpty()) {
+                return new ResponseEntity("No data found", HttpStatus.NOT_FOUND);
             } else {
                 return new ResponseEntity(classInfo, HttpStatus.OK);
             }
         } catch(Exception e){
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
 
     }

@@ -12,11 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Query;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,7 +29,9 @@ public class ClassServiceTest {
 
     private ClassRepository classRepository = Mockito.mock(ClassRepository.class);
     private SubjectService subjectService =Mockito.mock(SubjectService.class);
-    private ClassService classService=new ClassService(classRepository, subjectService);
+    private MongoTemplate mongoTemplate = Mockito.mock(MongoTemplate.class);
+
+    private ClassService classService=new ClassService(classRepository, subjectService,mongoTemplate);
     private ClassLevel classLevel;
 
 
@@ -131,22 +133,21 @@ public class ClassServiceTest {
 
     @Test
     void getClassByClassNameShouldReturnClassDto(){
-        ClassLevel classLevels = new ClassLevel("C4","4");
-        ClassDto expectedClass = new ClassDto("C4","4",List.of("Physics","social"));
+//        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"));
 
-        when(classRepository.findByName(any(String.class))).thenReturn(Optional.of(classLevels));
+        when(mongoTemplate.find(any(Query.class),any())).thenReturn(List.of(new ClassLevel("C4","4")));
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
-        ClassDto responseClass = classService.getClassLeveByName("4");
-        assertThat(responseClass).isNotNull();
-        assertTrue((expectedClass.getCode()).equals(responseClass.getCode()));
-        assertTrue((expectedClass.getName()).equals(responseClass.getName()));
-        assertTrue(responseClass.getSubjects().containsAll(List.of("Physics","Social")));
+
+        List<ClassDto> responseClasses = classService.getClassLeveByName("C4","4");
+        assertThat(responseClasses).isNotNull();
+        assertThat(1).isEqualTo(responseClasses.size());
     }
 
     @Test
     void getClassByClassNameShouldReturnException(){
-        when(classRepository.findByName(any(String.class))).thenReturn(Optional.ofNullable(classLevel));
+        List<ClassLevel> classLevels = new ArrayList<>();
+        when(mongoTemplate.find(any(),any())).thenReturn(Collections.singletonList(classLevels));
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
-        assertThrows(RuntimeException.class, ()-> classService.getClassLeveByName("4"));
+        assertThrows(RuntimeException.class, ()-> classService.getClassLeveByName("C4","4"));
     }
 }

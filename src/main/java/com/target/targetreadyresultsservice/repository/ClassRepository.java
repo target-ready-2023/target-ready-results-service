@@ -9,5 +9,4 @@ import java.util.Optional;
 @Repository
 public interface ClassRepository extends MongoRepository<ClassLevel, String> {
 
-    Optional<ClassLevel> findByName(String name);
 }
