@@ -43,7 +43,7 @@ public class SubjectService {
     }
 
     public  Subject addSubject(Subject subject)  {
-        String code="S-"+subject.getSubjectName().substring(0,2)+subject.getClassCode();
+        String code="S_"+subject.getSubjectName().substring(0,2)+subject.getClassCode();
         subject.setSubjectCode(code);
         Optional<Subject> savedSub=subjectRepository.findById(subject.getSubjectCode());
         if(savedSub.isPresent())
@@ -113,7 +113,7 @@ public class SubjectService {
     public List<Subject> searchSubjectsByFilters(String subjectName)
     {
         log.info("getting subjects with subject name");
-            List<Subject> subjects=subjectRepository.findBySubjectName(subjectName);
+            List<Subject> subjects=subjectRepository.findBySubjectNameIgnoreCase(subjectName);
               if(subjects.isEmpty())
                 {
                     log.info("Could not find any subject with name"+subjectName);
