@@ -48,7 +48,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
         given(subjectService.addSubject(ArgumentMatchers.any())).willAnswer((invocation -> invocation.getArgument(0)));
         ResultActions response=mockMvc.perform(post("/subjects/v1/subject")
@@ -64,7 +64,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
        sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
 
         when(subjectService.addSubject(any(Subject.class))).thenThrow(RuntimeException.class);
@@ -91,7 +91,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
   when(subjectService.getSubjects()).thenReturn(List.of(sub));
   ResultActions response=mockMvc.perform(get("/subjects/v1/subject")
@@ -111,7 +111,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setSubjectCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
         when(subjectService.getSubjectById(anyString())).thenReturn(Optional.of(sub));
         ResultActions response=mockMvc.perform(get("/subjects/v1/subject/S-PhC1")
@@ -133,7 +133,7 @@ public class SubjectControllerTests {
         Subject newsub=new Subject();
         newsub.setSubjectCode("S-PhC1");
         newsub.setSubjectName("Physics");
-        newsub.setCredits("20");
+        newsub.setCredits(20);
         newsub.setClassCode("C1");
         when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(String.valueOf(newsub));
         ResultActions response=mockMvc.perform(put("/subjects/v1/subject/S-PhC1")
@@ -148,7 +148,7 @@ public class SubjectControllerTests {
         Subject newsub=new Subject();
        newsub.setSubjectCode("S-PhC1");
         newsub.setSubjectName("Physics");
-        newsub.setCredits("20");
+        newsub.setCredits(20);
         newsub.setClassCode("C1");
 
         when(subjectService.updateSubject(anyString(),any(Subject.class))).thenThrow(RuntimeException.class);
@@ -165,7 +165,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setSubjectCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
         when(subjectService.deleteSubject("S-PhC1")).thenReturn("Successfully deleted");
         ResultActions response=mockMvc.perform(delete("/subjects/v1/subject/S-PhC1")
@@ -189,7 +189,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setSubjectCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
         when(subjectService.searchSubjectsByFilters("Physics")).thenReturn(List.of(sub));
         ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","Physics")
@@ -203,7 +203,7 @@ public class SubjectControllerTests {
         Subject sub=new Subject();
         sub.setSubjectCode("S-PhC1");
         sub.setSubjectName("Physics");
-        sub.setCredits("10");
+        sub.setCredits(10);
         sub.setClassCode("C1");
         when(subjectService.searchSubjectsByFilters("Physics")).thenThrow(RuntimeException.class);
         ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","Physics")

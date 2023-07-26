@@ -24,13 +24,13 @@ public class Subject {
     private String subjectName;
 
     @NotNull
-    private String credits;
+    private Integer credits;
 
 
     @NotNull private String classCode;
 
 
-    public Subject(String subjectCode, @NotNull String subjectName, @NotNull String credits, @NotNull String classCode) {
+    public Subject(String subjectCode, @NotNull String subjectName, @NotNull Integer credits, @NotNull String classCode) {
 
 
 
@@ -62,7 +62,7 @@ public class Subject {
         return subjectName;
     }
 
-    public String getCredits() {
+    public Integer getCredits() {
         return credits;
     }
 
@@ -78,7 +78,7 @@ public class Subject {
         this.subjectName = subjectName;
     }
 
-    public void setCredits(String credits) {
+    public void setCredits(Integer credits) {
         this.credits = credits;
     }
 

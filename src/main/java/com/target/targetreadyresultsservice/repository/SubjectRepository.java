@@ -9,7 +9,7 @@ import java.util.List;
 @Repository
 public interface SubjectRepository extends MongoRepository<Subject, String> {
 
-List<Subject>findBySubjectName(String subjectName);
+List<Subject>findBySubjectNameIgnoreCase(String subjectName);
 
     List<Subject> findByClassCode(String classCode);
 
