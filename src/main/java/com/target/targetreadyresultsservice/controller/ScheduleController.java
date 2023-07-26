@@ -6,6 +6,7 @@ import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.service.ScheduleService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -91,16 +92,16 @@ public class ScheduleController {
 
 
     @PostMapping
-    public ResponseEntity<String> addNewSchedule(@RequestBody Schedule schedule){
+    public ResponseEntity<String> addNewSchedule(@RequestBody @Valid Schedule schedule){
         try{
             scheduleService.addNewSchedule(schedule);
             return new ResponseEntity<>("Successful", HttpStatus.CREATED);
         }
-        catch (BlankValueException | InvalidValueException e){
+       catch (BlankValueException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }catch (NullValueException e){
-            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
+       }catch (NullValueException e){
+           return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+       }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }

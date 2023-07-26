@@ -65,8 +65,15 @@ public class ScheduleService {
         exceptionChecks(schedule);
         String code = addScheduleCode(schedule);
         schedule.setScheduleCode(code);
+        schedule.setYear(findScheduleYear(schedule.getSubjectSchedule()));
         scheduleRepository.save(schedule);
         return schedule;
+    }
+
+    private String findScheduleYear(List<SubjectSchedule> subjectSchedule) {
+        LocalDate date = subjectSchedule.get(0).getDate();
+        String year = String.valueOf(date.getYear());
+        return year;
     }
 
     //create schedule code T/E-classCode-dateOfE/T
@@ -106,6 +113,7 @@ public class ScheduleService {
         sc.setSubjectSchedule(schedule.getSubjectSchedule());
         sc.setScheduleType(schedule.getScheduleType());
         sc.setScheduleName(schedule.getScheduleName());
+        sc.setYear(findScheduleYear(schedule.getSubjectSchedule()));
         sc.setScheduleStatus(schedule.getScheduleStatus());
         scheduleRepository.save(sc);
         return Optional.of(sc);

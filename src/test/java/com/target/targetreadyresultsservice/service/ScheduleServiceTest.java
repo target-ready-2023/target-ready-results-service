@@ -7,7 +7,6 @@ import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
-import com.target.targetreadyresultsservice.service.ScheduleService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,19 +46,19 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00),
-                true));
-
-        String expected = new Schedule("TC9910JULY2023","C99",
-                subjectScheduleList,"Test",
-                "Class Test 1",
-                true).toString();
+                LocalTime.of(10,00), maxMarks, true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
         schedule.setClassCode("C99");
         schedule.setScheduleStatus(true);
         schedule.setSubjectSchedule(subjectScheduleList);
+
+        String expected = new Schedule("TC9910JULY2023","C99",
+                subjectScheduleList,"Test",
+                "Class Test 1",
+                true).toString();
+
 
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(schedule);
 
@@ -74,8 +73,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00),
-                true));
+                LocalTime.of(10,00), maxMarks, true));
 
         schedule.setScheduleName("");
         schedule.setScheduleType("Test");
@@ -92,8 +90,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,16),
-                LocalTime.of(10,00),
-                true));
+                LocalTime.of(10,00), maxMarks, true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
@@ -109,7 +106,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,16),
                 LocalTime.of(10,00),
-                true));
+                maxMarks, true));
 
        List<Schedule> scheduleList = List.of(new Schedule("C99",subjectScheduleList,
                "Test","Class Test 1",true));
@@ -131,7 +128,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                true));
+                maxMarks, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true);
 
@@ -153,8 +150,7 @@ class ScheduleServiceTest {
         List<Schedule> schedules = new ArrayList<>();
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
-                LocalTime.of(10,00),
-                true));
+                LocalTime.of(10,00), maxMarks, true));
         schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true));
 
@@ -178,7 +174,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                false));
+                maxMarks, false));
         schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",false));
 
@@ -200,7 +196,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10,00),
-                true));
+                maxMarks, true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99",subjectScheduleList,
                 "Test","Class Test 1",true);
         when(scheduleRepository.findById(any(String.class))).thenReturn(Optional.of(schedule));
@@ -218,7 +214,7 @@ class ScheduleServiceTest {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,25),
                 LocalTime.of(10,00),
-                true));
+                maxMarks, true));
         schedule = new Schedule("TC9910JULY2023", "C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 

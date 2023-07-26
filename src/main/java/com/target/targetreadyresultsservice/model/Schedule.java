@@ -14,6 +14,7 @@ public class Schedule {
     private List<SubjectSchedule> subjectSchedule;
     private String scheduleType;
     private String scheduleName;
+    private String year;
     private boolean scheduleStatus; // True(active) and  False(inactive)
 
     public Schedule(String classCode, List<SubjectSchedule> subjectSchedule,
@@ -32,6 +33,14 @@ public class Schedule {
         this.scheduleType = scheduleType;
         this.scheduleName = scheduleName;
         this.scheduleStatus = scheduleStatus;
+    }
+
+    public String getYear() {
+        return year;
+    }
+
+    public void setYear(String year) {
+        this.year = year;
     }
 
     public Schedule() {
