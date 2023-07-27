@@ -28,13 +28,17 @@ class ResultsServiceTest {
     private StudentRepository studentRepository;
     private ResultsRepository resultsRepository;
     private ResultsService resultsService;
+    private ScheduleService scheduleService;
+    private ClassService classService;
 
     @BeforeEach
     void setUp(){
         resultsRepository = mock(ResultsRepository.class);
         scheduleRepository = mock(ScheduleRepository.class);
         studentRepository = mock(StudentRepository.class);
-        resultsService = new ResultsService(resultsRepository,studentRepository,scheduleRepository);
+        scheduleService = mock(ScheduleService.class);
+        classService = mock(ClassService.class);
+        resultsService = new ResultsService(resultsRepository,studentRepository,scheduleRepository, scheduleService, classService);
     }
 
     @Test
