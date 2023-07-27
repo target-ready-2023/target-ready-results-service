@@ -2,7 +2,6 @@ package com.target.targetreadyresultsservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.target.targetreadyresultsservice.Dto.ClassDto;
-import com.target.targetreadyresultsservice.controller.ClassController;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.service.ClassService;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ public class ClassControllerTest {
     private ClassDto classDto;
 
 
-    @org.testng.annotations.Test
+    @Test
     void savaClassShouldReturnCreated() throws Exception{
         classLevel = new ClassLevel("C4","4");
         given(classService.setClassLevelInfo(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));
@@ -165,12 +164,10 @@ public class ClassControllerTest {
     @Test
     void getClassDetailsByNameShouldReturnClassDto() throws Exception{
         List<ClassDto> classDto = List.of(new ClassDto("C4","4",List.of("Math","Physics","Social")));
-        String name="4";
-        when(classService.getClassLeveByName("C4","4")).thenReturn(classDto);
+        when(classService.getClassLeveByName("4")).thenReturn(classDto);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("classCode","C4")
                 .param("className","4"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -179,12 +176,10 @@ public class ClassControllerTest {
 
     @Test
     void getClassDetailsByNameShouldReturnNotFound() throws Exception{
-        String name="4";
-        when(classService.getClassLeveByName("C4","4")).thenReturn((List<ClassDto>) classDto);
+        when(classService.getClassLeveByName("4")).thenReturn((List<ClassDto>) classDto);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
                 .contentType(MediaType.APPLICATION_JSON)
-                        .param("classCode","C4")
                         .param("className","4"));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())

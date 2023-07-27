@@ -57,7 +57,7 @@ public class ClassController {
             ClassLevel classInfo = classService.setClassLevelInfo(classLevel);
             return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
         } catch(Exception e){
-            return new ResponseEntity<>("Error occurred during save", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -83,10 +83,9 @@ public class ClassController {
     }
 
     @GetMapping("/classes/search")
-    public ResponseEntity<List<ClassDto>> SearchClassBYName(@RequestParam(required = false) String classCode,
-                                                            @RequestParam(required = false) String className){
+    public ResponseEntity<List<ClassDto>> SearchClassBYName(@RequestParam(required = false) String className){
         try {
-            List<ClassDto> classInfo = classService.getClassLeveByName(classCode,className);
+            List<ClassDto> classInfo = classService.getClassLeveByName(className);
             if (classInfo==null || classInfo.isEmpty()) {
                 return new ResponseEntity("No data found", HttpStatus.NOT_FOUND);
             } else {
