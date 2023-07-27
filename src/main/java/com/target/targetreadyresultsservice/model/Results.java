@@ -8,11 +8,17 @@ import java.util.List;
 @Document (collection = "results")
 public class Results {
     @Id
-    public String resultsCode;
+    private String resultsCode;
+    private String studentId;
+    private String scheduleCode;
+    private List<Marks> marksList;
 
-    public String studentId;
-    public String scheduleCode;
-    public List<Marks> marksList;
+
+    public Results(String studentId, String scheduleCode, List<Marks> marksList) {
+        this.studentId = studentId;
+        this.scheduleCode = scheduleCode;
+        this.marksList = marksList;
+    }
 
     public String getResultsCode() {
         return resultsCode;
@@ -46,10 +52,13 @@ public class Results {
         this.marksList = marksList;
     }
 
-    public Results(String resultsCode, String studentId, String scheduleCode, List<Marks> marksList) {
-        this.resultsCode = resultsCode;
-        this.studentId = studentId;
-        this.scheduleCode = scheduleCode;
-        this.marksList = marksList;
+    @Override
+    public String toString() {
+        return "Results{" +
+                "resultsCode='" + resultsCode + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", scheduleCode='" + scheduleCode + '\'' +
+                ", marksList=" + marksList +
+                '}';
     }
 }

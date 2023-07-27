@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/schedule/v1")
 public class ScheduleController {
@@ -120,7 +121,9 @@ public class ScheduleController {
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
        }catch (NullValueException e){
            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-       }
+       }catch (NotFoundException e){
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
         catch (Exception e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }

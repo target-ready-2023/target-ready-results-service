@@ -144,6 +144,10 @@ public class ScheduleService {
         if(schedule.getClassCode().isBlank() || schedule.getClassCode().isEmpty() ){
             throw new BlankValueException("Class code cannot be blank");
         }
+        ClassDto classDto = classService.getClassLevelById(schedule.getClassCode());
+        if(classDto==null){
+            throw new NotFoundException("Class not found. Action failed!");
+        }
         if(schedule.getScheduleType().isBlank() || schedule.getScheduleType().isEmpty() || schedule.getScheduleType() == null){
             throw new BlankValueException("Schedule Type cannot be blank");
         }

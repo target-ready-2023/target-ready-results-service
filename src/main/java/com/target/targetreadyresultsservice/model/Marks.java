@@ -1,9 +1,9 @@
 package com.target.targetreadyresultsservice.model;
 
 public class Marks {
-    public String subjectCode;
-    public int internalMarks;
-    public int externalMarks;
+    private String subjectCode;
+    private int internalMarks;
+    private int externalMarks;
 
     public String getSubjectCode() {
         return subjectCode;
@@ -33,6 +33,15 @@ public class Marks {
         this.subjectCode = subjectCode;
         this.internalMarks = internalMarks;
         this.externalMarks = externalMarks;
+    }
+
+    @Override
+    public String toString() {
+        return "Marks{" +
+                "subjectCode='" + subjectCode + '\'' +
+                ", internalMarks=" + internalMarks +
+                ", externalMarks=" + externalMarks +
+                '}';
     }
 }
 
