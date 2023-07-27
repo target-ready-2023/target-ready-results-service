@@ -34,7 +34,6 @@ class ScheduleServiceTest {
     private ScheduleService scheduleService;
     private ClassService classService;
     private Schedule schedule;
-
     @BeforeEach
     void setUp() {
         scheduleRepository = mock(ScheduleRepository.class);

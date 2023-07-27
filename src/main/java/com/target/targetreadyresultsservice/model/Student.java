@@ -7,33 +7,54 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Student {
 
     @Id
-    private String rollNumber;
+    private String studentId;
 
     private String name;
 
-    private String gender;
+    private String classCode;
 
-    public Student(String rollNumber, String name, String gender) {
-        setRollNumber(rollNumber);
-        setName(name);
-        setGender(gender);
+    private String rollNumber;
+
+    public Student(String studentId, String name, String classCode, String rollNumber) {
+        this.studentId = studentId;
+        this.name = name;
+        this.classCode = classCode;
+        this.rollNumber = rollNumber;
     }
+
 
     @Override
     public String toString() {
         return "Student{" +
-                "rollNumber='" + rollNumber + '\'' +
+                "studentId='" + studentId + '\'' +
                 ", name='" + name + '\'' +
-                ", gender='" + gender + '\'' +
+                ", classCode='" + classCode + '\'' +
+                ", rollNumber='" + rollNumber + '\'' +
                 '}';
     }
 
     public String getRollNumber() {
-        return rollNumber;
+        return studentId;
     }
 
     public void setRollNumber(String rollNumber) {
-        this.rollNumber = rollNumber;
+        this.studentId= rollNumber;
+    }
+
+    public String getStudentId() {
+        return studentId;
+    }
+
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
+    }
+
+    public String getClassCode() {
+        return classCode;
+    }
+
+    public void setClassCode(String classCode) {
+        this.classCode = classCode;
     }
 
     public String getName() {
@@ -44,12 +65,6 @@ public class Student {
         this.name = name;
     }
 
-    public String getGender() {
-        return gender;
-    }
 
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
 
 }
