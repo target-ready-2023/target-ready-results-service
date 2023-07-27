@@ -1,9 +1,11 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
+import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
@@ -18,11 +20,14 @@ import java.util.Optional;
 
 @Service
 public class ScheduleService {
+
     private final ScheduleRepository scheduleRepository;
+    private final ClassService classService;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService) {
         this.scheduleRepository = scheduleRepository;
+        this.classService = classService;
     }
 
     //get all schedule
@@ -73,7 +78,19 @@ public class ScheduleService {
     private String findScheduleYear(List<SubjectSchedule> subjectSchedule) {
         LocalDate date = subjectSchedule.get(0).getDate();
         String year = String.valueOf(date.getYear());
-        return year;
+
+        //an academic year is from 1st June of a year to 31st March of the next year
+
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year),5,31)) &&
+        date.isBefore(LocalDate.of(Integer.parseInt(year)+1,4,1))){
+            return year + "-" + Integer.toString(Integer.parseInt(year)+1);
+        }
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, 5,31)) &&
+                date.isBefore(LocalDate.of(Integer.parseInt(year),4,1))){
+            return Integer.parseInt(year)-1 +"-"+year;
+        }
+        throw new InvalidValueException("Action failed! Please provide a valid date within the academic year \n" +
+                "NOTE: An academic year is from 1st June of a year to 31st March of the next year");
     }
 
     //create schedule code T/E-classCode-dateOfE/T
@@ -155,5 +172,43 @@ public class ScheduleService {
                 throw new InvalidValueException("Please enter a time between 9AM and 4PM");
             }
         }
+    }
+
+    //get a schedule from schedule name, class name and academic year
+    //needed for results-service
+    public Schedule getScheduleForResult(String scheduleName, String className, String acYear) {
+        if(scheduleName.isBlank()){
+            throw new BlankValueException("Please enter a schedule name");
+        }
+        if(className.isBlank()){
+            throw new BlankValueException("Please enter a class name");
+        }
+        if(acYear.isBlank()){
+            throw new BlankValueException("Please enter an academic year");
+        }
+        String classCode = "";
+        List<ClassDto> classDtoList = classService.getAllClasses();
+        if(classDtoList.isEmpty()){
+            throw new NotFoundException("Class not found. Please enter an existing class name");
+        }
+        for (ClassDto classDto :classDtoList) {
+            if(classDto.getName().equals(className)){
+                classCode = classDto.getCode();
+                break;
+            }
+        }
+        if(classCode.isBlank()){
+            throw new InvalidValueException("Invalid class provided. Please enter a valid class");
+        }
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        if(scheduleList.isEmpty()){
+            throw new NotFoundException("This class does not have any schedules");
+        }
+        for (Schedule sc : scheduleList) {
+            if(sc.getScheduleName().equals(scheduleName) && sc.getYear().equals(acYear)){
+                return sc;
+            }
+        }
+        throw new NotFoundException("Schedule not found!");
     }
 }

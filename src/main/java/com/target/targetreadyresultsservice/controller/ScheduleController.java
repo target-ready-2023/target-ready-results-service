@@ -90,7 +90,26 @@ public class ScheduleController {
         }
     }
 
+    //get a schedule from schedule name, class name and academic year
+    @GetMapping("/viewSchedule")
+    public ResponseEntity<Schedule> getScheduleForResult(
+            @RequestParam("scheduleName") String scheduleName,
+            @RequestParam("className") String className,
+            @RequestParam("acYear") String acYear
+    ){
+        try{
+            Schedule schedule = scheduleService.getScheduleForResult(scheduleName,className,acYear);
+            return new ResponseEntity<>(schedule,HttpStatus.FOUND);
+        }catch (NotFoundException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (InvalidValueException | BlankValueException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        } catch (Exception e){
+            return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 
+    //add new schedule
     @PostMapping
     public ResponseEntity<String> addNewSchedule(@RequestBody @Valid Schedule schedule){
         try{
@@ -107,6 +126,7 @@ public class ScheduleController {
         }
     }
 
+    //delete a schedule
     @DeleteMapping("{scheduleCode}")
     public ResponseEntity<String> deleteSchedule(@PathVariable String scheduleCode){
         try {
@@ -122,6 +142,7 @@ public class ScheduleController {
 
     }
 
+    //update a schedule
     @PutMapping("/{scheduleCode}")
     public ResponseEntity<String> updateSchedule(@PathVariable String scheduleCode, @RequestBody Schedule schedule){
         try{

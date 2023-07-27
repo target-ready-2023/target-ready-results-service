@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
@@ -31,12 +32,14 @@ class ScheduleServiceTest {
 
     private ScheduleRepository scheduleRepository;
     private ScheduleService scheduleService;
+    private ClassService classService;
     private Schedule schedule;
 
     @BeforeEach
     void setUp() {
         scheduleRepository = mock(ScheduleRepository.class);
-        scheduleService = new ScheduleService(scheduleRepository);
+        classService = mock(ClassService.class);
+        scheduleService = new ScheduleService(scheduleRepository, classService);
     }
 
     @Test
@@ -189,6 +192,49 @@ class ScheduleServiceTest {
     void getScheduleByClassReturnsNullValueException(){
         when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(new ArrayList<>());
         assertThrows(NullValueException.class,()->scheduleService.getactiveSchedule("C99"));
+    }
+
+    @Test
+    void getScheduleForResults(){
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00),
+                50, true));
+        Schedule schedule = new Schedule("TC9910JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true);
+
+        List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true));
+
+        List<ClassDto> classDtoList = List.of(new ClassDto("C4","4",List.of("Physics","social")));
+        when(classService.getAllClasses()).thenReturn(classDtoList);
+        when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(scheduleList);
+
+        Schedule actual = scheduleService.getScheduleForResult("Class Test 1","4","2023-2024");
+
+        assertEquals(schedule.toString(),actual.toString());
+    }
+
+    @Test
+    void getScheduleForResultsReturnsNotFoundException() {
+        when(classService.getAllClasses()).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->scheduleService.getScheduleForResult("Class Test 1",
+                "4","2023-2024"));
+    }
+
+    @Test
+    void getScheduleForResultsReturnsInvalidValueException() {
+
+        List<ClassDto> classDtoList = List.of(new ClassDto("C4","4",List.of("Physics","social")));
+        when(classService.getAllClasses()).thenReturn(classDtoList);
+
+        assertThrows(InvalidValueException.class,()->scheduleService.getScheduleForResult("Class Test 1",
+                "12","2023-2024"));
+    }
+
+    @Test
+    void getScheduleForResultsReturnsBlankValueException(){
+        assertThrows(BlankValueException.class,()->scheduleService.getScheduleForResult("","",""));
     }
 
     @Test
