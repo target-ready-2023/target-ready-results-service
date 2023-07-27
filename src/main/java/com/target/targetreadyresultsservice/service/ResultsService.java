@@ -26,7 +26,7 @@ public class ResultsService{
         this.scheduleRepository = scheduleRepository;
     }
 
-    public void addNewResult(Results result) {
+    public Results addNewResult(Results result) {
         Student student = studentRepository.findById(result.getStudentId()).orElse(null);
         if(student==null){
             throw new NotFoundException("Action failed! Student not found");
@@ -37,6 +37,7 @@ public class ResultsService{
         }
         result.setResultsCode(addResultCode(result.getStudentId()));
         resultsRepository.save(result);
+        return result;
     }
 
     private String addResultCode(String studentId) {
