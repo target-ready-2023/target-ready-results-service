@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +63,12 @@ class ResultsServiceTest {
         Results actual = resultsService.addNewResult(result);
 
         assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    void addNewResultReturnsNotFoundException(){
+        when(studentRepository.findById(any(String.class))).thenReturn(null);
+
     }
 
     @Test
