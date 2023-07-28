@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,7 +103,13 @@ public class SubjectController {
     @GetMapping("/search")
     public ResponseEntity<Subject> searchSubjects(@RequestParam(required = false) String subjectName)  {
         try {
-            List<Subject> filterSub=subjectService.searchSubjectsByFilters(subjectName);
+            List<Subject> filterSub= new ArrayList<>();
+            if(subjectName.isBlank()){
+                filterSub = subjectService.getSubjects();
+            }
+            else{
+                filterSub=subjectService.searchSubjectsByFilters(subjectName);
+            }
             if(filterSub.isEmpty())
             {
                return new ResponseEntity("Could not find any subject with name : "+subjectName, HttpStatus.NOT_FOUND);

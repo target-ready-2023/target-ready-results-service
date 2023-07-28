@@ -4,13 +4,9 @@ import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.controller.ClassController;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.repository.ClassRepository;
-import com.target.targetreadyresultsservice.service.SubjectService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,14 +17,11 @@ public class ClassService {
     @Autowired
     private final ClassRepository classRepository;
     @Autowired
-    MongoTemplate mongoTemplate;
-    @Autowired
     private final SubjectService subjectService;
 
-    public ClassService(ClassRepository classRepository, SubjectService subjectService, MongoTemplate mongoTemplate) {
+    public ClassService(ClassRepository classRepository, SubjectService subjectService) {
         this.classRepository = classRepository;
         this.subjectService= subjectService;
-        this.mongoTemplate= mongoTemplate;
     }
     private static final Logger log = LoggerFactory.getLogger(ClassController.class);
     public List<ClassDto> getAllClasses(){
@@ -63,15 +56,16 @@ public class ClassService {
 
     public ClassLevel setClassLevelInfo(ClassLevel classLevel){
             log.info("storing class {} into db", classLevel);
+
             String id;
-            if((classLevel.getName()).isBlank()){
-                throw new RuntimeException();
+            if( classRepository.existsByName(classLevel.getName())){
+                throw new RuntimeException("class already exists with the given className: "+classLevel.getName());
             }
-            else if((classLevel.getName()).length() <=2) {
-                id = "C" + classLevel.getName();
+            else if((classLevel.getName()).isBlank()){
+                throw new RuntimeException("class name cannot be null or empty");
             }
             else{
-                id = "C" + (classLevel.getName()).substring(0,2);
+                id = "C" + (classLevel.getName());
             }
             classLevel.setCode(id.toUpperCase());
             return classRepository.save(classLevel);
@@ -94,17 +88,9 @@ public class ClassService {
         else throw new RuntimeException("Class with given code "+code+" is not found");
     }
 
-    public List<ClassDto> getClassLeveByName(String classCode,String className) {
-        Query query = new Query();
-        List<Criteria> criteria = new ArrayList<>();
-        if (classCode != null)
-            criteria.add(Criteria.where("code").is(classCode.toUpperCase()));
-        if (className!= null && !className.isEmpty())
-            criteria.add(Criteria.where("name").regex("^" + className + "$","i"));
-        if (!criteria.isEmpty())
-            query.addCriteria(new Criteria().andOperator(criteria.toArray(new Criteria[criteria.size()])));
+    public List<ClassDto> getClassLeveByName(String className) {
 
-        List<ClassLevel> classLevels = mongoTemplate.find(query,ClassLevel.class);
+        List<ClassLevel> classLevels = classRepository.findByNameIgnoreCase(className);
 
         if(!classLevels.isEmpty()) {
             List<ClassDto> classes = new ArrayList<>();
@@ -116,7 +102,7 @@ public class ClassService {
             return classes;
         }
         else{
-            return null;
+                return null;
         }
 
     }

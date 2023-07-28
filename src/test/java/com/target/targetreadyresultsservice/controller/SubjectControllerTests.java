@@ -197,6 +197,21 @@ public class SubjectControllerTests {
         );
         response.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    public void SubjectController_searchSubject_NoName_ReturnAllSubjects() throws Exception
+    {
+        Subject sub=new Subject();
+        sub.setSubjectCode("S-SoC1");
+        sub.setSubjectName("Social");
+        sub.setCredits(10);
+        sub.setClassCode("C1");
+        when(subjectService.getSubjects()).thenReturn(List.of(sub));
+        ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        response.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+    }
     @Test
     public void SubjectController_searchSubject_ReturnFailed() throws Exception
     {
