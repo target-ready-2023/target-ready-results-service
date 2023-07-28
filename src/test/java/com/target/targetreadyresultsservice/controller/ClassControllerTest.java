@@ -173,6 +173,18 @@ public class ClassControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
+    @Test
+    void getClassDetailsByNoNameShouldReturnAllClassDto() throws Exception{
+        List<ClassDto> classDto = List.of(new ClassDto("C5","5",List.of("Math","Physics","Social")));
+        when(classService.getAllClasses()).thenReturn(classDto);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("className",""));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
 
     @Test
     void getClassDetailsByNameShouldReturnNotFound() throws Exception{

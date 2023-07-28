@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -85,7 +86,13 @@ public class ClassController {
     @GetMapping("/classes/search")
     public ResponseEntity<List<ClassDto>> SearchClassBYName(@RequestParam(required = false) String className){
         try {
-            List<ClassDto> classInfo = classService.getClassLeveByName(className);
+            List<ClassDto> classInfo = new ArrayList<>();
+            if(className.isBlank()){
+                classInfo=classService.getAllClasses();
+            }
+            else{
+                 classInfo = classService.getClassLeveByName(className);
+            }
             if (classInfo==null || classInfo.isEmpty()) {
                 return new ResponseEntity("No data found", HttpStatus.NOT_FOUND);
             } else {
