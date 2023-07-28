@@ -70,7 +70,7 @@ public class SubjectService {
         Optional<Subject> sub=subjectRepository.findById(subjectCode);
         if(sub.isEmpty())
         {
-            throw new RuntimeException("No subject found");
+            throw new RuntimeException("No subject found for "+subjectCode);
         }
         return sub;
     }

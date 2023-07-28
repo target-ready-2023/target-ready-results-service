@@ -20,12 +20,6 @@ public class Results {
         this.marksList = marksList;
     }
 
-    public Results(String resultsCode, String studentId, String scheduleCode, List<Marks> marksList) {
-        this.resultsCode = resultsCode;
-        this.studentId = studentId;
-        this.scheduleCode = scheduleCode;
-        this.marksList = marksList;
-    }
 
     public String getResultsCode() {
         return resultsCode;

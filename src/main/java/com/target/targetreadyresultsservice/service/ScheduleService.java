@@ -5,8 +5,8 @@ import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
-import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.model.Schedule;
+import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,11 +23,13 @@ public class ScheduleService {
 
     private final ScheduleRepository scheduleRepository;
     private final ClassService classService;
+    private final SubjectService subjectService;
 
     @Autowired
-    public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService) {
+    public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService, SubjectService subjectService) {
         this.scheduleRepository = scheduleRepository;
         this.classService = classService;
+        this.subjectService = subjectService;
     }
 
     //get all schedule
@@ -162,6 +164,13 @@ public class ScheduleService {
                 SubjectList) {
             if(s.getSubjectCode().isBlank() || s.getSubjectCode().isEmpty()){
                 throw new BlankValueException("Schedule Code cannot be blank");
+            }
+            Subject subject = subjectService.getSubjectById(s.getSubjectCode()).orElse(null);
+            if(subject==null){
+                throw new NotFoundException("Subject not found! Please enter a valid subject");
+            }
+            if(!subject.getClassCode().equals(schedule.getClassCode())){
+                throw new InvalidValueException("Action failed! Selected subject not applicable for the given class");
             }
             if(s.getDate() == null){
                 throw new BlankValueException("Please enter a date");

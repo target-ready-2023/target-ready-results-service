@@ -13,9 +13,9 @@ public class Student {
 
     private String classCode;
 
-    private String rollNumber;
+    private int rollNumber;
 
-    public Student(String studentId, String name, String classCode, String rollNumber) {
+    public Student(String studentId, String name, String classCode, int rollNumber) {
         this.studentId = studentId;
         this.name = name;
         this.classCode = classCode;

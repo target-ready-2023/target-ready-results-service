@@ -24,7 +24,10 @@ public class StudentController {
 
     @GetMapping("/student")
     public ResponseEntity<String> getStudentDetails(
-            @RequestParam("studentId") String studentId
+            @RequestParam("studentId") String studentId,
+            @RequestParam("name") String name,
+            @RequestParam("classCode") String classCode,
+            @RequestParam("rollNumber") int rollNumber
     ) {
         try {
             log.info("get student info with Student Id {}", studentId);
@@ -45,7 +48,7 @@ public class StudentController {
             @RequestParam("studentId") String studentId,
             @RequestParam("name") String name,
             @RequestParam("classCode") String classCode,
-             @RequestParam("rollNumber") String rollNumber
+             @RequestParam("rollNumber") int rollNumber
 
     ) {
         try {
