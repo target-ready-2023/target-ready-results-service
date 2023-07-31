@@ -6,6 +6,7 @@ import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
+import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class ScheduleServiceTest {
 
@@ -62,6 +64,13 @@ class ScheduleServiceTest {
                 "Class Test 1",
                 true).toString();
 
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S_PhyC99","Physics",10,"C99",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(schedule);
 
@@ -78,11 +87,15 @@ class ScheduleServiceTest {
                 LocalDate.of(2023,7,10),
                 LocalTime.of(10,00), true));
 
-        schedule.setScheduleName("");
+        schedule.setScheduleName(" ");
         schedule.setScheduleType("Test");
         schedule.setClassCode("C99");
         schedule.setScheduleStatus(true);
         schedule.setSubjectSchedule(subjectScheduleList);
+
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
         assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
     }
@@ -100,6 +113,14 @@ class ScheduleServiceTest {
         schedule.setClassCode("C99");
         schedule.setScheduleStatus(true);
         schedule.setSubjectSchedule(subjectScheduleList);
+
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S_PhyC99","Physics",10,"C99",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
         assertThrows(InvalidValueException.class,()->scheduleService.addNewSchedule(schedule));
     }
@@ -259,6 +280,14 @@ class ScheduleServiceTest {
                 "Test", "Class Test 1", true);
 
         when(scheduleRepository.findById(any(String.class))).thenReturn(Optional.ofNullable(schedule));
+
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S_PhyC99","Physics",10,"C99",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
         Optional<Schedule> expected = Optional.of(new Schedule("TC9910JULY2023", "C99",
                 subjectScheduleList, "Test",
