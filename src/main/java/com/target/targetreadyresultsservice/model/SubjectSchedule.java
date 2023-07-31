@@ -7,23 +7,13 @@ public class SubjectSchedule {
     private String subjectCode;
     private LocalDate date;
     private LocalTime time;
-    private int maxMarks;
     private boolean status; //True(active) and False(inactive)
 
-    public SubjectSchedule(String subjectCode, LocalDate date, LocalTime time, int maxMarks, boolean status) {
+    public SubjectSchedule(String subjectCode, LocalDate date, LocalTime time, boolean status) {
         this.subjectCode = subjectCode;
         this.date = date;
         this.time = time;
-        this.maxMarks = maxMarks;
         this.status = status;
-    }
-
-    public int getMaxMarks() {
-        return maxMarks;
-    }
-
-    public void setMaxMarks(int maxMarks) {
-        this.maxMarks = maxMarks;
     }
 
     public String getSubjectCode() {

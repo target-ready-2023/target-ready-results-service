@@ -33,6 +33,8 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         when(repository.save(any(Subject.class))).thenReturn(subject);
         Subject sub1=service.addSubject(subject);
         assertEquals(subject,sub1);
@@ -45,6 +47,8 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         when(repository.findById(anyString())).thenReturn(Optional.of(subject));
         assertThrows(RuntimeException.class,()->service.addSubject(subject));
         verify(repository,times(0)).save(subject);
@@ -55,10 +59,14 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         Subject subject1=new Subject();
         subject1.setSubjectName("English");
         subject1.setCredits(5);
         subject1.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
        //given(repository.findAll()).willReturn(List.of(subject1));
         when(repository.findAll()).thenReturn(List.of(subject1,subject));
         List<Subject> subjects=service.getSubjects();
@@ -83,6 +91,8 @@ public class SubjectServiceTests {
         subject1.setSubjectName("English");
         subject1.setCredits(5);
         subject1.setClassCode("C1");
+        subject1.setMaxTestMarks(20);
+        subject1.setMaxExamMarks(80);
         Optional<Subject> sub=Optional.of(subject1);
         when(repository.findById(anyString())).thenReturn(sub);
         Optional<Subject> sub1=service.getSubjectById("S-EnC1");
@@ -95,6 +105,8 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         assertThrows(RuntimeException.class,()->service.updateSubject("S-PhC1",subject));
     }
     @Test public void testToUpdateSubject()
@@ -103,11 +115,15 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         when(repository.findById(anyString())).thenReturn(Optional.of(subject));
         Subject newsubject=new Subject();
         newsubject.setSubjectName("Physics");
         newsubject.setCredits(10);
         newsubject.setClassCode("C1");
+        subject.setMaxTestMarks(15);
+        subject.setMaxExamMarks(80);
         when(repository.save(any(Subject.class))).thenReturn(newsubject);
         assertEquals("Updated Successfully",service.updateSubject("S-PhC1",newsubject));
 
@@ -122,6 +138,8 @@ public class SubjectServiceTests {
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
+        subject.setMaxTestMarks(20);
+        subject.setMaxExamMarks(80);
         when(repository.findById(anyString())).thenReturn(Optional.of(subject));
         String actual=service.deleteSubject("S-PhC1");
         assertEquals("Deleted Successfully",actual);

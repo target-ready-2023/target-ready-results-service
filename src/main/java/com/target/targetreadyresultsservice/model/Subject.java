@@ -28,29 +28,34 @@ public class Subject {
 
 
     @NotNull private String classCode;
+    @NotNull private Integer maxTestMarks;
+    @NotNull private Integer maxExamMarks;
 
 
-    public Subject(String subjectCode, @NotNull String subjectName, @NotNull Integer credits, @NotNull String classCode) {
-
-
+    public Subject(String subjectCode, @NotNull String subjectName, @NotNull Integer credits, @NotNull String classCode,@NotNull Integer maxExamMarks,@NotNull Integer maxTestMarks) {
 
         this.subjectCode = subjectCode;
         this.subjectName = subjectName;
         this.credits = credits;
         this.classCode = classCode;
+        this.maxExamMarks=maxExamMarks;
+        this.maxTestMarks=maxTestMarks;
     }
 
     public Subject()
     {
 
     }
+
     @Override
     public String toString() {
         return "Subject{" +
                 "subjectCode='" + subjectCode + '\'' +
                 ", subjectName='" + subjectName + '\'' +
-                ", credits='" + credits + '\'' +
-                ", classLevel=" + classCode +
+                ", credits=" + credits +
+                ", classCode='" + classCode + '\'' +
+                ", maxTestMarks=" + maxTestMarks +
+                ", maxExamMarks=" + maxExamMarks +
                 '}';
     }
 
@@ -70,6 +75,22 @@ public class Subject {
         return classCode;
     }
 
+    public Integer getMaxTestMarks() {
+        return maxTestMarks;
+    }
+
+    public void setMaxTestMarks(Integer maxTestMarks) {
+        this.maxTestMarks = maxTestMarks;
+    }
+
+    public Integer getMaxExamMarks() {
+        return maxExamMarks;
+    }
+
+    public void setMaxExamMarks(Integer maxExamMarks) {
+        this.maxExamMarks = maxExamMarks;
+    }
+
     public void setSubjectCode(String subjectCode) {
         this.subjectCode = subjectCode;
     }
@@ -85,4 +106,5 @@ public class Subject {
     public void setClassCode(String classCode) {
         this.classCode = classCode;
     }
+
 }

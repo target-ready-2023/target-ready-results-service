@@ -33,11 +33,13 @@ class ScheduleServiceTest {
     private ScheduleRepository scheduleRepository;
     private ScheduleService scheduleService;
     private ClassService classService;
+    private SubjectService subjectService;
     private Schedule schedule;
     @BeforeEach
     void setUp() {
         scheduleRepository = mock(ScheduleRepository.class);
         classService = mock(ClassService.class);
+        subjectService = mock(SubjectService.class);
         scheduleService = new ScheduleService(scheduleRepository, classService, subjectService);
     }
 

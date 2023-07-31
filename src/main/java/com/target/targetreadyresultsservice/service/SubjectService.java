@@ -83,6 +83,8 @@ public class SubjectService {
             sub.setSubjectName(subject.getSubjectName());
             sub.setCredits(subject.getCredits());
             sub.setClassCode(subject.getClassCode());
+            sub.setMaxExamMarks(subject.getMaxExamMarks());
+            sub.setMaxTestMarks(subject.getMaxTestMarks());
             subjectRepository.save(sub);
             return "Updated Successfully";
         }
