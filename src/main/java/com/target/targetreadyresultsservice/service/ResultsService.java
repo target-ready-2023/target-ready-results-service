@@ -60,7 +60,7 @@ public class ResultsService{
         for (Schedule sc : scheduleList) {
             if (sc.getYear().equals(acyear)) {
                 String schedule = sc.getScheduleCode();
-                classResultList.addAll(resultsRepository.findALlByscheduleCode(schedule));
+                classResultList.addAll(resultsRepository.findAllByscheduleCode(schedule));
             }
 
         }
@@ -110,5 +110,46 @@ public class ResultsService{
 
         }
         resultsRepository.delete(result);
+    }
+
+    public List<Results> getClassTestResults(String className, String acyear, String scName) {
+        if (className.isBlank()) {
+            throw new BlankValueException("Please enter a Class Name");
+        }
+        if (acyear.isBlank()) {
+            throw new BlankValueException("Please enter an Academic Year");
+        }
+        if (scName.isBlank()) {
+            throw new BlankValueException("Please enter an Schedule Name");
+        }
+        String classCode = "";
+        List<ClassDto> classDtoList = classService.getAllClasses();
+        if (classDtoList.isEmpty()) {
+            throw new NotFoundException(("No classes found!"));
+        }
+        for (ClassDto classDto : classDtoList) {
+            if (classDto.getName().equals(className)) {
+                classCode = classDto.getCode();
+                break;
+            }
+        }
+        if (classCode.isBlank()) {
+            throw new InvalidValueException("Invalid Class Provided. Please enter a valid Class");
+        }
+        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        List<Results> classTestResultList = null;
+        for (Schedule sc : scheduleList) {
+            if (sc.getYear().equals(acyear) && sc.getScheduleName().equals(scName)) {
+                String schedule = sc.getScheduleCode();
+                 classTestResultList =resultsRepository.findAllByscheduleCode(schedule);
+                
+            }
+                throw new NotFoundException("Results not Found");
+
+        }
+        if (classTestResultList.isEmpty()) {
+            throw new NotFoundException("Results not Found");
+        }
+        return classTestResultList;
     }
 }

@@ -44,6 +44,29 @@ public class ResultsController {
         }
     }
 
+
+    //get class results of particular test/exam
+    @GetMapping
+    public ResponseEntity<List<Results>> getClassTestResults(
+            @RequestParam("className") String className,
+            @RequestParam("academicYear") String acyear,
+             @RequestParam("scheudleName") String scName
+    ){
+        try{
+            List<Results> classTestResults = resultsService.getClassTestResults(className,acyear,scName);
+            return new ResponseEntity<List<Results>>(classTestResults,HttpStatus.OK);
+        }
+        catch(NotFoundException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(InvalidValueException | BlankValueException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch(Exception e){
+            return new ResponseEntity("Action Failed",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
     @PostMapping
     public ResponseEntity<String> addResults(@RequestBody @Valid Results result){
         try{
