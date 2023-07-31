@@ -103,11 +103,14 @@ public class ScheduleService {
         String month = String.valueOf(date.getMonth());
         String year = String.valueOf(date.getYear());
 
-        if(schedule.getScheduleType().equals("Test")){
+        if(schedule.getScheduleType().equalsIgnoreCase("test")){
                 return "T"+schedule.getClassCode()+day+month+year;
         }
+        else if(schedule.getScheduleType().equalsIgnoreCase("exam")){
+            return "E"+schedule.getClassCode()+day+month+year;
+        }
         else{
-                return "E"+schedule.getClassCode()+day+month+year;
+                return "FE"+schedule.getClassCode()+day+month+year;
         }
     }
 

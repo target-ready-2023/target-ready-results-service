@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Optional;
 import java.util.List;
 
@@ -116,13 +115,24 @@ public class ResultsService{
                 subjectList.remove(m.getSubjectCode());
             }
         }
-        else{
-            for (Marks m : marksList) {
-                if(m.getInternalMarks()!=0) {
-                    m.setInternalMarks(0);
+        else if(schedule.getScheduleType().equals("Exam")
+                && (!schedule.getScheduleName().toLowerCase().contains("final"))){
+                for (Marks m : marksList) {
+                    if (m.getInternalMarks() != 0) {
+                        m.setInternalMarks(0);
+                    }
+                    subjectList.remove(m.getSubjectCode());
                 }
-                subjectList.remove(m.getSubjectCode());
             }
+        else {
+            if(schedule.getScheduleType().equals("Exam")
+                    && (schedule.getScheduleName().toLowerCase().contains("final"))){
+                for (Marks m : marksList) {
+                    m.setInternalMarks((int) getAverageForSubject(student,schedule.getYear(),m.getSubjectCode()));
+                    subjectList.remove(m.getSubjectCode());
+                }
+            }
+
         }
         if(!subjectList.isEmpty()){
             throw new BlankValueException("Action failed! \n" +
@@ -158,5 +168,38 @@ public class ResultsService{
 
         }
         resultsRepository.delete(result);
+    }
+
+    //get average internals in a subject for final exam using student id and academic year
+    public float getAverageForSubject(Student student, String acYear, String subjectCode){
+
+        //get results by class name and academic year
+        ClassDto classOfStudent = classService.getClassLevelById(student.getClassCode());
+        List<Results> resultsList = getClassresult(classOfStudent.getName(),acYear);
+        float avgInternals = 0;
+        int count = 0;
+        for (Results r : resultsList) {
+            Schedule thisSchedule = scheduleService.getScheduleDetails(r.getScheduleCode());
+            if(thisSchedule.getScheduleType().equals("Test") &&
+                    (r.getStudentId().equals(student.getStudentId()))) {
+                List<Marks> marksList = r.getMarksList();
+                for (Marks m : marksList) {
+                    if(m.getSubjectCode().equals(subjectCode)){
+                        avgInternals+=m.getInternalMarks();
+                        count++;
+                        break;
+                    }
+                }
+            }
+        }
+        if(count==0){
+            throw new InvalidValueException("Internal marks cannot be found for the given values");
+        }
+        avgInternals=avgInternals/count;
+        return avgInternals;
+    }
+
+    public double getResultPercentage(String studentId, String acYear) {
+        return 23.8;
     }
 }

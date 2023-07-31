@@ -4,7 +4,9 @@ import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Results;
+import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ResultsService;
+import com.target.targetreadyresultsservice.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +19,11 @@ import java.util.List;
 @RequestMapping("results/v1")
 public class ResultsController {
     private final ResultsService resultsService;
+    private final StudentService studentService;
 
-    public ResultsController(ResultsService resultsService) {
+    public ResultsController(ResultsService resultsService, StudentService studentService) {
         this.resultsService = resultsService;
+        this.studentService = studentService;
     }
 
     //get class results of an academic year
@@ -40,7 +44,7 @@ public class ResultsController {
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch(Exception e){
-            return new ResponseEntity("Action Failed",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -82,6 +86,39 @@ public class ResultsController {
         }
         catch(Exception e){
             return new ResponseEntity<>("Deletion Failed",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @GetMapping("/avgInternal")
+    public ResponseEntity<Float> getAvgInternalForSubject(
+            @RequestParam("studentId") String studentId,
+            @RequestParam("acYear") String acYear,
+            @RequestParam("subjectCode") String subjectCode
+    ){
+        try {
+            Student student = studentService.getStudentInfo(studentId).orElse(null);
+            if(student==null){
+                throw new NotFoundException("Student not found");
+            }
+            Float avgInternals = resultsService.getAverageForSubject(student,acYear,subjectCode);
+            return new ResponseEntity<>(avgInternals,HttpStatus.OK);
+        } catch (NotFoundException | InvalidValueException e) {
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    @GetMapping("/percentage")
+    public ResponseEntity<Double> getResultPercentageOfStudent(
+            @RequestParam("studentId") String studentId,
+            @RequestParam("acYear") String acYear
+    ){
+        try{
+            double percentage = resultsService.getResultPercentage(studentId,acYear);
+            return new ResponseEntity<>(percentage,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 }
