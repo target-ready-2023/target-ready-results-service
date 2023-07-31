@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.controller;
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.StudentService;
 import org.slf4j.Logger;
@@ -8,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @CrossOrigin(origins = "http://localhost:3000")
@@ -41,24 +44,47 @@ public class StudentController {
     }
 
     @PostMapping("/student")
-    public ResponseEntity<String> setStudentDetails(
-            @RequestParam("studentId") String studentId,
-            @RequestParam("name") String name,
-            @RequestParam("classCode") String classCode,
-             @RequestParam("rollNumber") String rollNumber
-
-    ) {
+    public ResponseEntity<String> setStudentDetails(@RequestBody Student studentInfo) {
         try {
-            Student student = new Student(studentId, name, classCode,rollNumber );
-
-            log.info("set student info with studentId {}", studentId);
-            studentService.setStudentInfo(student);
+            studentService.setStudentInfo(studentInfo);
 
             return new ResponseEntity<>("Successful", HttpStatus.OK);
         } catch (Exception e) {
             log.info("exception occurred");
             return new ResponseEntity<>("Error", HttpStatus.EXPECTATION_FAILED);
         }
+    }
+
+    @GetMapping("/student/{classCode}")
+    public ResponseEntity<List<Student>> getStudentsByClassCode(@PathVariable String classCode){
+        try{
+            List<Student> students=studentService.getStudentDetailsByClassCode(classCode);
+            return new ResponseEntity(students,HttpStatus.OK);
+        }
+        catch(Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+
+    }
+    @GetMapping("/student/search")
+    public ResponseEntity<List<ClassDto>> SearchStudentBYName(@RequestParam(required = false) String studentName){
+        try {
+            List<Student> students = new ArrayList<>();
+            if(studentName.isBlank()){
+                students=studentService.getAllStudents();
+            }
+            else{
+                students= studentService.getStudentByName(studentName);
+            }
+            if (students==null || students.isEmpty()) {
+                return new ResponseEntity("No data found", HttpStatus.NOT_FOUND);
+            } else {
+                return new ResponseEntity(students, HttpStatus.OK);
+            }
+        } catch(Exception e){
+            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
+        }
+
     }
 
 }

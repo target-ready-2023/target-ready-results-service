@@ -34,11 +34,11 @@ public class Student {
     }
 
     public String getRollNumber() {
-        return studentId;
+        return rollNumber;
     }
 
     public void setRollNumber(String rollNumber) {
-        this.studentId= rollNumber;
+        this.rollNumber= rollNumber;
     }
 
     public String getStudentId() {
