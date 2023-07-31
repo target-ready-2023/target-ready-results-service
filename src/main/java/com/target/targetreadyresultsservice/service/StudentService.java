@@ -26,7 +26,6 @@ public class StudentService {
 
     public void setStudentInfo(Student student) {
         try {
-
             studentRepository.save(student);
         } catch (Exception e) {
 

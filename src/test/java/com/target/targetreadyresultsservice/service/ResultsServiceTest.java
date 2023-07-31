@@ -38,7 +38,7 @@ class ResultsServiceTest {
         studentRepository = mock(StudentRepository.class);
         scheduleService = mock(ScheduleService.class);
         classService = mock(ClassService.class);
-        resultsService = new ResultsService(resultsRepository,studentRepository,scheduleRepository, scheduleService, classService);
+        resultsService = new ResultsService(resultsRepository,studentRepository,scheduleRepository, scheduleService, classService, subjectRepository);
     }
 
     @Test
@@ -66,6 +66,12 @@ class ResultsServiceTest {
         Results actual = resultsService.addNewResult(result);
 
         assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    void addNewResultReturnsNotFoundException(){
+        when(studentRepository.findById(any(String.class))).thenReturn(null);
+
     }
 
     @Test

@@ -71,13 +71,13 @@ public class ResultsController {
     public ResponseEntity<String> addResults(@RequestBody @Valid Results result){
         try{
             resultsService.addNewResult(result);
-            return new ResponseEntity<>("Success",HttpStatus.OK);
+            return new ResponseEntity<>("Successful",HttpStatus.OK);
         }catch (NotFoundException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
 
         catch (Exception e){
-            return new ResponseEntity<>("Error",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 

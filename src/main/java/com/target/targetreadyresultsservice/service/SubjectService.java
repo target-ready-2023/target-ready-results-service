@@ -70,7 +70,7 @@ public class SubjectService {
         Optional<Subject> sub=subjectRepository.findById(subjectCode);
         if(sub.isEmpty())
         {
-            throw new RuntimeException("No subject found");
+            throw new RuntimeException("No subject found for "+subjectCode);
         }
         return sub;
     }
@@ -83,6 +83,8 @@ public class SubjectService {
             sub.setSubjectName(subject.getSubjectName());
             sub.setCredits(subject.getCredits());
             sub.setClassCode(subject.getClassCode());
+            sub.setMaxExamMarks(subject.getMaxExamMarks());
+            sub.setMaxTestMarks(subject.getMaxTestMarks());
             subjectRepository.save(sub);
             return "Updated Successfully";
         }

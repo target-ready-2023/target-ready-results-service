@@ -50,6 +50,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         given(subjectService.addSubject(ArgumentMatchers.any())).willAnswer((invocation -> invocation.getArgument(0)));
         ResultActions response=mockMvc.perform(post("/subjects/v1/subject")
                 .contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(sub)));
@@ -66,7 +68,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
-
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.addSubject(any(Subject.class))).thenThrow(RuntimeException.class);
         ResultActions response=mockMvc.perform(post("/subjects/v1/subject")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -79,7 +82,7 @@ public class SubjectControllerTests {
     @Test
     public void SubjectController_setSubjectDetails_ReturnFailed() throws Exception
     {
-        Subject sub=new Subject(null,null,null,null);
+        Subject sub=new Subject(null,null,null,null,null,null);
         ResultActions response=mockMvc.perform(post("/subjects/v1/subject")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(sub))
@@ -93,6 +96,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
   when(subjectService.getSubjects()).thenReturn(List.of(sub));
   ResultActions response=mockMvc.perform(get("/subjects/v1/subject")
           .contentType(MediaType.APPLICATION_JSON));
@@ -113,6 +118,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.getSubjectById(anyString())).thenReturn(Optional.of(sub));
         ResultActions response=mockMvc.perform(get("/subjects/v1/subject/S-PhC1")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -135,6 +142,8 @@ public class SubjectControllerTests {
         newsub.setSubjectName("Physics");
         newsub.setCredits(20);
         newsub.setClassCode("C1");
+        newsub.setMaxTestMarks(20);
+        newsub.setMaxExamMarks(80);
         when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(String.valueOf(newsub));
         ResultActions response=mockMvc.perform(put("/subjects/v1/subject/S-PhC1")
                 .contentType(MediaType.APPLICATION_JSON).
@@ -150,7 +159,8 @@ public class SubjectControllerTests {
         newsub.setSubjectName("Physics");
         newsub.setCredits(20);
         newsub.setClassCode("C1");
-
+        newsub.setMaxTestMarks(20);
+        newsub.setMaxExamMarks(80);
         when(subjectService.updateSubject(anyString(),any(Subject.class))).thenThrow(RuntimeException.class);
         ResultActions response=mockMvc.perform(put("/subjects/v1/subject/S-EnC1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -167,6 +177,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.deleteSubject("S-PhC1")).thenReturn("Successfully deleted");
         ResultActions response=mockMvc.perform(delete("/subjects/v1/subject/S-PhC1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -191,6 +203,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.searchSubjectsByFilters("Physics")).thenReturn(List.of(sub));
         ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","Physics")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -206,6 +220,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Social");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.getSubjects()).thenReturn(List.of(sub));
         ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -220,6 +236,8 @@ public class SubjectControllerTests {
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
+        sub.setMaxTestMarks(20);
+        sub.setMaxExamMarks(80);
         when(subjectService.searchSubjectsByFilters("Physics")).thenThrow(RuntimeException.class);
         ResultActions response=mockMvc.perform(get("/subjects/v1/search").param("subjectName","Physics")
                         .contentType(MediaType.APPLICATION_JSON)

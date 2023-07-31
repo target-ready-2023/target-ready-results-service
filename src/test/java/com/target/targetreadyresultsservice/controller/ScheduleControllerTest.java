@@ -6,7 +6,9 @@ import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
+import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import com.target.targetreadyresultsservice.service.ScheduleService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -47,9 +49,12 @@ public class ScheduleControllerTest {
 
     @MockBean
     private ScheduleService scheduleService;
+    @MockBean
+    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
+
 
     @Test
     void addNewScheduleReturnsCreated() throws Exception {
