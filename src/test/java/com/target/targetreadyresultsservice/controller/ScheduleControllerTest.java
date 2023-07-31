@@ -6,9 +6,7 @@ import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
-import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import com.target.targetreadyresultsservice.service.ScheduleService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatchers;
@@ -49,8 +47,6 @@ public class ScheduleControllerTest {
 
     @MockBean
     private ScheduleService scheduleService;
-    @MockBean
-    private ScheduleRepository scheduleRepository;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -61,13 +57,12 @@ public class ScheduleControllerTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         Schedule schedule = new Schedule("C99", subjectScheduleList, "Test", "Class Test 1", true);
 
         given(scheduleService.addNewSchedule(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));
 
-        ResultActions response = mockMvc.perform(post(END_POINT_PATH)
+        ResultActions response = mockMvc.perform(post("/schedule/v1")
               .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(schedule)));
 
@@ -92,8 +87,7 @@ public class ScheduleControllerTest {
     void getAllSchedulesSuccessful() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         List<Schedule> scheduleList = List.of(new Schedule("C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
 
@@ -121,8 +115,7 @@ public class ScheduleControllerTest {
     void getScheduleByIdSuccessful() throws Exception {
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
         when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
@@ -149,8 +142,7 @@ public class ScheduleControllerTest {
     void getActiveSchedulesByClassSuccessful() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
         when(scheduleService.getactiveSchedule(any(String.class))).thenReturn(scheduleList);
@@ -176,8 +168,7 @@ public class ScheduleControllerTest {
     void getSchedulesBYClassSuccessful() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
         when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(scheduleList);
@@ -202,8 +193,7 @@ public class ScheduleControllerTest {
     void updateScheduleSuccessful() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 
@@ -221,8 +211,7 @@ public class ScheduleControllerTest {
     void updateScheduleReturnsException() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 16),
-                LocalTime.of(23, 00),
-                50, true));
+                LocalTime.of(23, 00), true));
         Schedule schedule = new Schedule("",subjectScheduleList,"","",true);
         when(scheduleService.updateSchedule(any(String.class),any(Schedule.class))).thenThrow(BlankValueException.class);
 
@@ -239,8 +228,7 @@ public class ScheduleControllerTest {
     void deleteScheduleSuccessful() throws Exception{
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023, 7, 10),
-                LocalTime.of(10, 00),
-                50, true));
+                LocalTime.of(10, 00), true));
         Schedule schedule = new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true);
 

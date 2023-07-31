@@ -110,7 +110,7 @@ public class ResultsService{
             for (Marks m : marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
 
-                m.setInternalMarks(getAverageForSubject(student,schedule.getYear(),sub.getSubjectCode()));
+                m.setInternalMarks(getAverageForSubject(student.getStudentId(),schedule.getYear(),sub.getSubjectCode()));
                 subjectList.remove(m.getSubjectCode());
             }
         }
@@ -175,7 +175,7 @@ public class ResultsService{
             for (Marks m : marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
 
-                m.setInternalMarks(getAverageForSubject(student,schedule.getYear(),sub.getSubjectCode()));
+                m.setInternalMarks(getAverageForSubject(student.getStudentId(),schedule.getYear(),sub.getSubjectCode()));
                 subjectList.remove(m.getSubjectCode());
             }
         }
@@ -245,10 +245,18 @@ public class ResultsService{
     }
 
     //get average internals in a subject for final exam using student id and academic year
-    public float getAverageForSubject(Student student, String acYear, String subjectCode){
+    public float getAverageForSubject(String studentId, String acYear, String subjectCode){
+
+        Student student = studentService.getStudentInfo(studentId).orElse(null);
+        if(student==null){
+            throw new NotFoundException("Student not found");
+        }
 
         //get results by class name and academic year
         ClassDto classOfStudent = classService.getClassLevelById(student.getClassCode());
+        if(classOfStudent==null){
+            throw new NotFoundException("Class not found");
+        }
         List<Results> resultsList = getClassResult(classOfStudent.getName(),acYear);
         float avgInternals = 0;
         int count = 0;
@@ -314,10 +322,26 @@ public class ResultsService{
     }
 
     //get all test and exam results for one student
-    public List<Results> getStudentResult(Student student, String acYear) {
-        List<Results> resultsList = resultsRepository.findAllBystudentId(student.getStudentId());
-        if(resultsList.isEmpty()){
+    public List<Results> getStudentResult(String studentId, String acYear) {
+
+        Student student = studentService.getStudentInfo(studentId).orElse(null);
+        if(student==null){
+            throw new NotFoundException("Student not found");
+        }
+
+        List<Results> results = resultsRepository.findAllBystudentId(student.getStudentId());
+        List<Results> resultsList = new ArrayList<>();
+        if(results.isEmpty()){
             throw new NotFoundException("No results found for student - "+ student.getName());
+        }
+        for (Results r :results) {
+            Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
+            if(schedule==null){
+                throw new NotFoundException("Schedule not found");
+            }
+            if(schedule.getYear().equals(acYear)){
+                resultsList.add(r);
+            }
         }
         return resultsList;
     }

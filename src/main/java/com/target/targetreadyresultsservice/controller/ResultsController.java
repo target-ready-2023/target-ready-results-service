@@ -19,11 +19,9 @@ import java.util.List;
 @RequestMapping("results/v1")
 public class ResultsController {
     private final ResultsService resultsService;
-    private final StudentService studentService;
 
-    public ResultsController(ResultsService resultsService, StudentService studentService) {
+    public ResultsController(ResultsService resultsService) {
         this.resultsService = resultsService;
-        this.studentService = studentService;
     }
 
     //get class results of an academic year
@@ -69,7 +67,7 @@ public class ResultsController {
     public ResponseEntity<String> addResults(@RequestBody @Valid Results result){
         try{
             resultsService.addNewResult(result);
-            return new ResponseEntity<>("Successful",HttpStatus.OK);
+            return new ResponseEntity<>("Successful",HttpStatus.CREATED);
         }catch (NotFoundException e){
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
@@ -84,8 +82,8 @@ public class ResultsController {
         try{
             resultsService.updateResult(resultCode,result);
             return new ResponseEntity<>("Updated successfully", HttpStatus.OK);
-        }catch (NotFoundException e){
-            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (NotFoundException | BlankValueException | InvalidValueException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }catch (Exception e){
             return new ResponseEntity("Update failed! Please try again",HttpStatus.EXPECTATION_FAILED);
         }
@@ -113,11 +111,7 @@ public class ResultsController {
             @RequestParam("subjectCode") String subjectCode
     ){
         try {
-            Student student = studentService.getStudentInfo(studentId).orElse(null);
-            if(student==null){
-                throw new NotFoundException("Student not found");
-            }
-            Float avgInternals = resultsService.getAverageForSubject(student,acYear,subjectCode);
+            Float avgInternals = resultsService.getAverageForSubject(studentId,acYear,subjectCode);
             return new ResponseEntity<>(avgInternals,HttpStatus.OK);
         } catch (NotFoundException | InvalidValueException e) {
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
@@ -145,13 +139,15 @@ public class ResultsController {
             @RequestParam("acYear") String acYear
             ){
         try{
-            Student student = studentService.getStudentInfo(studentId).orElse(null);
-            if(student==null){
-                throw new NotFoundException("Student not found");
+            List<Results> resultsList = resultsService.getStudentResult(studentId,acYear);
+            if(resultsList.isEmpty()){
+                throw new NotFoundException("No results found");
             }
-            List<Results> resultsList = resultsService.getStudentResult(student,acYear);
             return new ResponseEntity<>(resultsList,HttpStatus.OK);
-        }catch (Exception e){
+        }catch (NotFoundException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch (Exception e){
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }

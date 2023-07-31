@@ -5,10 +5,13 @@ import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.Exception.NullValueException;
+import com.target.targetreadyresultsservice.controller.ScheduleController;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.model.SubjectSchedule;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +24,20 @@ import java.util.Optional;
 @Service
 public class ScheduleService {
 
+    @Autowired
     private final ScheduleRepository scheduleRepository;
+    @Autowired
     private final ClassService classService;
+    @Autowired
     private final SubjectService subjectService;
 
-    @Autowired
     public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService, SubjectService subjectService) {
         this.scheduleRepository = scheduleRepository;
         this.classService = classService;
         this.subjectService = subjectService;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ScheduleService.class);
 
     //get all schedule
     public List<Schedule> findAll(){

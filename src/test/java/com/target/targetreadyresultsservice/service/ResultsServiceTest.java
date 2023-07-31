@@ -1,5 +1,8 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Exception.InvalidValueException;
+import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.*;
 import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import com.target.targetreadyresultsservice.repository.ScheduleRepository;
@@ -13,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,48 +25,55 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 class ResultsServiceTest {
 
-    private ScheduleRepository scheduleRepository;
-    private StudentRepository studentRepository;
     private ResultsRepository resultsRepository;
-    private SubjectRepository subjectRepository;
     private ResultsService resultsService;
+    private SubjectService subjectService;
     private ScheduleService scheduleService;
     private ClassService classService;
+    private StudentService studentService;
+    private Results results;
 
     @BeforeEach
     void setUp(){
         resultsRepository = mock(ResultsRepository.class);
-        scheduleRepository = mock(ScheduleRepository.class);
-        studentRepository = mock(StudentRepository.class);
-        subjectRepository = mock(SubjectRepository.class);
         scheduleService = mock(ScheduleService.class);
         classService = mock(ClassService.class);
-        resultsService = new ResultsService(resultsRepository,studentRepository, studentService, scheduleRepository, scheduleService, classService, subjectRepository, subjectService);
+        studentService = mock(StudentService.class);
+        subjectService = mock(SubjectService.class);
+        resultsService = new ResultsService(resultsRepository,studentService,
+                scheduleService, classService,subjectService);
     }
 
     @Test
     void addNewResult() {
-        Student student = new Student("4","Bob","C4",10);
+
+        Results result = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)));
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
-                LocalTime.of(10,00),
-                50, true));
-        Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
-                "Test","Class Test 1",true);
+                LocalTime.of(10, 0), true));
 
-        Results result = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,78)));
+        Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Student student = new Student("4","Bob","C4","10");
+
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+
+        Subject subject = new Subject("S999","Class ten subject",
+                10,"C10",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
         Results expected = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,78)));
-
-        when(studentRepository.findById(any(String.class))).thenReturn(Optional.of(student));
-        when(scheduleRepository.findById(any(String.class))).thenReturn(Optional.of(schedule));
+                List.of(new Marks("S999",45,0)));
+        expected.setResultsCode("R420JULY2023");
 
         when(resultsRepository.save(any(Results.class))).thenReturn(result);
 
@@ -72,27 +83,109 @@ class ResultsServiceTest {
     }
 
     @Test
-    void addNewResultReturnsNotFoundException(){
-        when(studentRepository.findById(any(String.class))).thenReturn(null);
+    void addNewResultReturnsInvalidValueException(){
 
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Results result = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999",78,0)));
+
+        Student student = new Student("4","Bob","C4","10");
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.ofNullable(student));
+
+        Subject subject = new Subject("S999","Class ten subject",
+                10,"C10",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        assertThrows(InvalidValueException.class,()->resultsService.addNewResult(result));
     }
 
     @Test
     void updateResult() {
 
         Results result = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,78)));
+                List.of(new Marks("S999",45,0)));
 
         Optional<Results> expected = Optional.of(new Results( "4", "TC420JULY2023",
-                List.of(new Marks("S999", 50, 80))));
+                List.of(new Marks("S999", 50, 0))));
 
         when(resultsRepository.findById(any(String.class))).thenReturn(Optional.of(result));
 
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Student student = new Student("4","Bob","C4","10");
+
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+
+        Subject subject = new Subject("S999","Class ten subject",
+                10,"C10",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
         Results update = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",50,80)));
+                List.of(new Marks("S999",50,0)));
+
+        when(resultsRepository.save(any(Results.class))).thenReturn(update);
 
         Optional<Results> actual = resultsService.updateResult("R4JULY2023",update);
 
         assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    void updateResultReturnsNotFoundException(){
+        assertThrows(NotFoundException.class,()->resultsService.updateResult("R4JULY2023",results));
+    }
+
+    @Test
+    void getStudentResult(){
+        Student student = new Student("2","Bob","C4","10");
+
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+
+        List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0))));
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        List<Results> expected = List.of(new Results("2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0))));
+
+        List<Results> actual = resultsService.getStudentResult("2","2023-2024");
+
+        assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    void getStudentResultReturnsNotFoundException(){
+        Student student = new Student("2","Bob","C4","10");
+
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->resultsService.getStudentResult("2","2023-2024"));
     }
 }

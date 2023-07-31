@@ -7,6 +7,9 @@ import com.target.targetreadyresultsservice.Exception.NullValueException;
 import com.target.targetreadyresultsservice.model.Schedule;
 import com.target.targetreadyresultsservice.service.ScheduleService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +21,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/schedule/v1")
 public class ScheduleController {
+    @Autowired
     private final ScheduleService scheduleService;
 
     public ScheduleController(ScheduleService scheduleService) {
         this.scheduleService = scheduleService;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ScheduleController.class);
 
     //get all schedules
     @GetMapping("/all")
@@ -35,9 +41,11 @@ public class ScheduleController {
             return new ResponseEntity<>(scheduleList, HttpStatus.OK);
         }
         catch (NotFoundException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity("Action failed",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -52,9 +60,11 @@ public class ScheduleController {
             return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
         catch (NotFoundException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -69,9 +79,11 @@ public class ScheduleController {
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
         catch (NullValueException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity("Action failed! An error occurred",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -84,9 +96,11 @@ public class ScheduleController {
             return new ResponseEntity<>(scheduleList,HttpStatus.OK);
         }
         catch(NullValueException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity("Active failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -102,10 +116,13 @@ public class ScheduleController {
             Schedule schedule = scheduleService.getScheduleForResult(scheduleName,className,acYear);
             return new ResponseEntity<>(schedule,HttpStatus.FOUND);
         }catch (NotFoundException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (InvalidValueException | BlankValueException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         } catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -118,13 +135,17 @@ public class ScheduleController {
             return new ResponseEntity<>("Successful", HttpStatus.CREATED);
         }
        catch (BlankValueException e){
+           log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
        }catch (NullValueException e){
+            log.info("exception occurred {}", e.getMessage());
            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
        }catch (NotFoundException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -137,9 +158,11 @@ public class ScheduleController {
             return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
         }
       catch (NotFoundException e){
-        return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
+            log.info("exception occurred {}", e.getMessage());
+            return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
 
@@ -152,8 +175,10 @@ public class ScheduleController {
             scheduleService.updateSchedule(scheduleCode, schedule);
             return new ResponseEntity<>("Successful",HttpStatus.OK);
         }catch (BlankValueException | InvalidValueException e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         } catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
