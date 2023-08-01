@@ -2,8 +2,8 @@ package com.target.targetreadyresultsservice.model;
 
 public class Marks {
     private String subjectCode;
-    private float internalMarks;
-    private float externalMarks;
+    private double internalMarks;
+    private double externalMarks;
 
     public String getSubjectCode() {
         return subjectCode;
@@ -13,23 +13,23 @@ public class Marks {
         this.subjectCode = subjectCode;
     }
 
-    public float getInternalMarks() {
+    public double getInternalMarks() {
         return internalMarks;
     }
 
-    public void setInternalMarks(float internalMarks) {
+    public void setInternalMarks(double internalMarks) {
         this.internalMarks = internalMarks;
     }
 
-    public float getExternalMarks() {
+    public double getExternalMarks() {
         return externalMarks;
     }
 
-    public void setExternalMarks(float externalMarks) {
+    public void setExternalMarks(double externalMarks) {
         this.externalMarks = externalMarks;
     }
 
-    public Marks(String subjectCode, int internalMarks, int externalMarks) {
+    public Marks(String subjectCode, double internalMarks, double externalMarks) {
         this.subjectCode = subjectCode;
         this.internalMarks = internalMarks;
         this.externalMarks = externalMarks;

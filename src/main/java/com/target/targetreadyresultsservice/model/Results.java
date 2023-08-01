@@ -20,7 +20,6 @@ public class Results {
         this.marksList = marksList;
     }
 
-
     public String getResultsCode() {
         return resultsCode;
     }

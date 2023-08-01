@@ -4,9 +4,7 @@ import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Results;
-import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ResultsService;
-import com.target.targetreadyresultsservice.service.StudentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,12 +25,12 @@ public class ResultsController {
     //get class results of an academic year
     @GetMapping("/classResults")
     public ResponseEntity<List<Results>> getClassResults(
-            @RequestParam("classCode") String classCode,
-            @RequestParam("academicYear") String acyear
+            @RequestParam("className") String className,
+            @RequestParam("academicYear") String acYear
 
     ){
         try{
-            List<Results> classResults = resultsService.getClassResult(classCode,acyear);
+            List<Results> classResults = resultsService.getClassResult(className, acYear);
             return new ResponseEntity<>(classResults,HttpStatus.OK);
         }
         catch(InvalidValueException | BlankValueException | NotFoundException e){
@@ -48,18 +46,18 @@ public class ResultsController {
     @GetMapping("/classTest")
     public ResponseEntity<List<Results>> getClassTestResults(
             @RequestParam("className") String className,
-            @RequestParam("academicYear") String acyear,
+            @RequestParam("academicYear") String acYear,
              @RequestParam("scheduleName") String scName
     ){
         try{
-            List<Results> classTestResults = resultsService.getClassTestResults(className,acyear,scName);
+            List<Results> classTestResults = resultsService.getClassTestResults(className, acYear,scName);
             return new ResponseEntity<>(classTestResults,HttpStatus.OK);
         }
         catch(InvalidValueException | BlankValueException | NotFoundException e){
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch(Exception e){
-            return new ResponseEntity("Action Failed",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Action Failed "+ e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -105,13 +103,13 @@ public class ResultsController {
     }
 
     @GetMapping("/avgInternal")
-    public ResponseEntity<Float> getAvgInternalForSubject(
+    public ResponseEntity<Double> getAvgInternalForSubject(
             @RequestParam("studentId") String studentId,
             @RequestParam("acYear") String acYear,
             @RequestParam("subjectCode") String subjectCode
     ){
         try {
-            Float avgInternals = resultsService.getAverageForSubject(studentId,acYear,subjectCode);
+            double avgInternals = resultsService.getAverageForSubject(studentId,acYear,subjectCode);
             return new ResponseEntity<>(avgInternals,HttpStatus.OK);
         } catch (NotFoundException | InvalidValueException e) {
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
@@ -133,6 +131,7 @@ public class ResultsController {
         }
     }
 
+    //get student results for an academic year including all tests and exams
     @GetMapping("/student")
     public ResponseEntity<List<Results>> getStudentResults(
             @RequestParam("studentId") String studentId,

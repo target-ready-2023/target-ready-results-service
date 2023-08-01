@@ -245,7 +245,7 @@ public class ResultsService{
     }
 
     //get average internals in a subject for final exam using student id and academic year
-    public float getAverageForSubject(String studentId, String acYear, String subjectCode){
+    public double getAverageForSubject(String studentId, String acYear, String subjectCode){
 
         Student student = studentService.getStudentInfo(studentId).orElse(null);
         if(student==null){
@@ -258,7 +258,7 @@ public class ResultsService{
             throw new NotFoundException("Class not found");
         }
         List<Results> resultsList = getClassResult(classOfStudent.getName(),acYear);
-        float avgInternals = 0;
+        double avgInternals = 0;
         int count = 0;
         for (Results r : resultsList) {
             Schedule thisSchedule = scheduleService.getScheduleDetails(r.getScheduleCode());
@@ -347,6 +347,6 @@ public class ResultsService{
     }
 
     public double getResultPercentage(String studentId, String acYear) {
-        return 23.8;
+        return 28.5;
     }
 }
