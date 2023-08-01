@@ -150,5 +150,28 @@ public class ResultsController {
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
+
+    //to get student results for one test/exam
+    @GetMapping("/studentTestResult")
+    public ResponseEntity<Results> getStudentTestResult(
+            @RequestParam("className") String className,
+            @RequestParam("academicYear") String acYear,
+            @RequestParam("scheduleName") String scName,
+            @RequestParam("rollNumber")  String rollno
+    ){
+        try{
+            Results StudentResult = resultsService.getStudentTestResult(className,acYear,scName,rollno);
+            if(StudentResult==null){
+                throw new NotFoundException("No results Found");
+            }
+            return new ResponseEntity<>(StudentResult,HttpStatus.OK);
+        }
+        catch(NotFoundException e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }
+        catch(Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 }
 

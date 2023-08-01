@@ -349,4 +349,56 @@ public class ResultsService{
     public double getResultPercentage(String studentId, String acYear) {
         return 28.5;
     }
+
+    public Results getStudentTestResult(String className, String acYear, String scName, String rollno) {
+        Student student = getStudentfromClassRollno(className,rollno);
+        Results result = null;
+        if(student==null){
+            throw new NotFoundException("Student Not Found!");
+        }
+        List<Results> results = resultsRepository.findAllBystudentId(student.getStudentId());
+        if(results.isEmpty()){
+            throw new NotFoundException("No results found for student - "+ student.getName());
+        }
+        for (Results r :results) {
+            Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
+            if (schedule == null) {
+                throw new NotFoundException("Schedule not found");
+            }
+            if (schedule.getYear().equals(acYear) && schedule.getScheduleName().equals(scName)) {
+                result = r;
+            }
+        }
+        if(result==null){
+            throw new NotFoundException("Result not Found");
+        }
+        return result;
+    }
+
+    private Student getStudentfromClassRollno(String className, String rollno) {
+
+        String classCode = "";
+        List<ClassDto> classDtoList = classService.getAllClasses();
+        if (classDtoList.isEmpty()) {
+            throw new NotFoundException(("No classes found!"));
+        }
+        for (ClassDto classDto : classDtoList) {
+            if (classDto.getName().equals(className)) {
+                classCode = classDto.getCode();
+                break;
+            }
+        }
+        List<Student> students = studentService.getStudentDetailsByClassCode(classCode);
+        Student student=null;
+        for (Student s: students
+             ) {
+            if(s.getRollNumber().equals(rollno)){
+                student = s;
+            }
+        }
+        if(student==null){
+            throw new NotFoundException("Student Not Found");
+        }
+        return student;
+    }
 }
