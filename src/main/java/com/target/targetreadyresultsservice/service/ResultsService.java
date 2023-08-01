@@ -110,7 +110,7 @@ public class ResultsService{
             for (Marks m : marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
 
-                m.setInternalMarks(getAverageForSubject(student.getStudentId(),schedule.getYear(),sub.getSubjectCode()));
+                m.setInternalMarks(getAverageForSubject(student.getRollNumber(),student.getClassCode(),schedule.getYear(),sub.getSubjectCode()));
                 subjectList.remove(m.getSubjectCode());
             }
         }
@@ -146,6 +146,8 @@ public class ResultsService{
 
         Student student = studentService.getStudentInfo(results.getStudentId()).orElse(null);
 
+        ClassDto classDto = classService.getClassLevelById(student.getClassCode());
+
         //get the subject codes for all the subjects found in the schedule
         List<SubjectSchedule> subjectSchedule = schedule.getSubjectSchedule();
         List<String> subjectList = new ArrayList<>();
@@ -175,7 +177,7 @@ public class ResultsService{
             for (Marks m : marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
 
-                m.setInternalMarks(getAverageForSubject(student.getStudentId(),schedule.getYear(),sub.getSubjectCode()));
+                m.setInternalMarks(getAverageForSubject(student.getRollNumber(),classDto.getName(),schedule.getYear(),sub.getSubjectCode()));
                 subjectList.remove(m.getSubjectCode());
             }
         }
@@ -245,13 +247,12 @@ public class ResultsService{
     }
 
     //get average internals in a subject for final exam using student id and academic year
-    public double getAverageForSubject(String studentId, String acYear, String subjectCode){
+    public double getAverageForSubject(String rollNumber,String className, String acYear, String subjectCode){
 
-        Student student = studentService.getStudentInfo(studentId).orElse(null);
+        Student student = getStudentfromClassRollno(className,rollNumber);
         if(student==null){
             throw new NotFoundException("Student not found");
         }
-
         //get results by class name and academic year
         ClassDto classOfStudent = classService.getClassLevelById(student.getClassCode());
         if(classOfStudent==null){
@@ -322,13 +323,12 @@ public class ResultsService{
     }
 
     //get all test and exam results for one student
-    public List<Results> getStudentResult(String studentId, String acYear) {
+    public List<Results> getStudentResult(String rollNumber,String className, String acYear) {
 
-        Student student = studentService.getStudentInfo(studentId).orElse(null);
+        Student student = getStudentfromClassRollno(className,rollNumber);
         if(student==null){
             throw new NotFoundException("Student not found");
         }
-
         List<Results> results = resultsRepository.findAllBystudentId(student.getStudentId());
         List<Results> resultsList = new ArrayList<>();
         if(results.isEmpty()){
@@ -346,8 +346,51 @@ public class ResultsService{
         return resultsList;
     }
 
-    public double getResultPercentage(String studentId, String acYear) {
-        return 28.5;
+    public double getResultPercentage(String rollNumber, String className, String acYear) {
+
+        Student student = getStudentfromClassRollno(className,rollNumber);
+        if(student==null){
+            throw new NotFoundException("Action failed! Student not found");
+        }
+        ClassDto classDto = classService.getClassLevelById(student.getClassCode());
+        if(classDto==null){
+            throw new NotFoundException("Action failed! CLass not found");
+        }
+
+        List<Results> resultsList = getStudentResult(rollNumber,className,acYear);
+        if(resultsList.isEmpty()){
+            throw new NotFoundException("No results found for student - "+student.getName());
+        }
+        double totalObtainedMarks = 0;
+        double totalPossibleMarks = 0;
+        List<Results> finalExamResults = new ArrayList<>();
+        for (Results r : resultsList) {
+            Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
+            if(schedule.getScheduleCode().startsWith("FE")){
+                finalExamResults.add(r);
+                break;
+            }
+        }
+        if(finalExamResults.isEmpty()){
+            throw new NotFoundException("No results found");
+        }
+        Results results = finalExamResults.get(0);
+        List<Marks> marksList = results.getMarksList();
+        for (Marks m :marksList) {
+            Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
+            if(sub==null){
+                throw new NotFoundException("Subject not found");
+            }
+            totalObtainedMarks+=m.getInternalMarks()+m.getExternalMarks();
+            totalPossibleMarks+=sub.getMaxTestMarks()+sub.getMaxExamMarks();
+        }
+        Double percentage;
+        try{
+            percentage = (totalObtainedMarks * 100)/(totalPossibleMarks);
+        }catch (InvalidValueException e){
+            throw new InvalidValueException("Action failed! Total possible marks for subjects cannot be zero");
+        }
+        return percentage;
     }
 
     public Results getStudentTestResult(String className, String acYear, String scName, String rollno) {

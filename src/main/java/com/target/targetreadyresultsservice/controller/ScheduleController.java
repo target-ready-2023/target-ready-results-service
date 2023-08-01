@@ -38,10 +38,11 @@ public class ScheduleController {
             if (scheduleList.isEmpty()) {
                 throw new NotFoundException("No schedules found");
             }
+            log.info("All schedules retrieved successfully - {}",scheduleList);
             return new ResponseEntity<>(scheduleList, HttpStatus.OK);
         }
         catch (NotFoundException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NotFoundException {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
@@ -57,10 +58,11 @@ public class ScheduleController {
     ){
         try {
             Schedule scheduleInfo = scheduleService.getScheduleDetails(scheduleCode);
+            log.info("Schedule retrieved successfully - {}",scheduleInfo);
             return new ResponseEntity<>(scheduleInfo, HttpStatus.OK);
         }
         catch (NotFoundException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NotFoundException {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
         catch (Exception e){
@@ -76,6 +78,7 @@ public class ScheduleController {
        ){
         try{
             List<Schedule> activeScheduleList = scheduleService.getactiveSchedule(classCode);
+
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
         catch (NullValueException e){

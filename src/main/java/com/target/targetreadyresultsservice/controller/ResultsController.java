@@ -42,7 +42,7 @@ public class ResultsController {
     }
 
 
-    //get class results of particular test/exam
+    //get class results of particular test
     @GetMapping("/classTest")
     public ResponseEntity<List<Results>> getClassTestResults(
             @RequestParam("className") String className,
@@ -104,12 +104,13 @@ public class ResultsController {
 
     @GetMapping("/avgInternal")
     public ResponseEntity<Double> getAvgInternalForSubject(
-            @RequestParam("studentId") String studentId,
+            @RequestParam("rollNumber") String rollNumber,
+            @RequestParam("className") String className,
             @RequestParam("acYear") String acYear,
             @RequestParam("subjectCode") String subjectCode
     ){
         try {
-            double avgInternals = resultsService.getAverageForSubject(studentId,acYear,subjectCode);
+            double avgInternals = resultsService.getAverageForSubject(rollNumber,className,acYear,subjectCode);
             return new ResponseEntity<>(avgInternals,HttpStatus.OK);
         } catch (NotFoundException | InvalidValueException e) {
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
@@ -120,25 +121,30 @@ public class ResultsController {
 
     @GetMapping("/percentage")
     public ResponseEntity<Double> getResultPercentageOfStudent(
-            @RequestParam("studentId") String studentId,
+            @RequestParam("rollNumber") String rollNumber,
+            @RequestParam("className") String className,
             @RequestParam("acYear") String acYear
     ){
         try{
-            double percentage = resultsService.getResultPercentage(studentId,acYear);
+            double percentage = resultsService.getResultPercentage(rollNumber,className,acYear);
             return new ResponseEntity<>(percentage,HttpStatus.OK);
-        }catch (Exception e){
+        }catch (NotFoundException | InvalidValueException e){
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
+            return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     //get student results for an academic year including all tests and exams
     @GetMapping("/student")
     public ResponseEntity<List<Results>> getStudentResults(
-            @RequestParam("studentId") String studentId,
+            @RequestParam("rollNumber") String rollNumber,
+            @RequestParam("className") String className,
             @RequestParam("acYear") String acYear
             ){
         try{
-            List<Results> resultsList = resultsService.getStudentResult(studentId,acYear);
+            List<Results> resultsList = resultsService.getStudentResult(rollNumber,className,acYear);
             if(resultsList.isEmpty()){
                 throw new NotFoundException("No results found");
             }
@@ -157,10 +163,10 @@ public class ResultsController {
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear,
             @RequestParam("scheduleName") String scName,
-            @RequestParam("rollNumber")  String rollno
+            @RequestParam("rollNumber")  String rollNo
     ){
         try{
-            Results StudentResult = resultsService.getStudentTestResult(className,acYear,scName,rollno);
+            Results StudentResult = resultsService.getStudentTestResult(className,acYear,scName, rollNo);
             if(StudentResult==null){
                 throw new NotFoundException("No results Found");
             }
