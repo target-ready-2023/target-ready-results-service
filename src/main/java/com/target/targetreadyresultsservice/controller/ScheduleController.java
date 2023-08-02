@@ -92,7 +92,7 @@ public class ScheduleController {
         }
     }
 
-    //get all schedules by classCode (includes both active and inactive
+    //get all schedules by classCode (includes both active and inactive)
     @GetMapping("/{classCode}/all")
     public ResponseEntity<List<Schedule>> getScheduleByClass(@PathVariable String classCode){
         try{
@@ -107,6 +107,32 @@ public class ScheduleController {
         catch (Exception e){
             log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity("Active failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    //get list of schedule names for a class in an academic year
+    @GetMapping("/scheduleNames")
+    private ResponseEntity<List<String>> getScheduleNamesForClass(
+            @RequestParam("className") String className,
+            @RequestParam("acYear") String acYear
+    ){
+        try{
+            List<String> scheduleNameList = scheduleService.getScheduleNamesForClass(className,acYear);
+            if(scheduleNameList.isEmpty()){
+                log.info("scheduleNameList is empty. Throws NotFoundException");
+                throw new NotFoundException("No schedules found");
+            }
+            log.info("Schedule name list found successfully as - {}",scheduleNameList);
+            return new ResponseEntity<>(scheduleNameList,HttpStatus.OK);
+        }catch (NotFoundException e){
+            log.info("No schedules found");
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (BlankValueException | InvalidValueException | NullValueException e){
+            log.info("Exception occurred due to the values provided - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }catch (Exception e){
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 

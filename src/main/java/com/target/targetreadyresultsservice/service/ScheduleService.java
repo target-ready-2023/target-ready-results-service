@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -273,5 +274,23 @@ public class ScheduleService {
             }
         }
         throw new NotFoundException("Schedule not found!");
+    }
+
+    public List<String> getScheduleNamesForClass(String className, String acYear) {
+        List<ClassDto> classDto = classService.getClassLeveByName(className);
+        List<Schedule> scheduleList = getScheduleByClass(classDto.get(0).getCode());
+        if(scheduleList.isEmpty()){
+            throw new NotFoundException("No schedules found");
+        }
+        List<String> scheduleNameList = new ArrayList<>();
+        for (Schedule s :scheduleList) {
+            if(s.getYear().equals(acYear)){
+                scheduleNameList.add(s.getScheduleName());
+            }
+        }
+        if(scheduleNameList.isEmpty()){
+            throw new NotFoundException("No schedules found");
+        }
+        return scheduleNameList;
     }
 }
