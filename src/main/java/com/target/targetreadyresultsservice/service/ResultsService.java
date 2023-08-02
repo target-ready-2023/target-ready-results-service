@@ -6,6 +6,8 @@ import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.*;
 import com.target.targetreadyresultsservice.repository.ResultsRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +18,17 @@ import java.util.List;
 
 @Service
 public class ResultsService{
+    @Autowired
     private final ResultsRepository resultsRepository;
+    @Autowired
     private final StudentService studentService;
+    @Autowired
     private final ScheduleService scheduleService;
+    @Autowired
     private final ClassService classService;
+    @Autowired
     private final SubjectService subjectService;
 
-    @Autowired
     public ResultsService(ResultsRepository resultsRepository,
                           StudentService studentService, ScheduleService scheduleService,
                           ClassService classService,SubjectService subjectService) {
@@ -33,17 +39,22 @@ public class ResultsService{
         this.subjectService = subjectService;
     }
 
-    //get results for all tests and exams for a class in an academic year
+    private static final Logger log = LoggerFactory.getLogger(ResultsService.class);
+
+    //get results for all tests, exams and final exam for a class in an academic year
     public List<Results> getClassResult(String className, String acYear) {
         if (className.isBlank()) {
+            log.info("Class name is not provided. Throws BlankValueException");
             throw new BlankValueException("Please enter a Class Name");
         }
         if (acYear.isBlank()) {
+            log.info("Academic year not provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Academic Year");
         }
         String classCode = "";
         List<ClassDto> classDtoList = classService.getAllClasses();
         if (classDtoList.isEmpty()) {
+            log.info("No classes found in the repository. Throws NotFoundException");
             throw new NotFoundException(("No classes found!"));
         }
         for (ClassDto classDto : classDtoList) {
@@ -73,7 +84,9 @@ public class ResultsService{
     //add a new result for a student
     public Results addNewResult(Results result) {
 
+        //exceptionChecks has the initial exception checks common to put and post
         exceptionChecks(result);
+        log.info("Successfully cleared exception checks for adding new result");
 
         Schedule schedule = scheduleService.getScheduleDetails(result.getScheduleCode());
 
@@ -81,12 +94,14 @@ public class ResultsService{
 
         Student student = studentService.getStudentInfo(result.getStudentId()).orElse(null);
 
-        //get the subject codes for all the subjects found in the schedule
+        //get the subject codes for all the subjects found in the schedule to check
+        // if marks for all subjects are provided
         List<SubjectSchedule> subjectSchedule = schedule.getSubjectSchedule();
         List<String> subjectList = new ArrayList<>();
         for (SubjectSchedule s : subjectSchedule) {
             subjectList.add(s.getSubjectCode());
         }
+        //for each subject, if the result is for a test, then the external marks is set as zero
         if(schedule.getScheduleType().equalsIgnoreCase("test")){
             for (Marks m : marksList) {
                 if(m.getExternalMarks()!=0){
@@ -95,6 +110,7 @@ public class ResultsService{
                 subjectList.remove(m.getSubjectCode());
             }
         }
+        //for each subject, if the result is for an exam (not final exam), then the internal marks is set as zero
         else if(schedule.getScheduleType().equalsIgnoreCase("exam")){
                 for (Marks m : marksList) {
                     if (m.getInternalMarks() != 0) {
@@ -103,23 +119,27 @@ public class ResultsService{
                     subjectList.remove(m.getSubjectCode());
                 }
             }
-        else if(!schedule.getScheduleType().equalsIgnoreCase("final exam")){
+        else if(!schedule.getScheduleType().toLowerCase().contains("final")){
+            log.info("The schedule type provided is not test, exam or final exam");
             throw new InvalidValueException("The schedule type should be 'test', 'exam' or 'final exam'");
         }
+        //if schedule type is final exam, find average of test for each subject and set as internal marks
         else {
             for (Marks m : marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
-
+                //exception check already done by the exceptionCheck function
                 m.setInternalMarks(getAverageForSubject(student.getRollNumber(),student.getClassCode(),schedule.getYear(),sub.getSubjectCode()));
                 subjectList.remove(m.getSubjectCode());
             }
         }
         if(!subjectList.isEmpty()){
+            log.info("Marks for all the subjects were not provided");
             throw new BlankValueException("Action failed! \n" +
                     "Please provide marks for all the subjects in the schedule");
         }
         result.setResultsCode(addResultCode(result.getStudentId(),schedule.getSubjectSchedule()));
         resultsRepository.save(result);
+        log.info("Result added successfully");
         return result;
     }
 
@@ -136,9 +156,11 @@ public class ResultsService{
     public Optional<Results> updateResult(String resultCode, Results results) {
         Results r = resultsRepository.findById(resultCode).orElse(null);
         if(r==null){
+            log.info("Result not found");
             throw new NotFoundException("Update failed! Result for this student is not found");
         }
         exceptionChecks(r);
+        log.info("Successfully cleared all the initial exception checks to update results by exceptionChecks()");
 
         Schedule schedule = scheduleService.getScheduleDetails(results.getScheduleCode());
 
@@ -170,7 +192,7 @@ public class ResultsService{
                 subjectList.remove(m.getSubjectCode());
             }
         }
-        else if(!schedule.getScheduleType().equalsIgnoreCase("final exam")){
+        else if(!schedule.getScheduleType().toLowerCase().contains("final")){
             throw new InvalidValueException("The schedule type should be 'test', 'exam' or 'final exam'");
         }
         else {
@@ -190,44 +212,53 @@ public class ResultsService{
         r.setScheduleCode(results.getScheduleCode());
         r.setMarksList(results.getMarksList());
         resultsRepository.save(r);
+        log.info("Result updated successfully");
         return Optional.of(r);
     }
 
-    //exception checks for post and put
+    //exception checks common for post and put
     public void exceptionChecks(Results r){
 
         //check if student exists
         Student student = studentService.getStudentInfo(r.getStudentId()).orElse(null);
         if(student==null){
+            log.info("Student not found for - {}",r.getStudentId());
             throw new NotFoundException("Action failed! Student not found");
         }
 
         //check if schedule exists
         Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
         if(schedule==null){
+            log.info("Schedule not found for - {}",r.getScheduleCode());
             throw new NotFoundException("Action failed! Schedule not found");
         }
 
         //check if mark list is empty
         List<Marks> marksList = r.getMarksList();
         if(marksList.isEmpty()){
+            log.info("marksList is empty. Throws BlankValueException");
             throw new BlankValueException("Action failed! Please enter marks for each subject");
         }
         for (Marks m : marksList) {
             Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
             if(sub == null){
+                log.info("Subject - {} not found. Throws InvalidValueException",m.getSubjectCode());
                 throw new InvalidValueException("Enter a valid subject");
             }
             if(schedule.getScheduleType().equalsIgnoreCase("test")){
                 if(sub.getMaxTestMarks()<m.getInternalMarks()){
+                    log.info("Marks provided is greater than the maximum test marks allowed " +
+                            "for the subject - {}",sub.getSubjectCode());
                     throw new InvalidValueException("Action failed! Test marks for "
                             +sub.getSubjectName()+" cannot be "+ m.getInternalMarks() +"\n" +
                             "NOTE: The maximum exam marks for "+sub.getSubjectName()+" is "+sub.getMaxTestMarks());
                 }
             }
             if(schedule.getScheduleType().equalsIgnoreCase("exam") ||
-                    schedule.getScheduleType().equalsIgnoreCase("final exam")){
+                    schedule.getScheduleType().toLowerCase().contains("final")){
                 if(sub.getMaxExamMarks()<m.getExternalMarks()){
+                    log.info("Marks provided is greater than the maximum exam marks allowed " +
+                            "for the subject - {}",sub.getSubjectCode());
                     throw new InvalidValueException("Action failed! Exam marks for "
                             +sub.getSubjectName()+" cannot be "+ m.getExternalMarks() +"\n" +
                             "NOTE: The maximum exam marks for "+sub.getSubjectName()+" is "+sub.getMaxExamMarks());
@@ -240,29 +271,35 @@ public class ResultsService{
     public void deleteResult(String resultCode) {
         Results result = resultsRepository.findById(resultCode).orElse(null);
         if(result == null){
+            log.info("Result not found. Throws NotFoundException");
             throw new NotFoundException("Deletion Failed. No such Result!");
-
         }
+        log.info("Result deleted successfully");
         resultsRepository.delete(result);
     }
 
     //get average internals in a subject for final exam using student id and academic year
     public double getAverageForSubject(String rollNumber,String className, String acYear, String subjectCode){
 
-        Student student = getStudentfromClassRollno(className,rollNumber);
+        Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
         if(student==null){
+            log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student not found");
         }
         //get results by class name and academic year
         ClassDto classOfStudent = classService.getClassLevelById(student.getClassCode());
         if(classOfStudent==null){
+            log.info("Class of the given student is not found");
             throw new NotFoundException("Class not found");
         }
+        //get the list of all the results for a class in an academic year
         List<Results> resultsList = getClassResult(classOfStudent.getName(),acYear);
         double avgInternals = 0;
+        //count is used to find the number of tests
         int count = 0;
         for (Results r : resultsList) {
             Schedule thisSchedule = scheduleService.getScheduleDetails(r.getScheduleCode());
+            //add the internal marks for the subject if schedule type is test
             if(thisSchedule.getScheduleType().equals("Test") &&
                     (r.getStudentId().equals(student.getStudentId()))) {
                 List<Marks> marksList = r.getMarksList();
@@ -276,26 +313,32 @@ public class ResultsService{
             }
         }
         if(count==0){
+            log.info("No test results were found");
             throw new InvalidValueException("Internal marks cannot be found for the given values");
         }
         avgInternals=avgInternals/count;
+        log.info("Average found successfully as - {}",avgInternals);
         return avgInternals;
     }
 
     //get result for a given schedule in a class for an academic year
     public List<Results> getClassTestResults(String className, String acYear, String scName) {
         if (className.isBlank()) {
+            log.info("No class name provided. Throws BlankValueException");
             throw new BlankValueException("Please enter a Class Name");
         }
         if (acYear.isBlank()) {
+            log.info("No academic year provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Academic Year");
         }
         if (scName.isBlank()) {
+            log.info("No schedule name provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Schedule Name");
         }
         String classCode = "";
         List<ClassDto> classDtoList = classService.getAllClasses();
         if (classDtoList.isEmpty()) {
+            log.info("No classes found in the repository");
             throw new NotFoundException(("No classes found!"));
         }
         for (ClassDto classDto : classDtoList) {
@@ -319,14 +362,15 @@ public class ResultsService{
         if (classTestResultList.isEmpty()) {
             throw new NotFoundException("Results not Found");
         }
+        log.info("Results found successfully - {}",classTestResultList);
         return classTestResultList;
     }
 
-    //get all test and exam results for one student
+    //get all test,exam and final exam results for one student in an academic year
     public List<Results> getStudentResult(String rollNumber,String className, String acYear) {
-
-        Student student = getStudentfromClassRollno(className,rollNumber);
+        Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
         if(student==null){
+            log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student not found");
         }
         List<Results> results = resultsRepository.findAllBystudentId(student.getStudentId());
@@ -343,17 +387,21 @@ public class ResultsService{
                 resultsList.add(r);
             }
         }
+        log.info("Results found as - {}",resultsList);
         return resultsList;
     }
 
+    //get the result percentage for a student in an academic year
     public double getResultPercentage(String rollNumber, String className, String acYear) {
 
-        Student student = getStudentfromClassRollno(className,rollNumber);
+        Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
         if(student==null){
+            log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Action failed! Student not found");
         }
         ClassDto classDto = classService.getClassLevelById(student.getClassCode());
         if(classDto==null){
+            log.info("Class not found. Throws NotFoundException");
             throw new NotFoundException("Action failed! CLass not found");
         }
 
@@ -361,8 +409,12 @@ public class ResultsService{
         if(resultsList.isEmpty()){
             throw new NotFoundException("No results found for student - "+student.getName());
         }
+        //sum of internal marks of subjects in the FE + sum of external marks for FE (for one student)
         double totalObtainedMarks = 0;
+
+        //sum of max internal and external marks for subjects
         double totalPossibleMarks = 0;
+
         List<Results> finalExamResults = new ArrayList<>();
         for (Results r : resultsList) {
             Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
@@ -372,6 +424,7 @@ public class ResultsService{
             }
         }
         if(finalExamResults.isEmpty()){
+            log.info("Final exam results not found for student - {}",student);
             throw new NotFoundException("No results found");
         }
         Results results = finalExamResults.get(0);
@@ -388,24 +441,29 @@ public class ResultsService{
         try{
             percentage = (totalObtainedMarks * 100)/(totalPossibleMarks);
         }catch (InvalidValueException e){
+            log.info("Division by zero is causing the error");
             throw new InvalidValueException("Action failed! Total possible marks for subjects cannot be zero");
         }
         return percentage;
     }
 
-    public Results getStudentTestResult(String className, String acYear, String scName, String rollno) {
-        Student student = getStudentfromClassRollno(className,rollno);
+    //get test result for one student
+    public Results getStudentTestResult(String className, String acYear, String scName, String rollNo) {
+        Student student = studentService.getStudentFromClassRollNo(className, rollNo);
         Results result = null;
         if(student==null){
+            log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student Not Found!");
         }
         List<Results> results = resultsRepository.findAllBystudentId(student.getStudentId());
         if(results.isEmpty()){
+            log.info("No results found for student - {}. Throws NotFoundException",student.getStudentId());
             throw new NotFoundException("No results found for student - "+ student.getName());
         }
         for (Results r :results) {
             Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
             if (schedule == null) {
+                log.info("Schedule not found. Throws NotFoundException");
                 throw new NotFoundException("Schedule not found");
             }
             if (schedule.getYear().equals(acYear) && schedule.getScheduleName().equals(scName)) {
@@ -415,33 +473,7 @@ public class ResultsService{
         if(result==null){
             throw new NotFoundException("Result not Found");
         }
+        log.info("Result found as  - {}",result);
         return result;
-    }
-
-    private Student getStudentfromClassRollno(String className, String rollno) {
-
-        String classCode = "";
-        List<ClassDto> classDtoList = classService.getAllClasses();
-        if (classDtoList.isEmpty()) {
-            throw new NotFoundException(("No classes found!"));
-        }
-        for (ClassDto classDto : classDtoList) {
-            if (classDto.getName().equals(className)) {
-                classCode = classDto.getCode();
-                break;
-            }
-        }
-        List<Student> students = studentService.getStudentDetailsByClassCode(classCode);
-        Student student=null;
-        for (Student s: students
-             ) {
-            if(s.getRollNumber().equals(rollno)){
-                student = s;
-            }
-        }
-        if(student==null){
-            throw new NotFoundException("Student Not Found");
-        }
-        return student;
     }
 }

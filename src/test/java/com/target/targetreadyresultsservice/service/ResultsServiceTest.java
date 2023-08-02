@@ -5,13 +5,8 @@ import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.*;
 import com.target.targetreadyresultsservice.repository.ResultsRepository;
-import com.target.targetreadyresultsservice.repository.ScheduleRepository;
-import com.target.targetreadyresultsservice.repository.StudentRepository;
-import com.target.targetreadyresultsservice.repository.SubjectRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -156,7 +151,7 @@ class ResultsServiceTest {
     void getStudentResult(){
         Student student = new Student("2","Bob","C4","10");
 
-        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
         List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
                 List.of(new Marks("S999", 50, 0))));
@@ -174,7 +169,7 @@ class ResultsServiceTest {
         List<Results> expected = List.of(new Results("2","TC420JULY2023",
                 List.of(new Marks("S999", 50, 0))));
 
-        List<Results> actual = resultsService.getStudentResult("2","2023-2024");
+        List<Results> actual = resultsService.getStudentResult("2","4","2023-2024");
 
         assertEquals(expected.toString(),actual.toString());
     }
@@ -183,9 +178,53 @@ class ResultsServiceTest {
     void getStudentResultReturnsNotFoundException(){
         Student student = new Student("2","Bob","C4","10");
 
-        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
         when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(new ArrayList<>());
-        assertThrows(NotFoundException.class,()->resultsService.getStudentResult("2","2023-2024"));
+        assertThrows(NotFoundException.class,()->resultsService.getStudentResult("2","4","2023-2024"));
+    }
+
+    @Test
+    void getResultPercentage() {
+        Student student = new Student("2","Bob","C4","10");
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        ClassDto classDto = new ClassDto("C4","4",List.of("Physics","Maths"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        List<Results> resultsList = List.of(new Results("2","FEC420JULY2023",
+                List.of(new Marks("S999", 45, 67))));
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("FEC420JULY2023","C4",subjectScheduleList,
+                "final exam","Final exam","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        List<Results> results = resultsService.getStudentResult("2","4","2023-2024");
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Subject subject = new Subject("S999","Physics",10,"C4",100,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        Double expected = ((45.0+67)/(50+100))*100;
+
+        Double actual = resultsService.getResultPercentage("10","4","2023-2024");
+
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    void getResultPercentageReturnsNotFoundException(){
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(null);
+
+        assertThrows(NotFoundException.class,()->resultsService.getResultPercentage("10","4","2023-2024"));
     }
 }

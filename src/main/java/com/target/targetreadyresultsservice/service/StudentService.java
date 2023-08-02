@@ -1,6 +1,8 @@
 package com.target.targetreadyresultsservice.service;
 
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.repository.StudentRepository;
 import org.slf4j.Logger;
@@ -13,12 +15,18 @@ import java.util.Optional;
 
 @Service
 public class StudentService {
+    @Autowired
     private final StudentRepository studentRepository;
+    @Autowired
+    private final ClassService classService;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, ClassService classService) {
         this.studentRepository = studentRepository;
+        this.classService = classService;
     }
+
+    private static final Logger log = LoggerFactory.getLogger(StudentService.class);
 
     public List<Student> getAllStudents(){
         return studentRepository.findAll();
@@ -47,5 +55,36 @@ public class StudentService {
 
     public List<Student> getStudentByName(String studentName){
         return studentRepository.findByName(studentName);
+    }
+
+    //get a student from class name and their roll number
+    //used in results-service
+    public Student getStudentFromClassRollNo(String className, String rollNo) {
+
+        String classCode = "";
+        List<ClassDto> classDtoList = classService.getAllClasses();
+        if (classDtoList.isEmpty()) {
+            log.info("Classes not found in repository. Throws NotFoundException");
+            throw new NotFoundException(("No classes found!"));
+        }
+        for (ClassDto classDto : classDtoList) {
+            if (classDto.getName().equals(className)) {
+                classCode = classDto.getCode();
+                break;
+            }
+        }
+        List<Student> students = getStudentDetailsByClassCode(classCode);
+        Student student=null;
+        for (Student s: students
+        ) {
+            if(s.getRollNumber().equals(rollNo)){
+                student = s;
+            }
+        }
+        if(student==null){
+            throw new NotFoundException("Student Not Found");
+        }
+        log.info("Student found is - {}",student);
+        return student;
     }
 }

@@ -72,7 +72,7 @@ public class ScheduleControllerTest {
 
     @Test
     void addNewScheduleReturnsException() throws Exception{
-        Schedule schedule = new Schedule(null," ",Collections.EMPTY_LIST," "," ",true);
+        Schedule schedule = new Schedule(" ",Collections.EMPTY_LIST," "," ",true);
         when(scheduleService.addNewSchedule(any(Schedule.class))).thenThrow(BlankValueException.class);
 
         ResultActions response = mockMvc.perform(post(END_POINT_PATH)
@@ -145,7 +145,7 @@ public class ScheduleControllerTest {
                 LocalTime.of(10, 00), true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", true));
-        when(scheduleService.getactiveSchedule(any(String.class))).thenReturn(scheduleList);
+        when(scheduleService.getActiveSchedule(any(String.class))).thenReturn(scheduleList);
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/active")
                 .contentType(MediaType.APPLICATION_JSON));
 
@@ -156,7 +156,7 @@ public class ScheduleControllerTest {
 
     @Test
     void getActiveSchedulesByClassReturnsException() throws Exception{
-        when(scheduleService.getactiveSchedule(any(String.class))).thenThrow(NullValueException.class);
+        when(scheduleService.getActiveSchedule(any(String.class))).thenThrow(NullValueException.class);
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/active")
                 .contentType(MediaType.APPLICATION_JSON));
 

@@ -32,10 +32,11 @@ public class ScheduleController {
 
     //get all schedules
     @GetMapping("/all")
-    public ResponseEntity<List<Schedule>> getallSchedule(){
+    public ResponseEntity<List<Schedule>> getAllSchedule(){
         List<Schedule> scheduleList = scheduleService.findAll();
         try{
             if (scheduleList.isEmpty()) {
+                log.info("No schedules found. Exception occurred");
                 throw new NotFoundException("No schedules found");
             }
             log.info("All schedules retrieved successfully - {}",scheduleList);
@@ -73,16 +74,16 @@ public class ScheduleController {
 
     //get active schedule by classCode
     @GetMapping("/{classCode}/active")
-    public ResponseEntity<List<Schedule>> getactiveSchedule(
+    public ResponseEntity<List<Schedule>> getActiveSchedule(
                @PathVariable String classCode
        ){
         try{
-            List<Schedule> activeScheduleList = scheduleService.getactiveSchedule(classCode);
-
+            List<Schedule> activeScheduleList = scheduleService.getActiveSchedule(classCode);
+            log.info("Active schedules for a class retrieved successfully - {}",activeScheduleList);
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
         catch (NullValueException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NullValueException - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch(Exception e){
@@ -91,19 +92,20 @@ public class ScheduleController {
         }
     }
 
-    //get all schedules by classCode
+    //get all schedules by classCode (includes both active and inactive
     @GetMapping("/{classCode}/all")
     public ResponseEntity<List<Schedule>> getScheduleByClass(@PathVariable String classCode){
         try{
             List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+            log.info("schedule list retrieved successfully - {}",scheduleList);
             return new ResponseEntity<>(scheduleList,HttpStatus.OK);
         }
         catch(NullValueException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred  - NullValueException - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity("Active failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -117,15 +119,16 @@ public class ScheduleController {
     ){
         try{
             Schedule schedule = scheduleService.getScheduleForResult(scheduleName,className,acYear);
+            log.info("Schedule retrieved successfully - {}",schedule);
             return new ResponseEntity<>(schedule,HttpStatus.FOUND);
         }catch (NotFoundException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred  - NotFoundException - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }catch (InvalidValueException | BlankValueException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - Invalid or Blank value provided - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         } catch (Exception e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -135,20 +138,21 @@ public class ScheduleController {
     public ResponseEntity<String> addNewSchedule(@RequestBody @Valid Schedule schedule){
         try{
             scheduleService.addNewSchedule(schedule);
+            log.info("Schedule added successfully");
             return new ResponseEntity<>("Successful", HttpStatus.CREATED);
         }
        catch (BlankValueException e){
-           log.info("exception occurred {}", e.getMessage());
+           log.info("exception occurred - BLankValue Exception - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
        }catch (NullValueException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NullValueException - {}", e.getMessage());
            return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
        }catch (NotFoundException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NotFoundException - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
@@ -158,14 +162,15 @@ public class ScheduleController {
     public ResponseEntity<String> deleteSchedule(@PathVariable String scheduleCode){
         try {
             scheduleService.deleteSchedule(scheduleCode);
+            log.info("Schedule deleted successfully");
             return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
         }
       catch (NotFoundException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - NotFoundException - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
 
@@ -176,12 +181,13 @@ public class ScheduleController {
     public ResponseEntity<String> updateSchedule(@PathVariable String scheduleCode, @RequestBody Schedule schedule){
         try{
             scheduleService.updateSchedule(scheduleCode, schedule);
+            log.info("Schedule updated successfully");
             return new ResponseEntity<>("Successful",HttpStatus.OK);
         }catch (BlankValueException | InvalidValueException e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - Blank or Invalid value provided - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         } catch (Exception e){
-            log.info("exception occurred {}", e.getMessage());
+            log.info("exception occurred - {}", e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }

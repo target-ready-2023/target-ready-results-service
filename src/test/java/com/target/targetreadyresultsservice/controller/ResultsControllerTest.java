@@ -45,7 +45,7 @@ class ResultsControllerTest {
     private ObjectMapper objectMapper;
 
     @Test
-    void addResults() throws Exception{
+    void addResultsSuccessful() throws Exception{
         Results result = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
         given(resultsService.addNewResult(ArgumentMatchers.any())).willAnswer(invocation -> invocation.getArgument(0));
@@ -107,15 +107,15 @@ class ResultsControllerTest {
     }
 
     @Test
-    void getStudentResults() throws Exception{
+    void getStudentResultsSuccessful() throws Exception{
         Results r = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
         r.setResultsCode("R4JULY2023");
         List<Results> resultsList = List.of(r);
 
-        when(resultsService.getStudentResult(any(String.class),any(String.class))).thenReturn(resultsList);
+        when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(resultsList);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?studentId=4&acYear=2023-2024")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -124,9 +124,9 @@ class ResultsControllerTest {
 
     @Test
     void getStudentResultsReturnsException() throws Exception{
-        when(resultsService.getStudentResult(any(String.class),any(String.class))).thenReturn(new ArrayList<>());
+        when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(new ArrayList<>());
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?studentId=4&acYear=2023-2024")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
