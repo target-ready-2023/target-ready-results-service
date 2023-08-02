@@ -1,8 +1,14 @@
 package com.target.targetreadyresultsservice.Exception;
 
-public class NotFoundException extends RuntimeException{
-    public NotFoundException(){
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+public class NotFoundException extends RuntimeException{
+
+    private static final Logger log = LoggerFactory.getLogger(NotFoundException.class);
+    public String NotFoundException(){
+        log.info("Not found exception occurred");
+        return "Not found here";
     }
     public NotFoundException(String message){
         super(message);

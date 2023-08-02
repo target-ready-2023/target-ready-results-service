@@ -86,5 +86,15 @@ public class StudentController {
         }
 
     }
+    @GetMapping("/{roll}/{className}")
+    public ResponseEntity<Student> getStudentFromRollClass(@PathVariable String roll, @PathVariable String className){
+        try {
+            Student s = studentService.getStudentFromClassRollNo(className,roll);
+            return new ResponseEntity<>(s,HttpStatus.OK);
+        }catch (Exception e){
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
 
 }

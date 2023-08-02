@@ -111,8 +111,8 @@ public class ResultsController {
     @DeleteMapping("/delete/{resultCode}")
     public ResponseEntity<String> deleteResults(@PathVariable String resultCode){
         try{
-            resultsService.deleteResult(resultCode);
-            log.info("Result deleted successfully");
+            Results r = resultsService.deleteResult(resultCode);
+            log.info("Result - {} - deleted successfully",r);
             return new ResponseEntity<>("Deleted Successfully",HttpStatus.OK);
         }
         catch(NotFoundException e){
@@ -139,7 +139,7 @@ public class ResultsController {
             return new ResponseEntity<>(avgInternals,HttpStatus.OK);
         } catch (NotFoundException | InvalidValueException e) {
             log.info("Exception occurred due to the values provided - {}",e.getMessage());
-            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }catch (Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
