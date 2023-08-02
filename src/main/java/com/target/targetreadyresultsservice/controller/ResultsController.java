@@ -4,6 +4,7 @@ import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Results;
+import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ResultsService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -214,6 +215,26 @@ public class ResultsController {
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
+    }
+
+    @GetMapping("leaderboard")
+    public ResponseEntity<List<Student>> getLeaderboard(
+            @RequestParam("className") String className,
+            @RequestParam("academicYear") String acYear
+    ){
+        try{
+            List<Student> rankList = resultsService.getLeaderboard(className,acYear);
+        log.info("Rank List with top 5 retirved successfully - {}",rankList);
+        return new ResponseEntity<>(rankList,HttpStatus.OK);
+        }
+        catch(NotFoundException e){
+        log.info("Exception occurred - NotFoundException - {}",e.getMessage());
+        return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+    }
+        catch(Exception e){
+        log.info("Exception occurred - {}",e.getMessage());
+        return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+    }
     }
 }
 

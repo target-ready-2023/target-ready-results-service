@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
 
@@ -447,7 +449,7 @@ public class ResultsService{
         return percentage;
     }
 
-    //get test result for one student
+    //get a particular test result for a student
     public Results getStudentTestResult(String className, String acYear, String scName, String rollNo) {
         Student student = studentService.getStudentFromClassRollNo(className, rollNo);
         Results result = null;
@@ -475,5 +477,17 @@ public class ResultsService{
         }
         log.info("Result found as  - {}",result);
         return result;
+    }
+
+    public List<Student> getLeaderboard(String className, String acYear) {
+            List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(className));
+            List<StudentDto> studentMarkList= new ArrayList<>();
+        for (Student s:
+             studentList) {
+            StudentDto student = new StudentDto(s.getStudentId(),s.getClassCode(),s.getRollNumber(),s.getName(),getResultPercentage(s.getRollNumber(),className,acYear));
+            studentMarkList.add(student);
+        }
+//        Collections.sort(studentMarkList);
+        return null;
     }
 }

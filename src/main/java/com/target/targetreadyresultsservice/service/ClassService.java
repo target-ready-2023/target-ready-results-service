@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.controller.ClassController;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.repository.ClassRepository;
@@ -105,5 +106,26 @@ public class ClassService {
                 return null;
         }
 
+    }
+
+    public String getClassCodeFromName(String className) {
+
+        String classCode = "";
+        List<ClassDto> classDtoList = getAllClasses();
+        if (classDtoList.isEmpty()) {
+            log.info("No classes found in the repository");
+            throw new NotFoundException(("No classes found!"));
+        }
+        for (ClassDto classDto : classDtoList) {
+            if (classDto.getName().equals(className)) {
+                classCode = classDto.getCode();
+                break;
+            }
+        }
+        if(classCode.isBlank()){
+            log.info("The class name did not match with any classes in the Repository");
+            throw new NotFoundException("This class name does not exists");
+        }
+        return classCode;
     }
 }
