@@ -126,6 +126,7 @@ public class ClassService {
             log.info("The class name did not match with any classes in the Repository");
             throw new NotFoundException("This class name does not exists");
         }
+        log.info("Class code is {}",classCode);
         return classCode;
     }
 }

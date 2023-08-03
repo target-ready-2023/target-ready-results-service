@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
 
@@ -487,15 +488,16 @@ public class ResultsService{
         return result;
     }
 
-    public List<Student> getLeaderboard(String className, String acYear) {
+    public List<StudentDto> getLeaderboard(String className, String acYear) {
             List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(className));
-            List<StudentDto> studentMarkList= new ArrayList<>();
+            List<StudentDto> studentMarkList = new ArrayList<>();
         for (Student s:
              studentList) {
             StudentDto student = new StudentDto(s.getStudentId(),s.getClassCode(),s.getRollNumber(),s.getName(),getResultPercentage(s.getRollNumber(),className,acYear));
             studentMarkList.add(student);
         }
-//        Collections.sort(studentMarkList);
-        return null;
+        Collections.sort(studentMarkList,Collections.reverseOrder());
+        return studentMarkList.subList(0,5);
+
     }
 }

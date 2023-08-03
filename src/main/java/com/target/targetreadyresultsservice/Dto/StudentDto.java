@@ -1,6 +1,6 @@
 package com.target.targetreadyresultsservice.Dto;
 
-public class StudentDto {
+public class StudentDto implements Comparable<StudentDto> {
     String studentid;
     String classCode;
     String rollNum;
@@ -54,9 +54,12 @@ public class StudentDto {
     public void setTotalMarks(Double totalMarks) {
         this.totalMarks = totalMarks;
     }
-//    @Override
-//    public int compareTo(StudentDto student) {
-//        return getTotalMarks().compareTo(student.getTotalMarks());
-//    }
+
+    @Override
+    public int compareTo(StudentDto student) {
+        return Double.compare(getTotalMarks(),student.getTotalMarks());
+      }
+
 }
+
 
