@@ -47,7 +47,7 @@ public class StudentService {
     }
 
     public List<Student> getStudentDetailsByClassCode(String classCode) {
-        List<Student> students=studentRepository.findByclassCode(classCode);
+        List<Student> students=studentRepository.findByClassCode(classCode);
         if(students.isEmpty())
         {
             throw new RuntimeException("No student present in the class with the class code: "+classCode);

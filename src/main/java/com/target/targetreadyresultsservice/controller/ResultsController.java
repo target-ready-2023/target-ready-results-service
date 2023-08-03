@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.controller;
 
+import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
@@ -217,13 +218,13 @@ public class ResultsController {
         }
     }
 
-    @GetMapping("leaderboard")
-    public ResponseEntity<List<Student>> getLeaderboard(
+    @GetMapping("/leaderboard")
+    public ResponseEntity<List<StudentDto>> getLeaderboard(
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear
     ){
         try{
-            List<Student> rankList = resultsService.getLeaderboard(className,acYear);
+            List<StudentDto> rankList = resultsService.getLeaderboard(className,acYear);
         log.info("Rank List with top 5 retirved successfully - {}",rankList);
         return new ResponseEntity<>(rankList,HttpStatus.OK);
         }

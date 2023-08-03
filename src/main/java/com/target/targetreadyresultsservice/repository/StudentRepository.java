@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface StudentRepository extends MongoRepository<Student, String> {
-    List<Student> findByclassCode(String classCode);
+    List<Student> findByClassCode(String classCode);
     List<Student> findByName(String studentName);
 }
