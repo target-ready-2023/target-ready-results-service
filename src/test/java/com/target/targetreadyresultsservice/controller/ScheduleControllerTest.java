@@ -69,7 +69,6 @@ public class ScheduleControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isCreated())
                 .andDo(MockMvcResultHandlers.print());
     }
-
     @Test
     void addNewScheduleReturnsException() throws Exception{
         Schedule schedule = new Schedule(" ",Collections.EMPTY_LIST," "," ",true);

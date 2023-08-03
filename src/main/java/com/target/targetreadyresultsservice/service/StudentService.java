@@ -63,7 +63,6 @@ public class StudentService {
     public Student getStudentFromClassRollNo(String className, String rollNo) {
 
         log.info("ClassName received is - {}",className);
-        String classCode = "";
         ClassDto classFound = null;
         List<ClassDto> classDtoList = classService.getAllClasses();
         if (classDtoList.isEmpty()) {
@@ -71,19 +70,14 @@ public class StudentService {
             throw new NotFoundException(("No classes found!"));
         }
         for (ClassDto classDto : classDtoList) {
-            log.info("One in the list of name - "+classDto.getName());
-            log.info("The class name we need -"+className);
             if (classDto.getName().equals(className)) {
-                //the problem is in this line
-                classCode = classDto+classDto.getCode();
                 classFound=classDto;
                 break;
             }
         }
-        if(classCode.isEmpty()){
-            throw new NotFoundException("Class not found - this is from get student fromclass name and rooll num fun");
+        if(classFound==null){
+            throw new NotFoundException("Class not found - this is from getStudentFromClassRollNo");
         }
-        log.info("Class code found is - {}",classCode);
         log.info("classFound has the class Code - {}",classFound.getCode());
         List<Student> students = getStudentDetailsByClassCode(classFound.getCode());
         Student student=null;

@@ -89,7 +89,7 @@ public class ResultsService{
         List<Marks> marksList = result.getMarksList();
 
         Student student = studentService.getStudentInfo(result.getStudentId()).orElse(null);
-        log.info("Student found as - {}",student);
+        log.info("Student found as - {}. This is from addNewResult",student);
 
         ClassDto classLevel = classService.getClassLevelById(student.getClassCode());
         String className = classLevel.getName();
@@ -290,7 +290,7 @@ public class ResultsService{
     public double getAverageForSubject(String rollNumber,String className, String acYear, String subjectCode){
 
         Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
-        log.info("Student found as - {}.This is from average from",student);
+        log.info("Student found as - {}.This is from average",student);
         if(student==null){
             log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student not found");
@@ -351,10 +351,15 @@ public class ResultsService{
             throw new InvalidValueException("Invalid Class Provided. Please enter a valid Class");
         }
         List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        if(scheduleList.isEmpty()){
+            throw new NotFoundException("No schedules found for this class");
+        }
+        log.info("Schedule list found as - {}",scheduleList);
         List<Results> classTestResultList = new ArrayList<>();
         for (Schedule sc : scheduleList) {
             if (sc.getYear().equals(acYear) && sc.getScheduleName().equals(scName)) {
                 String schedule = sc.getScheduleCode();
+                log.info("The schedule code found (inside loop) is - {}",schedule);
                  classTestResultList =resultsRepository.findAllByscheduleCode(schedule);
             }
         }
@@ -470,6 +475,7 @@ public class ResultsService{
                 log.info("Schedule not found. Throws NotFoundException");
                 throw new NotFoundException("Schedule not found");
             }
+            log.info("Schedule found as  - {}",schedule);
             if (schedule.getYear().equals(acYear) && schedule.getScheduleName().equals(scName)) {
                 result = r;
             }

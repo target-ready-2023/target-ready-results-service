@@ -62,6 +62,9 @@ class ResultsServiceTest {
 
         when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
 
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
         Subject subject = new Subject("S999","Class ten subject",
                 10,"C10",100,50);
 
@@ -128,6 +131,9 @@ class ResultsServiceTest {
 
         when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
 
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
         Subject subject = new Subject("S999","Class ten subject",
                 10,"C10",100,50);
 
@@ -190,7 +196,7 @@ class ResultsServiceTest {
         Student student = new Student("2","Bob","C4","10");
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
-        ClassDto classDto = new ClassDto("C4","4",List.of("Physics","Maths"));
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
         when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
@@ -279,11 +285,17 @@ class ResultsServiceTest {
     }
 
     @Test
+    void deleteResultReturnsNotFoundException(){
+        when(resultsRepository.findById(any(String.class))).thenReturn(null);
+        assertThrows(NotFoundException.class,()->resultsService.deleteResult(any(String.class)));
+    }
+
+    @Test
     void getAverageForSubjectSuccessful(){
         Student student = new Student("2","Bob","C4","10");
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
-        ClassDto classDto = new ClassDto("C4","4",List.of("Physics","Maths"));
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
         when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
         when(classService.getClassCodeFromName(any(String.class))).thenReturn("C4");
@@ -319,5 +331,77 @@ class ResultsServiceTest {
     }
 
     @Test
-    void getAverageForSubjectR
+    void getAverageForSubjectReturnsNotFoundException() {
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(null);
+         assertThrows(NotFoundException.class,()->resultsService.getAverageForSubject("10","4","2023-2024","S999"));
+    }
+
+    @Test
+    void getClassTestResultsSuccessful() {
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule s1 = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",false);
+        Schedule s2 = new Schedule("TC420JUNE2023","C4",subjectScheduleList,
+                "Test","Class Test 2","2023-2024",false);
+
+        List<Schedule> scheduleList = List.of(s1,s2);
+        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(scheduleList);
+
+        Results r1 = new Results("2","TC420JULY2023",
+                List.of(new Marks("S999", 45, 0)));
+        Results r2 = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999", 30, 0)));
+        List<Results> resultsList = List.of(r1,r2);
+        when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
+
+        List<Results> expected = List.of(r1,r2);
+        List<Results> actual = resultsService.getClassTestResults("4","2023-2024","Class Test 1");
+
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    void getClassTestResultsReturnsBlankValueException() {
+        assertThrows(BlankValueException.class,()->resultsService.getClassTestResults("","",","));
+    }
+
+    @Test
+    void getStudentTestResultSuccessful() {
+        Student student = new Student("2","Bob","C4","10");
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        Results r1 = new Results("2","TC420JULY2023",
+                List.of(new Marks("S999", 45, 0)));
+
+        List<Results> resultsList = List.of(r1);
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), false));
+        Schedule s1 = new Schedule("TC420JULY2023","C4",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",false);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
+
+        Results expected = new Results("2","TC420JULY2023",
+                List.of(new Marks("S999", 45, 0)));
+
+        Results actual = resultsService.getStudentTestResult("4","2023-2024","Class Test 1","10");
+
+        assertEquals(expected.toString(),actual.toString());
+    }
+
+    @Test
+    void getStudentTestResultReturnsNotFoundException() {
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(null);
+        assertThrows(NotFoundException.class,()->resultsService.getStudentTestResult("4",
+                "2023-2024","Class Test 1","10"));
+    }
 }
