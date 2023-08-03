@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.repository.StudentRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -51,18 +52,36 @@ class StudentServiceTest {
     }
 
     @Test
-    void setStudentInfo() {
+    void getStudentDetailsByClassCodeSuccessful() {
+        List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
+        when(studentRepository.findByclassCode(any(String.class))).thenReturn(studentList);
+
+        List<Student> expected = studentList;
+        List<Student> actual = studentService.getStudentDetailsByClassCode("C4");
+        assertEquals(expected,actual);
     }
 
     @Test
-    void getStudentDetailsByClassCode() {
+    void getStudentByNameSuccessful() {
+        List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
+        when(studentRepository.findByName(any(String.class))).thenReturn(studentList);
+
+        List<Student> expected = studentList;
+        List<Student> actual = studentService.getStudentByName("Bob");
+        assertEquals(expected,actual);
     }
 
     @Test
-    void getStudentByName() {
-    }
+    void getStudentFromClassRollNoSuccessful() {
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getAllClasses()).thenReturn(List.of(classDto));
 
-    @Test
-    void getStudentFromClassRollNo() {
+        List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
+        when(studentRepository.findByclassCode(any(String.class))).thenReturn(studentList);
+
+        Student expected = new Student("4","Bob","C4","10");
+        Student actual = studentService.getStudentFromClassRollNo("4","10");
+
+        assertEquals(expected.toString(),actual.toString());
     }
 }

@@ -39,9 +39,10 @@ public class StudentService {
 
     public void setStudentInfo(Student student) {
         try {
-            studentRepository.save(student);
+            Student s = studentRepository.save(student);
+            log.info("Student added is - {}",s);
         } catch (Exception e) {
-
+            throw new RuntimeException("Student not added");
         }
     }
 
