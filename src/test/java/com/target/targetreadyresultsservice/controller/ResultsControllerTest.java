@@ -1,11 +1,13 @@
 package com.target.targetreadyresultsservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Marks;
 import com.target.targetreadyresultsservice.model.Results;
+import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ResultsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -272,5 +274,23 @@ class ResultsControllerTest {
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getLeaderboardSuccessful() throws Exception{
+        List<StudentDto> studentDtoList = List.of(new StudentDto("8","C4","15","Carl",100.0),
+                new StudentDto("6","C4","12","Ann",93.0),
+                new StudentDto("4","C4","10","Bob",89.0),
+                new StudentDto("7","C4","30","Rob",87.0),
+                new StudentDto("5","C4","1","Alice",80.0));
+
+        when(resultsService.getLeaderboard(any(String.class),any(String.class))).thenReturn(studentDtoList);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/leaderboard?className=4&academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+
     }
 }

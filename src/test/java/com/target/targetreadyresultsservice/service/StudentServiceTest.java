@@ -54,7 +54,7 @@ class StudentServiceTest {
     @Test
     void getStudentDetailsByClassCodeSuccessful() {
         List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
-        when(studentRepository.findByclassCode(any(String.class))).thenReturn(studentList);
+        when(studentRepository.findByClassCode(any(String.class))).thenReturn(studentList);
 
         List<Student> expected = studentList;
         List<Student> actual = studentService.getStudentDetailsByClassCode("C4");
@@ -77,7 +77,7 @@ class StudentServiceTest {
         when(classService.getAllClasses()).thenReturn(List.of(classDto));
 
         List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
-        when(studentRepository.findByclassCode(any(String.class))).thenReturn(studentList);
+        when(studentRepository.findByClassCode(any(String.class))).thenReturn(studentList);
 
         Student expected = new Student("4","Bob","C4","10");
         Student actual = studentService.getStudentFromClassRollNo("4","10");

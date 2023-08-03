@@ -488,16 +488,21 @@ public class ResultsService{
         return result;
     }
 
+    //get top 5 students from a class in an academic year
     public List<StudentDto> getLeaderboard(String className, String acYear) {
             List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(className));
+            if(studentList.isEmpty()){
+                throw new NotFoundException("No students found in studentList");
+            }
+            log.info("Student list found as - {}",studentList);
             List<StudentDto> studentMarkList = new ArrayList<>();
-        for (Student s:
-             studentList) {
-            StudentDto student = new StudentDto(s.getStudentId(),s.getClassCode(),s.getRollNumber(),s.getName(),getResultPercentage(s.getRollNumber(),className,acYear));
+        for (Student s: studentList) {
+            StudentDto student = new StudentDto(s.getStudentId(),s.getClassCode(),s.getRollNumber(),s.getName(),
+                    getResultPercentage(s.getRollNumber(),className,acYear));
             studentMarkList.add(student);
         }
         Collections.sort(studentMarkList,Collections.reverseOrder());
+        log.info("Top 5 students found as - {}",studentMarkList);
         return studentMarkList.subList(0,5);
-
     }
 }

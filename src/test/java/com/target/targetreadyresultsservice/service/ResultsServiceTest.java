@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
@@ -403,5 +404,11 @@ class ResultsServiceTest {
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(null);
         assertThrows(NotFoundException.class,()->resultsService.getStudentTestResult("4",
                 "2023-2024","Class Test 1","10"));
+    }
+
+    @Test
+    void getLeaderboardReturnsException() {
+        when(studentService.getStudentDetailsByClassCode(any(String.class))).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->resultsService.getLeaderboard("4","2023-2024"));
     }
 }

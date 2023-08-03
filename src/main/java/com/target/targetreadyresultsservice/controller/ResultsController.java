@@ -218,6 +218,7 @@ public class ResultsController {
         }
     }
 
+    //get the top 5 students from a class in an academic year
     @GetMapping("/leaderboard")
     public ResponseEntity<List<StudentDto>> getLeaderboard(
             @RequestParam("className") String className,
@@ -225,17 +226,15 @@ public class ResultsController {
     ){
         try{
             List<StudentDto> rankList = resultsService.getLeaderboard(className,acYear);
-        log.info("Rank List with top 5 retirved successfully - {}",rankList);
+        log.info("Rank List with top 5 retrieved successfully - {}",rankList);
         return new ResponseEntity<>(rankList,HttpStatus.OK);
+        } catch(NotFoundException e){
+            log.info("Exception occurred - NotFoundException - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        } catch(Exception e){
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
-        catch(NotFoundException e){
-        log.info("Exception occurred - NotFoundException - {}",e.getMessage());
-        return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
-    }
-        catch(Exception e){
-        log.info("Exception occurred - {}",e.getMessage());
-        return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-    }
     }
 }
 
