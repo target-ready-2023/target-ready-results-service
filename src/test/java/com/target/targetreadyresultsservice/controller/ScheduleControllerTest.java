@@ -240,8 +240,8 @@ public class ScheduleControllerTest {
     }
 
     @Test
-    void getSchedulesByClassReturnsNullValueException() throws Exception{
-        when(scheduleService.getScheduleByClass(any(String.class))).thenThrow(NullValueException.class);
+    void getSchedulesByClassReturnsNotFoundException() throws Exception{
+        when(scheduleService.getScheduleByClass(any(String.class))).thenThrow(NotFoundException.class);
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/all")
                 .contentType(MediaType.APPLICATION_JSON));
 

@@ -45,7 +45,7 @@ class ScheduleServiceTest {
     }
 
     @Test
-    void addNewScheduleTest() {
+    void addNewScheduleSuccess1() {
 
         Schedule schedule = new Schedule();
 
@@ -80,6 +80,70 @@ class ScheduleServiceTest {
     }
 
     @Test
+    void addNewScheduleSuccess2() {
+
+        Schedule schedule = new Schedule();
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,2,10),
+                LocalTime.of(10,00),true));
+
+        schedule.setScheduleName("model exam");
+        schedule.setScheduleType("exam");
+        schedule.setClassCode("C99");
+        schedule.setScheduleStatus(true);
+        schedule.setSubjectSchedule(subjectScheduleList);
+
+        String expected = new Schedule("EC9910FEBRUARY2023","C99",
+                subjectScheduleList,"exam",
+                "model exam",
+                true).toString();
+
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S_PhyC99","Physics",10,"C99",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        when(scheduleRepository.save(any(Schedule.class))).thenReturn(schedule);
+
+        String actual = scheduleService.addNewSchedule(schedule).toString();
+
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    void addNewScheduleInvalidDate() {
+        Schedule schedule = new Schedule();
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,4,10),
+                LocalTime.of(10,00),true));
+
+        schedule.setScheduleName("Class Test 1");
+        schedule.setScheduleType("Test");
+        schedule.setClassCode("C99");
+        schedule.setScheduleStatus(true);
+        schedule.setSubjectSchedule(subjectScheduleList);
+
+        String expected = new Schedule("TC9910APRIL2023","C99",
+                subjectScheduleList,"Test",
+                "Class Test 1",
+                true).toString();
+
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S_PhyC99","Physics",10,"C99",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        assertThrows(InvalidValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
     void addNewScheduleReturnsBlankValueException(){
         Schedule schedule = new Schedule();
 
@@ -98,6 +162,124 @@ class ScheduleServiceTest {
         when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
         assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+    @Test
+    void addNewScheduleWithNullClass() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule(null,subjectScheduleList,
+                "Test","Class Test 1",true);
+        assertThrows(NullValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleWithBlankClass() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("",subjectScheduleList,
+                "Test","Class Test 1",true);
+        assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleClassNotFound() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("C4",subjectScheduleList,
+                "Test","Class Test 1",true);
+        when(classService.getClassLevelById(any(String.class))).thenReturn(null);
+        assertThrows(NotFoundException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleWithTypeBlank() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("C4",subjectScheduleList,
+                "","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleWithEmptySubjectList() {
+        Schedule schedule = new Schedule("C4", Collections.EMPTY_LIST,
+                "test", "Class Test 1", true);
+        ClassDto classDto = new ClassDto("C99", "99", List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        assertThrows(BlankValueException.class, () -> scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleWithBlankSubCode() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("C4",subjectScheduleList,
+                "test","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleSubNotTaught() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("C4",subjectScheduleList,
+                "test","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        Subject subject = new Subject("S999","Physics",10,"C99",100,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        assertThrows(InvalidValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleDateNull() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                null, LocalTime.of(10,00), true));
+        Schedule schedule = new Schedule("C99",subjectScheduleList,
+                "test","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        Subject subject = new Subject("S999","Physics",10,"C99",100,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleTimeNull() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                null, true));
+        Schedule schedule = new Schedule("C99",subjectScheduleList,
+                "test","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        Subject subject = new Subject("S999","Physics",10,"C99",100,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        assertThrows(BlankValueException.class,()->scheduleService.addNewSchedule(schedule));
+    }
+
+    @Test
+    void addNewScheduleInvalidTime() {
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(23,00), true));
+        Schedule schedule = new Schedule("C99",subjectScheduleList,
+                "test","Class Test 1",true);
+        ClassDto classDto = new ClassDto("C99","99",List.of("Physics"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+        Subject subject = new Subject("S999","Physics",10,"C99",100,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        assertThrows(InvalidValueException.class,()->scheduleService.addNewSchedule(schedule));
     }
 
     @Test
@@ -251,7 +433,25 @@ class ScheduleServiceTest {
 
     @Test
     void getScheduleForResultsReturnsBlankValueException(){
-        assertThrows(BlankValueException.class,()->scheduleService.getScheduleForResult("","",""));
+        assertThrows(BlankValueException.class,()->scheduleService.getScheduleForResult("","4","2023-2024"));
+    }
+
+    @Test
+    void getScheduleForResultsWithBlankClass(){
+        assertThrows(BlankValueException.class,()->scheduleService.getScheduleForResult("Test 1","","20203-2024"));
+    }
+
+    @Test
+    void getScheduleForResultsWithBlankAcYear(){
+        assertThrows(BlankValueException.class,()->scheduleService.getScheduleForResult("Test 1","4",""));
+    }
+
+    @Test
+    void getScheduleForResultsWithEmptySchedule() {
+        List<ClassDto> classDtoList = List.of(new ClassDto("C4","4",List.of("Physics","social")));
+        when(classService.getAllClasses()).thenReturn(classDtoList);
+        when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->scheduleService.getScheduleForResult("test 1","4","2023-2024"));
     }
 
     @Test
@@ -311,4 +511,27 @@ class ScheduleServiceTest {
         assertThrows(NotFoundException.class,()->scheduleService.updateSchedule("TC9910JULY2023",schedule));
     }
 
+    @Test
+    void getScheduleNamesForClassSuccessful() {
+        List<ClassDto> classDto = List.of(new ClassDto("C99","99",List.of("Physics")));
+        when(classService.getClassLeveByName(any(String.class))).thenReturn(classDto);
+
+        List<Schedule> schedules = new ArrayList<>();
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), false));
+        schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",false));
+
+        when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(schedules);
+
+        List<String> expected = List.of("Class Test 1");
+        List<String> actual = scheduleService.getScheduleNamesForClass("99","2023-2024");
+    }
+
+    @Test
+    void getScheduleNamesForClassListNotFound() {
+        when(classService.getClassLeveByName(any(String.class))).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->scheduleService.getScheduleNamesForClass("4","2023-2024"));
+    }
 }

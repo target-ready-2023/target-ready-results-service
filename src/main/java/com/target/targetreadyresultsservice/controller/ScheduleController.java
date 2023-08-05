@@ -101,8 +101,8 @@ public class ScheduleController {
             log.info("schedule list retrieved successfully - {}",scheduleList);
             return new ResponseEntity<>(scheduleList,HttpStatus.OK);
         }
-        catch(NullValueException e){
-            log.info("exception occurred  - NullValueException - {}", e.getMessage());
+        catch(NotFoundException e){
+            log.info("exception occurred  - NotFoundException - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         }
         catch (Exception e){

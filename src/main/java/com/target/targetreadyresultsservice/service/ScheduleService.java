@@ -62,7 +62,7 @@ public class ScheduleService {
         List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
         if(scheduleList.isEmpty()){
             log.info("Exception occurred - scheduleList is empty and throws NullValueException");
-            throw new NullValueException("No schedules found for the given class");
+            throw new NotFoundException("No schedules found for the given class");
         }
         else{
             log.info("List of schedules found successfully as - {}",scheduleList);
@@ -278,10 +278,16 @@ public class ScheduleService {
 
     public List<String> getScheduleNamesForClass(String className, String acYear) {
         List<ClassDto> classDto = classService.getClassLeveByName(className);
+        log.info("Class found as - {}",classDto);
+        if(classDto.isEmpty()){
+            log.info("No class found with class name - {}",className);
+            throw new NotFoundException("No class found with the given class name");
+        }
         List<Schedule> scheduleList = getScheduleByClass(classDto.get(0).getCode());
         if(scheduleList.isEmpty()){
             throw new NotFoundException("No schedules found");
         }
+        log.info("Schedule list for {} found as - {}",className,scheduleList);
         List<String> scheduleNameList = new ArrayList<>();
         for (Schedule s :scheduleList) {
             if(s.getYear().equals(acYear)){
@@ -289,8 +295,10 @@ public class ScheduleService {
             }
         }
         if(scheduleNameList.isEmpty()){
+            log.info("No schedules found");
             throw new NotFoundException("No schedules found");
         }
+        log.info("Schedule name list found as - {}",scheduleNameList);
         return scheduleNameList;
     }
 }
