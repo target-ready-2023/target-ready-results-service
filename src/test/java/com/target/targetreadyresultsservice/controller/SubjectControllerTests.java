@@ -144,7 +144,7 @@ public class SubjectControllerTests {
         newsub.setClassCode("C1");
         newsub.setMaxTestMarks(20);
         newsub.setMaxExamMarks(80);
-        when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(String.valueOf(newsub));
+        when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(newsub);
         ResultActions response=mockMvc.perform(put("/subjects/v1/subject/S-PhC1")
                 .contentType(MediaType.APPLICATION_JSON).
                 content(objectMapper.writeValueAsString(newsub)));

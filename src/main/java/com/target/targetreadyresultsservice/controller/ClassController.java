@@ -65,27 +65,27 @@ public class ClassController {
     }
 
     @PostMapping("/classes")
-    public ResponseEntity<String> saveClassDetails(@RequestBody @Valid ClassLevel classLevel){
+    public ResponseEntity<ClassLevel> saveClassDetails(@RequestBody @Valid ClassLevel classLevel){
         try {
             ClassLevel classInfo = classService.setClassLevelInfo(classLevel);
             log.info("New class is added successfully as - {}",classInfo);
-            return new ResponseEntity<>("successfully saved", HttpStatus.CREATED);
+            return new ResponseEntity<>(classInfo, HttpStatus.CREATED);
         } catch(Exception e){
             log.info("Exception occurred - {}",e.getMessage());
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(e.getMessage(), HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PutMapping("/classes/{classCode}")
-    public ResponseEntity<String> UpdateClassDetails(@PathVariable("classCode") String code,
+    public ResponseEntity<ClassLevel> UpdateClassDetails(@PathVariable("classCode") String code,
                                                      @RequestBody ClassLevel classLevel){
         try{
             ClassLevel classLevel1 = classService.updateClassLevelInfo(code,classLevel);
             log.info("class updated successfully as - {}",classLevel1);
-            return new ResponseEntity<>("Successfully updated",HttpStatus.OK);
+            return new ResponseEntity<>(classLevel1,HttpStatus.OK);
         } catch(Exception e){
             log.info("Exception occurred - {}",e.getMessage());
-            return new ResponseEntity<>("Error occurred during update",HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error occurred during update",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
@@ -94,7 +94,7 @@ public class ClassController {
         try {
             classService.deleteClassLevelInfo(code);
             log.info("Class deleted successfully");
-            return new ResponseEntity<>("Successfully deleted",HttpStatus.OK);
+            return new ResponseEntity<>(code+ " Successfully deleted",HttpStatus.OK);
         } catch(Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity<>(e.getMessage(),HttpStatus.EXPECTATION_FAILED);

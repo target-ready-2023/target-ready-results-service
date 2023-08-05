@@ -84,7 +84,7 @@ public class ClassService {
         boolean isClass=classRepository.existsById(code);
         if(isClass) {
            classRepository.deleteById(code);
-           return "deleted successfully";
+           return "code";
         }
         else throw new RuntimeException("Class with given code "+code+" is not found");
     }

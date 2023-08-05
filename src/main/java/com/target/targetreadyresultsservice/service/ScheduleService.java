@@ -140,7 +140,7 @@ public class ScheduleService {
     }
 
     //delete a schedule
-    public String deleteSchedule(String scheduleCode) {
+    public Schedule deleteSchedule(String scheduleCode) {
         Schedule schedule = scheduleRepository.findById(scheduleCode).orElse(null);
         if(schedule == null){
             log.info("Schedule not found and throws NotFoundException");
@@ -148,7 +148,7 @@ public class ScheduleService {
         }
         log.info("Schedule deleted successfully");
         scheduleRepository.delete(schedule);
-        return "Deleted";
+        return schedule;
     }
 
     //update a schedule

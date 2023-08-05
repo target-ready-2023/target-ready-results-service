@@ -26,32 +26,32 @@ public class StudentController {
     private static final Logger log = LoggerFactory.getLogger(StudentController.class);
 
     @GetMapping("/student")
-    public ResponseEntity<String> getStudentDetails(
+    public ResponseEntity<Student> getStudentDetails(
             @RequestParam("studentId") String studentId
     ) {
         try {
             log.info("get student info with Student Id {}", studentId);
             Optional<Student> studentInfo = studentService.getStudentInfo(studentId);
             return studentInfo.map(
-                    student -> new ResponseEntity<>("Found : " + student.toString(), HttpStatus.OK)
+                    student -> new ResponseEntity<>(student, HttpStatus.OK)
             ).orElseGet(
-                    () -> new ResponseEntity<>("Not Found : ", HttpStatus.NOT_FOUND)
+                    () -> new ResponseEntity("Not Found : ", HttpStatus.NOT_FOUND)
             );
         } catch (Exception e) {
             log.info("exception occurred {}", e.getMessage());
-            return new ResponseEntity<>("Error", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
     @PostMapping("/student")
-    public ResponseEntity<String> setStudentDetails(@RequestBody Student studentInfo) {
+    public ResponseEntity<Student> setStudentDetails(@RequestBody Student studentInfo) {
         try {
             studentService.setStudentInfo(studentInfo);
 
-            return new ResponseEntity<>("Successful", HttpStatus.OK);
+            return new ResponseEntity<>(studentInfo, HttpStatus.OK);
         } catch (Exception e) {
             log.info("exception occurred");
-            return new ResponseEntity<>("Error", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity("Error", HttpStatus.EXPECTATION_FAILED);
         }
     }
 
