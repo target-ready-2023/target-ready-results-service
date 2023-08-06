@@ -47,7 +47,6 @@ public class StudentController {
     public ResponseEntity<Student> setStudentDetails(@RequestBody Student studentInfo) {
         try {
             studentService.setStudentInfo(studentInfo);
-
             return new ResponseEntity<>(studentInfo, HttpStatus.OK);
         } catch (Exception e) {
             log.info("exception occurred");

@@ -153,4 +153,16 @@ public class ClassServiceTest {
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
         assertThrows(RuntimeException.class, ()-> classService.getClassLeveByName("4"));
     }
+
+    @Test
+    void getClassCodeFromNameSuccessful() {
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"));
+        List<String> subjects = List.of("Physics","Social");
+        when(classRepository.findAll()).thenReturn(classLevels);
+        when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(subjects);
+
+        String expected = "C4";
+        String actual = classService.getClassCodeFromName("4");
+        assertEquals(expected,actual);
+    }
 }

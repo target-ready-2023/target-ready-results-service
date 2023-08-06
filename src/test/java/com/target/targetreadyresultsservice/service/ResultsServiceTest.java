@@ -214,7 +214,7 @@ class ResultsServiceTest {
     void updateResultTestSuccessful() {
 
         Results result = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
+                List.of(new Marks("S999",45,89)));
 
         Optional<Results> expected = Optional.of(new Results( "4", "TC420JULY2023",
                 List.of(new Marks("S999", 50, 0))));
@@ -255,7 +255,7 @@ class ResultsServiceTest {
     @Test
     void updateResultExamSuccessful() {
         Results result = new Results("4","EC420JULY2023",
-                List.of(new Marks("S999",45,0)));
+                List.of(new Marks("S999",45,78)));
 
         Optional<Results> expected = Optional.of(new Results( "4", "EC420JULY2023",
                 List.of(new Marks("S999", 0, 80))));
@@ -365,6 +365,39 @@ class ResultsServiceTest {
     }
 
     @Test
+    void updateResultInvalidScheduleType() {
+        Results result = new Results("4","EC420JULY2023",
+                List.of(new Marks("S999",45,0)));
+        when(resultsRepository.findById(any(String.class))).thenReturn(Optional.of(result));
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("EC420JULY2023","C4",subjectScheduleList,
+                "normal","model exam","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Student student = new Student("4","Bob","C4","10");
+
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(Optional.of(student));
+
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        Subject subject = new Subject("S999","Class four subject",
+                10,"C4",100,50);
+
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        Results update = new Results("4","EC420JULY2023",
+                List.of(new Marks("S999",45,0)));
+
+        assertThrows(InvalidValueException.class,()->resultsService.updateResult("R4JULY2023",update));
+    }
+
+    @Test
     void getStudentResult(){
         Student student = new Student("2","Bob","C4","10");
 
@@ -469,6 +502,38 @@ class ResultsServiceTest {
 
         when(classService.getClassLevelById(any(String.class))).thenReturn(null);
         assertThrows(NotFoundException.class,()->resultsService.getResultPercentage("10","4",
+                "2023-2024"));
+    }
+
+    @Test
+    void getResultPercentageWithZeroMaxMark() {
+        Student student = new Student("2","Bob","C4","10");
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        List<Results> resultsList = List.of(new Results("2","FEC420JULY2023",
+                List.of(new Marks("S999", 45, 67))));
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule schedule = new Schedule("FEC420JULY2023","C4",subjectScheduleList,
+                "final exam","Final exam","2023-2024",true);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+
+        Subject subject = new Subject("S999","Physics",10,"C4",0,0);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        assertThrows(InvalidValueException.class,()->resultsService.getResultPercentage("10","4",
                 "2023-2024"));
     }
 
@@ -618,6 +683,42 @@ class ResultsServiceTest {
     }
 
     @Test
+    void getAverageForSubjectNoTestResultsFound() {
+        Student student = new Student("2","Bob","C4","10");
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
+
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
+
+        when(classService.getClassCodeFromName(any(String.class))).thenReturn("C4");
+
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10, 0), true));
+
+        Schedule s1 = new Schedule("EC420JULY2023","C4",subjectScheduleList,
+                "exam","model exam","2023-2024",false);
+        Schedule s2 = new Schedule("EC420JUNE2023","C4",subjectScheduleList,
+                "exam","pre-model exam","2023-2024",false);
+
+        List<Schedule> schedule = List.of(s1,s2);
+
+        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(schedule);
+
+        List<Results> resultsList = List.of(new Results("2","EC420JULY2023",
+                        List.of(new Marks("S999", 45, 67))),
+                new Results("2","EC420JUNE2023",
+                        List.of(new Marks("S999", 30, 45))));
+        when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
+
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s2);
+
+        assertThrows(InvalidValueException.class,()->resultsService.getAverageForSubject("10","4",
+                "2023-2024","S999"));
+    }
+
+    @Test
     void getClassTestResultsSuccessful() {
         ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
         when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
@@ -762,7 +863,7 @@ class ResultsServiceTest {
     }
 
     @Test
-    void getLeaderboardSuccessful() {
+    void getLeaderboardTestingForSuccess() {
         List<Student> studentList = List.of(
                 new Student("1","Student1","C4","10"),
                 new Student("2","Student2","C4","11"),
@@ -770,20 +871,17 @@ class ResultsServiceTest {
                 new Student("4","Student4","C4","13"),
                 new Student("5","Student5","C4","14")
         );
-        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
-        when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getCode());
-        when(studentService.getStudentDetailsByClassCode(any(String.class))).thenReturn(studentList);
 
         List<Results> resultsList = List.of(
-                new Results("1","TC420JULY2023",
+                new Results("1","FE420JULY2023",
                         List.of(new Marks("S999", 50, 100))),
-                new Results("2","TC420JULY2023",
+                new Results("2","FE420JULY2023",
                         List.of(new Marks("S999", 40, 76))),
-                new Results("3","TC420JULY2023",
-                        List.of(new Marks("S999", 45, 80))),
-                new Results("4","TC420JULY2023",
+                new Results("3","FE420JULY2023",
                         List.of(new Marks("S999", 39, 76))),
-                new Results("5","TC420JULY2023",
+                new Results("4","FE420JULY2023",
+                        List.of(new Marks("S999", 33, 80))),
+                new Results("5","FE420JULY2023",
                         List.of(new Marks("S999", 29, 50)))
         );
 
@@ -794,29 +892,42 @@ class ResultsServiceTest {
                 "final exam","final exam","2023-2024",false);
         Subject subject = new Subject("S999","Class four subject",
                 10,"C4",100,50);
-        int count=0;
 
-        for (Student s :studentList) {
-            //in percentage
+        when(classService.getClassCodeFromName(any(String.class))).thenReturn("C4");
+        when(studentService.getStudentDetailsByClassCode(any(String.class))).thenReturn(studentList);
+
+        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
+        int count = 0;
+        for (Student s : studentList) {
             when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(s);
             when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
-            //in getStudentResult
+            //goes to getStudentResult function
             when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(s);
-            List<Results> rList = List.of(resultsList.get(count));
-            log.info("Count is - {}",count);
-            count++;
-            when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(rList);
-            for (Results r :rList) {
+            List<Results> resultListForOne = List.of(resultsList.get(count));
+            when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultListForOne);
+
+           // count++;
+            for (Results r : resultListForOne) {
                 when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
             }
 
-            //in percentage
-            when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+            //back to percentage
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
+
+            List<Marks> marksList = resultsList.get(count).getMarksList();
+            for (Marks m : marksList) {
+                when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+            }
+            count++;
         }
         List<StudentDto> studentDtoList = resultsService.getLeaderboard("4","2023-2024");
         assertEquals(5,studentDtoList.size());
         assertEquals(studentList.get(0).getName(),studentDtoList.get(0).getName());
+        assertEquals(studentList.get(1).getName(),studentDtoList.get(1).getName());
+        assertEquals(studentList.get(2).getName(),studentDtoList.get(2).getName());
+        assertEquals(studentList.get(3).getName(),studentDtoList.get(3).getName());
+        assertEquals(studentList.get(4).getName(),studentDtoList.get(4).getName());
     }
 
     @Test

@@ -77,8 +77,8 @@ public class ClassController {
     }
 
     @PutMapping("/classes/{classCode}")
-    public ResponseEntity<ClassLevel> UpdateClassDetails(@PathVariable("classCode") String code,
-                                                     @RequestBody ClassLevel classLevel){
+    public ResponseEntity<ClassLevel> updateClassDetails(@PathVariable("classCode") String code,
+                                                         @RequestBody ClassLevel classLevel){
         try{
             ClassLevel classLevel1 = classService.updateClassLevelInfo(code,classLevel);
             log.info("class updated successfully as - {}",classLevel1);
