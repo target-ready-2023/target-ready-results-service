@@ -12,6 +12,7 @@ import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -30,6 +31,18 @@ public class ScheduleService {
     private final ClassService classService;
     @Autowired
     private final SubjectService subjectService;
+
+    @Value("${app.dayBeforeAcStart}")
+    private int dayBeforeAcStart;
+
+    @Value("${app.monthBeforeAcStart}")
+    private int monthBeforeAcStart;
+
+    @Value("${app.dayAfterAcEnd}")
+    private int dayAfterAcEnd;
+
+    @Value("${app.monthAfterAcEnd}")
+    private int monthAfterAcEnd;
 
     public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService, SubjectService subjectService) {
         this.scheduleRepository = scheduleRepository;
@@ -104,12 +117,12 @@ public class ScheduleService {
 
         //an academic year is from 1st June of a year to 31st March of the next year
 
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year),5,31)) &&
-        date.isBefore(LocalDate.of(Integer.parseInt(year)+1,4,1))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year), monthBeforeAcStart, dayBeforeAcStart)) &&
+        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, monthAfterAcEnd, dayAfterAcEnd))){
             return year + "-" + Integer.toString(Integer.parseInt(year)+1);
         }
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, 5,31)) &&
-                date.isBefore(LocalDate.of(Integer.parseInt(year),4,1))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, monthBeforeAcStart, dayBeforeAcStart)) &&
+                date.isBefore(LocalDate.of(Integer.parseInt(year), monthAfterAcEnd, dayAfterAcEnd))){
             return Integer.parseInt(year)-1 +"-"+year;
         }
         log.info("Invalid date for exam provided. Cannot find the academic year");
