@@ -502,7 +502,26 @@ public class ResultsService{
             studentMarkList.add(student);
         }
         Collections.sort(studentMarkList,Collections.reverseOrder());
-        log.info("Top 5 students found as - {}",studentMarkList);
+        log.info("Top 5 students found as - {}",studentMarkList.subList(0,5));
         return studentMarkList.subList(0,5);
+    }
+
+    public List<StudentDto> getToppersList(String acYear) {
+        List<StudentDto> toppersList = new ArrayList<>();
+        List<ClassDto> classList = classService.getAllClasses();
+        if(classList.isEmpty()){
+            throw new NotFoundException("Class list is Empty");
+        }
+        //need to sort class by classLevel
+        //code here
+        for (ClassDto c :
+             classList) {
+            List<StudentDto> rankList = getLeaderboard(c.getName(),acYear);
+            toppersList.add(rankList.get(0));
+        }
+        if(toppersList.isEmpty()){
+            throw new NotFoundException("Toppers List is Empty");
+        }
+        return toppersList;
     }
 }

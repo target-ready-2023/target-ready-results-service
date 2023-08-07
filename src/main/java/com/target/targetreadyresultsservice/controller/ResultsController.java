@@ -236,5 +236,25 @@ public class ResultsController {
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
+    //to get the Topper of each class
+    @GetMapping("/schoolToppers")
+    public  ResponseEntity<List<StudentDto>> getToppersList(
+            @RequestParam("academicYear") String acYear
+    ){
+        try{
+            List<StudentDto> toppersList = resultsService.getToppersList(acYear);
+            log.info("List of Toppers of each class retrieved successfully- {}",toppersList);
+            return new ResponseEntity<>(toppersList,HttpStatus.OK);
+        }
+        catch(NotFoundException e){
+            log.info("Exception occurred - NotFoundException - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        } catch(Exception e){
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 }
+
+
 
