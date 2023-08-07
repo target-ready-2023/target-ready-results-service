@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,6 +54,16 @@ public class StudentControllerTest {
     }
 
     @Test
+    void getStudentDetailsNotFound() throws Exception {
+        when(studentService.getStudentInfo(any(String.class))).thenReturn(null);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?studentId=4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void setStudentDetailsSuccessful() throws Exception{
         Student student = new Student("4","Bob","C4","10");
         studentService.setStudentInfo(any(Student.class));
@@ -78,6 +89,17 @@ public class StudentControllerTest {
     }
 
     @Test
+    void getStudentsByClassCodeException() throws Exception{
+        when(studentService.getStudentDetailsByClassCode(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student/C4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void searchStudentBYNameSuccessful() throws Exception{
         List<Student> studentList = List.of(new Student("4","Bob","C4","10"));
         when(studentService.getAllStudents()).thenReturn(studentList);
@@ -91,6 +113,17 @@ public class StudentControllerTest {
     }
 
     @Test
+    void searchStudentBYNameBlankStudent() throws Exception{
+        when(studentService.getAllStudents()).thenReturn(new ArrayList<>());
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student/search?studentName=")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
     void getStudentFromRollClassSuccessful() throws Exception {
         Student student = new Student("4","Bob","C4","10");
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
@@ -99,6 +132,17 @@ public class StudentControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getStudentFromRollClassException() throws Exception{
+        when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/10/4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
 }

@@ -43,8 +43,7 @@ public class SubjectControllerTests {
     private ObjectMapper objectMapper;
 
     @Test
-   public void SubjectController_setSubjectDetails_ReturnCreated() throws Exception
-    {
+    public void SubjectController_setSubjectDetails_ReturnCreated() throws Exception {
         Subject sub=new Subject();
         sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
@@ -61,10 +60,9 @@ public class SubjectControllerTests {
 
     }
     @Test
-    public void SubjectController_setSubjectDetails_ReturnException() throws Exception
-    {
+    public void SubjectController_setSubjectDetails_ReturnException() throws Exception {
         Subject sub=new Subject();
-       sub.setClassCode("S-PhC1");
+        sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
         sub.setCredits(10);
         sub.setClassCode("C1");
@@ -80,8 +78,7 @@ public class SubjectControllerTests {
 
     }
     @Test
-    public void SubjectController_setSubjectDetails_ReturnFailed() throws Exception
-    {
+    public void SubjectController_setSubjectDetails_ReturnFailed() throws Exception {
         Subject sub=new Subject(null,null,null,null,null,null);
         ResultActions response=mockMvc.perform(post("/subjects/v1/subject")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -89,8 +86,8 @@ public class SubjectControllerTests {
         );
         response.andExpect(MockMvcResultMatchers.status().is4xxClientError()).andDo(MockMvcResultHandlers.print());
     }
-    @Test public void SubjectController_getAllSubjects_ReturnOk() throws Exception
-    {
+    @Test
+    public void SubjectController_getAllSubjects_ReturnOk() throws Exception {
         Subject sub=new Subject();
         sub.setClassCode("S-PhC1");
         sub.setSubjectName("Physics");
@@ -98,12 +95,14 @@ public class SubjectControllerTests {
         sub.setClassCode("C1");
         sub.setMaxTestMarks(20);
         sub.setMaxExamMarks(80);
-  when(subjectService.getSubjects()).thenReturn(List.of(sub));
-  ResultActions response=mockMvc.perform(get("/subjects/v1/subject")
+        when(subjectService.getSubjects()).thenReturn(List.of(sub));
+        ResultActions response=mockMvc.perform(get("/subjects/v1/subject")
           .contentType(MediaType.APPLICATION_JSON));
-  response.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+        response.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
     }
-    @Test public void SubjectController_getAllSubjects_ReturnFailed() throws Exception
+
+    @Test
+    public void SubjectController_getAllSubjects_ReturnFailed() throws Exception
     {
         when(subjectService.getSubjects()).thenThrow(RuntimeException.class);
         ResultActions response=mockMvc.perform(get("/subjects/v1/subject")
@@ -144,7 +143,7 @@ public class SubjectControllerTests {
         newsub.setClassCode("C1");
         newsub.setMaxTestMarks(20);
         newsub.setMaxExamMarks(80);
-        when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(String.valueOf(newsub));
+        when(subjectService.updateSubject("S-PhC1",newsub)).thenReturn(newsub);
         ResultActions response=mockMvc.perform(put("/subjects/v1/subject/S-PhC1")
                 .contentType(MediaType.APPLICATION_JSON).
                 content(objectMapper.writeValueAsString(newsub)));

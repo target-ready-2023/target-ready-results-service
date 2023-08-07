@@ -85,6 +85,17 @@ public class ClassControllerTest {
     }
 
     @Test
+    void getAllClassDetailsShouldReturnException() throws  Exception{
+        when(classService.getAllClasses()).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH)
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void getClassDetailsByIDShouldReturnClassDto() throws Exception{
         classDto = new ClassDto("C4","4",List.of("Math","Physics","Social"));
         String code="C4";
@@ -106,6 +117,17 @@ public class ClassControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getClassDetailsByIDShouldReturnException() throws Exception{
+        when(classService.getClassLevelById(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
 
@@ -195,6 +217,18 @@ public class ClassControllerTest {
                         .param("className","4"));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getClassDetailsByNameShouldReturnException() throws Exception{
+        when(classService.getClassLeveByName(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("className","4"));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
 

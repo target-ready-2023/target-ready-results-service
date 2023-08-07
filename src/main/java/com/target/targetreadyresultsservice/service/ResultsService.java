@@ -311,7 +311,7 @@ public class ResultsService{
         for (Results r : resultsList) {
             Schedule thisSchedule = scheduleService.getScheduleDetails(r.getScheduleCode());
             //add the internal marks for the subject if schedule type is test
-            if(thisSchedule.getScheduleType().equals("Test") &&
+            if(thisSchedule.getScheduleType().equalsIgnoreCase("Test") &&
                     (r.getStudentId().equals(student.getStudentId()))) {
                 List<Marks> marksList = r.getMarksList();
                 for (Marks m : marksList) {
@@ -447,9 +447,10 @@ public class ResultsService{
             totalPossibleMarks+=sub.getMaxTestMarks()+sub.getMaxExamMarks();
         }
         Double percentage;
-        try{
+        if(totalPossibleMarks!=0){
             percentage = (totalObtainedMarks * 100)/(totalPossibleMarks);
-        }catch (InvalidValueException e){
+        }
+        else{
             log.info("Division by zero is causing the error");
             throw new InvalidValueException("Action failed! Total possible marks for subjects cannot be zero");
         }

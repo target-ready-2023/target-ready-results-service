@@ -29,7 +29,6 @@ public class SubjectServiceTests {
     {
 
         Subject subject=new Subject();
-        //subject.setSubjectCode("S-PhC1");
         subject.setSubjectName("Physics");
         subject.setCredits(5);
         subject.setClassCode("C1");
@@ -125,7 +124,7 @@ public class SubjectServiceTests {
         subject.setMaxTestMarks(15);
         subject.setMaxExamMarks(80);
         when(repository.save(any(Subject.class))).thenReturn(newsubject);
-        assertEquals("Updated Successfully",service.updateSubject("S-PhC1",newsubject));
+        assertEquals(newsubject.toString(),service.updateSubject("S_PhC1",newsubject).toString());
 
     }
     @Test public void testToDeleteSubjectByIdNotFound()
@@ -141,9 +140,9 @@ public class SubjectServiceTests {
         subject.setMaxTestMarks(20);
         subject.setMaxExamMarks(80);
         when(repository.findById(anyString())).thenReturn(Optional.of(subject));
-        String actual=service.deleteSubject("S-PhC1");
-        assertEquals("Deleted Successfully",actual);
-        verify(repository,times(1)).deleteById("S-PhC1");
+        String actual=service.deleteSubject("S_PhC1");
+        assertEquals("S_PhC1",actual);
+        verify(repository,times(1)).deleteById("S_PhC1");
         //assertThrows(RuntimeException.class,()->service.deleteSubject("S-EnC1"));
     }
 }

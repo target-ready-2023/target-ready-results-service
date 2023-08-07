@@ -42,7 +42,7 @@ public class SubjectService {
         return subNames;
     }
 
-    public  Subject addSubject(Subject subject)  {
+    public Subject addSubject(Subject subject)  {
         String code="S_"+subject.getSubjectName().substring(0,2)+subject.getClassCode();
         subject.setSubjectCode(code);
         Optional<Subject> savedSub=subjectRepository.findById(subject.getSubjectCode());
@@ -75,7 +75,7 @@ public class SubjectService {
         return sub;
     }
 
-    public String updateSubject(String subjectCode, Subject subject) {
+    public Subject updateSubject(String subjectCode, Subject subject) {
         Optional<Subject> subject1= subjectRepository.findById(subjectCode);
         if(subject1.isPresent()) {
             log.info("updating subject");
@@ -86,7 +86,7 @@ public class SubjectService {
             sub.setMaxExamMarks(subject.getMaxExamMarks());
             sub.setMaxTestMarks(subject.getMaxTestMarks());
             subjectRepository.save(sub);
-            return "Updated Successfully";
+            return sub;
         }
         else
         {
@@ -100,7 +100,7 @@ public class SubjectService {
         if(subject.isPresent()) {
             log.info("Deleting subject with code "+subjectCode);
             subjectRepository.deleteById(subjectCode);
-            return "Deleted Successfully";
+            return subjectCode;
            }
         else {
             log.info("Could not find the subject with code"+subjectCode);

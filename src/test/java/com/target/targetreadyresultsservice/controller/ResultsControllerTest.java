@@ -7,7 +7,6 @@ import com.target.targetreadyresultsservice.Exception.InvalidValueException;
 import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.Marks;
 import com.target.targetreadyresultsservice.model.Results;
-import com.target.targetreadyresultsservice.model.Student;
 import com.target.targetreadyresultsservice.service.ResultsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,6 +48,7 @@ class ResultsControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    //tests for adding new result
     @Test
     void addResultsSuccessful() throws Exception{
         Results result = new Results("4","TC420JULY2023",
@@ -64,11 +64,25 @@ class ResultsControllerTest {
     }
 
     @Test
-    void addResultsReturnsException() throws Exception{
-        Results result = new Results("","",
+    void addResultsReturnsNotFoundException() throws Exception{
+        Results result = new Results("","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
 
-        when(resultsService.addNewResult(any(Results.class))).thenThrow(BlankValueException.class);
+        when(resultsService.addNewResult(any(Results.class))).thenThrow(NotFoundException.class);
+
+        ResultActions response = mockMvc.perform(post(END_POINT_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(result)));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    void addResultsReturnsInvalidException() throws Exception{
+        Results result = new Results("4","",
+                List.of(new Marks("S999",500,500)));
+
+        when(resultsService.addNewResult(any(Results.class))).thenThrow(InvalidValueException.class);
 
         ResultActions response = mockMvc.perform(post(END_POINT_PATH)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -78,6 +92,22 @@ class ResultsControllerTest {
                 .andDo(MockMvcResultHandlers.print());
     }
 
+    @Test
+    void addResultsReturnsException() throws Exception{
+        Results result = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999",500,500)));
+
+        when(resultsService.addNewResult(any(Results.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(post(END_POINT_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(result)));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    //tests to update result
     @Test
     void updateResult() throws Exception{
         Results result = new Results("4","TC420JULY2023",
@@ -96,12 +126,44 @@ class ResultsControllerTest {
     }
 
     @Test
-    void updateResultReturnsException() throws Exception{
+    void updateResultReturnsBlankValueException() throws Exception{
         Results result = new Results("","",
                 List.of(new Marks("S999",45,0)));
         result.setResultsCode("");
 
         when(resultsService.updateResult(any(String.class),any(Results.class))).thenThrow(BlankValueException.class);
+
+        ResultActions response = mockMvc.perform(put(END_POINT_PATH+"/R4JULY2023")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(result)));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void updateResultReturnsNotFoundException() throws Exception{
+        Results result = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)));
+        result.setResultsCode("R4JULY2023");
+
+        when(resultsService.updateResult(any(String.class),any(Results.class))).thenThrow(NotFoundException.class);
+
+        ResultActions response = mockMvc.perform(put(END_POINT_PATH+"/R4JULY2023")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(result)));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void updateResultReturnsException() throws Exception{
+        Results result = new Results("4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)));
+        result.setResultsCode("R4JULY2023");
+
+        when(resultsService.updateResult(any(String.class),any(Results.class))).thenThrow(RuntimeException.class);
 
         ResultActions response = mockMvc.perform(put(END_POINT_PATH+"/R4JULY2023")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -129,6 +191,17 @@ class ResultsControllerTest {
 
     @Test
     void getStudentResultsReturnsException() throws Exception{
+        when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getStudentResultsReturnsNotFoundException() throws Exception{
         when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(new ArrayList<>());
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
@@ -165,6 +238,17 @@ class ResultsControllerTest {
     }
 
     @Test
+    void getClassResultsReturnsException() throws Exception{
+        when(resultsService.getClassResult(any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classResults?className=4&academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void getClassTestResultsSuccessful() throws Exception{
         Results r = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
@@ -183,6 +267,17 @@ class ResultsControllerTest {
     @Test
     void getClassTestResultsReturnsBlankValueException() throws Exception{
         when(resultsService.getClassTestResults(any(String.class),any(String.class),any(String.class))).thenThrow(BlankValueException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?className=4&academicYear=2023-2024&scheduleName=Class Test 4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getClassTestResultsReturnsException() throws Exception{
+        when(resultsService.getClassTestResults(any(String.class),any(String.class),any(String.class))).thenThrow(RuntimeException.class);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?className=4&academicYear=2023-2024&scheduleName=Class Test 4")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -217,12 +312,18 @@ class ResultsControllerTest {
     }
 
     @Test
-    void getAvgInternalForSubjectSuccessful() throws Exception{
-        Results r = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4JULY2023");
-        List<Results> resultsList = List.of(r);
+    void deleteResultsReturnsException() throws Exception{
+        when(resultsService.deleteResult(any(String.class))).thenThrow(RuntimeException.class);
 
+        ResultActions response = mockMvc.perform(delete(END_POINT_PATH+"/delete/R4JULY2023")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getAvgInternalForSubjectSuccessful() throws Exception{
         when(resultsService.getAverageForSubject(any(String.class),any(String.class),any(String.class),
                 any(String.class))).thenReturn(45.0);
 
@@ -238,6 +339,32 @@ class ResultsControllerTest {
     void getAvgInternalForSubjectReturnsInvalidValueException() throws Exception{
         when(resultsService.getAverageForSubject(any(String.class),any(String.class),any(String.class),
                 any(String.class))).thenThrow(InvalidValueException.class);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/avgInternal?rollNumber=4&className=4" +
+                "&acYear=2023-2024&subjectCode=S999")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    void getAvgInternalForSubjectReturnsNotFoundException() throws Exception{
+        when(resultsService.getAverageForSubject(any(String.class),any(String.class),any(String.class),
+                any(String.class))).thenThrow(NotFoundException.class);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/avgInternal?rollNumber=4&className=4" +
+                "&acYear=2023-2024&subjectCode=S999")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+
+    }
+
+    @Test
+    void getAvgInternalForSubjectReturnsException() throws Exception{
+        when(resultsService.getAverageForSubject(any(String.class),any(String.class),any(String.class),
+                any(String.class))).thenThrow(RuntimeException.class);
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/avgInternal?rollNumber=4&className=4" +
                 "&acYear=2023-2024&subjectCode=S999")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -277,6 +404,19 @@ class ResultsControllerTest {
     }
 
     @Test
+    void getStudentTestResultReturnsException() throws Exception{
+        when(resultsService.getStudentTestResult(any(String.class),any(String.class),
+                any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/studentTestResult?className=4" +
+                "&academicYear=2023-2024&scheduleName=TC420JULY2023&rollNumber=4")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void getLeaderboardSuccessful() throws Exception{
         List<StudentDto> studentDtoList = List.of(new StudentDto("8","C4","15","Carl",100.0),
                 new StudentDto("6","C4","12","Ann",93.0),
@@ -292,5 +432,71 @@ class ResultsControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
 
+    }
+
+    @Test
+    void getLeaderboardReturnsNotFoundException() throws Exception{
+        when(resultsService.getLeaderboard(any(String.class),any(String.class))).thenThrow(NotFoundException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/leaderboard?className=4&academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getLeaderboardReturnsException() throws Exception{
+        when(resultsService.getLeaderboard(any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/leaderboard?className=4&academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getResultPercentageOfStudentSuccessful() throws Exception{
+        when(resultsService.getResultPercentage(any(String.class),any(String.class),any(String.class))).thenReturn(45.0);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/percentage?rollNumber=10&className=4&acYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getResultPercentageOfStudentReturnsNotFound() throws Exception{
+        when(resultsService.getResultPercentage(any(String.class),any(String.class),any(String.class))).thenThrow(NotFoundException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/percentage?rollNumber=10&className=4&acYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getResultPercentageOfStudentReturnsInvalidValue() throws Exception{
+        when(resultsService.getResultPercentage(any(String.class),any(String.class),any(String.class))).thenThrow(InvalidValueException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/percentage?rollNumber=10&className=4&acYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getResultPercentageOfStudentReturnsException() throws Exception{
+        when(resultsService.getResultPercentage(any(String.class),any(String.class),any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/percentage?rollNumber=10&className=4&acYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
     }
 }
