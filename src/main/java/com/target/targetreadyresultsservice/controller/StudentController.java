@@ -58,12 +58,18 @@ public class StudentController {
     public ResponseEntity<List<Student>> getStudentsByClassCode(@PathVariable String classCode){
         try{
             List<Student> students=studentService.getStudentDetailsByClassCode(classCode);
-            return new ResponseEntity(students,HttpStatus.OK);
+            if ((students != null) && !(students.toString().isEmpty())) {
+                log.info("students found successfully as - {}",students);
+                return new ResponseEntity<>(students, HttpStatus.OK);
+            }
+            else{
+                log.info("No classes found");
+                return new ResponseEntity(students, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
         }
-        catch(Exception e){
-            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-
     }
     @GetMapping("/student/search")
     public ResponseEntity<List<ClassDto>> SearchStudentBYName(@RequestParam(required = false) String studentName){

@@ -123,6 +123,16 @@ public class SubjectService {
                 }
            return subjects;
     }
+
+    public List<Subject> getSubjectsObjectGivenClassCode(String code) {
+        List<Subject> subInfo = subjectRepository.findByClassCode(code);
+        log.info("fetching all the subjects with class Code {}",code);
+        if(subInfo.isEmpty())
+        {
+            return null;
+        }
+        return subInfo;
+    }
 }
 
 

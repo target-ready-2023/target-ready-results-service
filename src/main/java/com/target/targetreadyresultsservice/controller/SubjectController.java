@@ -66,6 +66,26 @@ public class SubjectController {
         }
     }
 
+    @GetMapping("/subject/class/{classCode}")
+    public ResponseEntity<List<Subject>> getSubjectsGivenClassCode(@PathVariable String classCode){
+        try {
+            List<Subject> subjects = subjectService.getSubjectsObjectGivenClassCode(classCode);
+
+            if ((subjects != null) && !(subjects.toString().isEmpty())) {
+                log.info("subjects found successfully with class code- {}",classCode);
+                return new ResponseEntity<>(subjects, HttpStatus.OK);
+            }
+            else{
+                log.info("No subjects found");
+                return new ResponseEntity(subjects, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
+        }
+
+    }
+
 
     @PutMapping("/subject/{subjectCode}")
     public ResponseEntity<Subject> updateSubjectById(@PathVariable("subjectCode") String subjectCode,@RequestBody Subject subject)  {
