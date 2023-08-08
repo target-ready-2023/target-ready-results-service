@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.service;
 
+import com.target.targetreadyresultsservice.ConstantConfig.DateTimeConfig;
 import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
@@ -12,7 +13,6 @@ import com.target.targetreadyresultsservice.repository.ScheduleRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -31,18 +31,6 @@ public class ScheduleService {
     private final ClassService classService;
     @Autowired
     private final SubjectService subjectService;
-
-    @Value("${app.dayBeforeAcStart}")
-    private int dayBeforeAcStart;
-
-    @Value("${app.monthBeforeAcStart}")
-    private int monthBeforeAcStart;
-
-    @Value("${app.dayAfterAcEnd}")
-    private int dayAfterAcEnd;
-
-    @Value("${app.monthAfterAcEnd}")
-    private int monthAfterAcEnd;
 
     public ScheduleService(ScheduleRepository scheduleRepository, ClassService classService, SubjectService subjectService) {
         this.scheduleRepository = scheduleRepository;
@@ -116,13 +104,17 @@ public class ScheduleService {
         String year = String.valueOf(date.getYear());
 
         //an academic year is from 1st June of a year to 31st March of the next year
+        log.info("Month before acYear start - {}",DateTimeConfig.MONTH_BEFORE_AC_START);
+        log.info("Day before acYEar start - {}",DateTimeConfig.DAY_BEFORE_AC_START);
+        log.info("Month after acYear end - {}",DateTimeConfig.MONTH_AFTER_AC_END);
+        log.info("Day after acYear end - {}",DateTimeConfig.DAY_AFTER_AC_END);
 
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year), monthBeforeAcStart, dayBeforeAcStart)) &&
-        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, monthAfterAcEnd, dayAfterAcEnd))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_BEFORE_AC_START,DateTimeConfig.DAY_BEFORE_AC_START)) &&
+        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
             return year + "-" + Integer.toString(Integer.parseInt(year)+1);
         }
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, monthBeforeAcStart, dayBeforeAcStart)) &&
-                date.isBefore(LocalDate.of(Integer.parseInt(year), monthAfterAcEnd, dayAfterAcEnd))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, DateTimeConfig.MONTH_BEFORE_AC_START, DateTimeConfig.DAY_BEFORE_AC_START)) &&
+                date.isBefore(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
             return Integer.parseInt(year)-1 +"-"+year;
         }
         log.info("Invalid date for exam provided. Cannot find the academic year");
@@ -239,9 +231,22 @@ public class ScheduleService {
                 log.info("Time is not provided");
                 throw new BlankValueException("Please enter a time");
             }
-            if(!(s.getTime().isAfter(LocalTime.of(9,0)) && s.getTime().isBefore(LocalTime.of(16,0)) )){
+
+            log.info("Day start time hour - {}",DateTimeConfig.HOUR_BEFORE_DAY_START);
+            log.info("Day start time minute - {}",DateTimeConfig.MINUTE_BEFORE_DAY_START);
+            log.info("Day end time hour - {}",DateTimeConfig.HOUR_AFTER_DAY_END);
+            log.info("Day end time minute - {}",DateTimeConfig.MINUTE_AFTER_DAY_END);
+
+            if(!(s.getTime().isAfter(LocalTime.of(DateTimeConfig.HOUR_BEFORE_DAY_START,
+                    DateTimeConfig.MINUTE_BEFORE_DAY_START)) &&
+                    s.getTime().isBefore(LocalTime.of(DateTimeConfig.HOUR_AFTER_DAY_END,
+                            DateTimeConfig.MINUTE_AFTER_DAY_END)))){
                 log.info("Time provided is not a working time for school");
-                throw new InvalidValueException("Please enter a time between 9AM and 4PM");
+                throw new InvalidValueException("Please enter a time between "+
+                        LocalTime.of(DateTimeConfig.HOUR_BEFORE_DAY_START,
+                                DateTimeConfig.MINUTE_BEFORE_DAY_START) +
+                        " and "+ LocalTime.of(DateTimeConfig.HOUR_AFTER_DAY_END,
+                        DateTimeConfig.MINUTE_AFTER_DAY_END));
             }
         }
     }
