@@ -155,7 +155,7 @@ public class ResultsController {
         }
     }
 
-    //get the result percentage of a student in an academic year
+    //get the final exam result percentage of a student in an academic year
     @GetMapping("/percentage")
     public ResponseEntity<Double> getResultPercentageOfStudent(
             @RequestParam("rollNumber") String rollNumber,
@@ -237,8 +237,8 @@ public class ResultsController {
     ){
         try{
             List<StudentDto> rankList = resultsService.getLeaderboard(className,acYear);
-        log.info("Rank List with top 5 retrieved successfully - {}",rankList);
-        return new ResponseEntity<>(rankList,HttpStatus.OK);
+            log.info("Rank List with top 5 retrieved successfully - {}",rankList);
+            return new ResponseEntity<>(rankList,HttpStatus.OK);
         } catch(NotFoundException e){
             log.info("Exception occurred - NotFoundException - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);

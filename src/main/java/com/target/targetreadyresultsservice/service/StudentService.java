@@ -50,7 +50,8 @@ public class StudentService {
         List<Student> students=studentRepository.findByClassCode(classCode);
         if(students.isEmpty())
         {
-            throw new RuntimeException("No student present in the class with the class code: "+classCode);
+           log.info("No student present in the class with the class code: {}",classCode);
+           return null;
         }
         return students;
     }

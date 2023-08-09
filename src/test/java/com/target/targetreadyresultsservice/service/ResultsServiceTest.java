@@ -77,7 +77,7 @@ class ResultsServiceTest {
 
         Results expected = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
-        expected.setResultsCode("R420JULY2023");
+        expected.setResultsCode("R4TC420JULY2023");
 
         when(resultsRepository.save(any(Results.class))).thenReturn(result);
 
@@ -115,7 +115,7 @@ class ResultsServiceTest {
 
         Results expected = new Results("4","EC420JULY2023",
                 List.of(new Marks("S999",0.0,90.0)));
-        expected.setResultsCode("R420JULY2023");
+        expected.setResultsCode("R4EC420JULY2023");
 
         when(resultsRepository.save(any(Results.class))).thenReturn(result);
 
@@ -247,7 +247,7 @@ class ResultsServiceTest {
 
         when(resultsRepository.save(any(Results.class))).thenReturn(update);
 
-        Optional<Results> actual = resultsService.updateResult("R4JULY2023",update);
+        Optional<Results> actual = resultsService.updateResult("R4TC420JULY2023",update);
 
         assertEquals(expected.toString(),actual.toString());
     }
@@ -288,7 +288,7 @@ class ResultsServiceTest {
 
         when(resultsRepository.save(any(Results.class))).thenReturn(update);
 
-        Optional<Results> actual = resultsService.updateResult("R4JULY2023",update);
+        Optional<Results> actual = resultsService.updateResult("R4EC420JULY2023",update);
 
         assertEquals(expected.toString(),actual.toString());
     }
@@ -323,7 +323,7 @@ class ResultsServiceTest {
         Results update = new Results("4","EC420JULY2023",
                 List.of(new Marks("S999",0,80)));
 
-        assertThrows(InvalidValueException.class,()->resultsService.updateResult("R4JULY2023",update));
+        assertThrows(InvalidValueException.class,()->resultsService.updateResult("R4EC420JULY2023",update));
     }
 
     @Test
@@ -356,7 +356,7 @@ class ResultsServiceTest {
         Results update = new Results("4","EC420JULY2023",
                 Collections.EMPTY_LIST);
 
-        assertThrows(BlankValueException.class,()->resultsService.updateResult("R4JULY2023",update));
+        assertThrows(BlankValueException.class,()->resultsService.updateResult("R4EC420JULY2023",update));
     }
 
     @Test
@@ -394,7 +394,7 @@ class ResultsServiceTest {
         Results update = new Results("4","EC420JULY2023",
                 List.of(new Marks("S999",45,0)));
 
-        assertThrows(InvalidValueException.class,()->resultsService.updateResult("R4JULY2023",update));
+        assertThrows(InvalidValueException.class,()->resultsService.updateResult("R4EC420JULY2023",update));
     }
 
     @Test

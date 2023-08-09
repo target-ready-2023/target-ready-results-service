@@ -38,11 +38,11 @@ public class ClassController {
             }
             else{
                 log.info("No classes found");
-                return new ResponseEntity("Data not found", HttpStatus.NOT_FOUND);
+                return new ResponseEntity(classes, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             log.info("Exception occurred - {}",e.getMessage());
-            return new ResponseEntity("Error occurred during fetch", HttpStatus.EXPECTATION_FAILED);
+            return new ResponseEntity(HttpStatus.EXPECTATION_FAILED);
         }
     }
 

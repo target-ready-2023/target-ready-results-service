@@ -140,19 +140,15 @@ public class ResultsService{
             throw new BlankValueException("Action failed! \n" +
                     "Please provide marks for all the subjects in the schedule");
         }
-        result.setResultsCode(addResultCode(result.getStudentId(),schedule.getSubjectSchedule()));
+        result.setResultsCode(addResultCode(result.getStudentId(),schedule.getScheduleCode()));
         resultsRepository.save(result);
         log.info("Result added successfully");
         return result;
     }
 
     //create result code
-    private String addResultCode(String studentId, List<SubjectSchedule> subjectScheduleList) {
-        LocalDate date = subjectScheduleList.get(0).getDate();
-        String day = String.valueOf(date.getDayOfMonth());
-        String month = String.valueOf(date.getMonth());
-        String year = String.valueOf(date.getYear());
-        return "R"+studentId+day+month+year;
+    private String addResultCode(String studentId, String scheduleCode) {
+        return "R"+studentId+scheduleCode;
     }
 
     //update result for a student

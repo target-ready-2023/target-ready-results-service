@@ -13,7 +13,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -23,6 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.linesOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -36,6 +42,7 @@ class ScheduleServiceTest {
     private ClassService classService;
     private SubjectService subjectService;
     private Schedule schedule;
+
     @BeforeEach
     void setUp() {
         scheduleRepository = mock(ScheduleRepository.class);
@@ -44,6 +51,8 @@ class ScheduleServiceTest {
         scheduleService = new ScheduleService(scheduleRepository, classService, subjectService);
     }
 
+    private static final Logger log = LoggerFactory.getLogger(ScheduleServiceTest.class);
+
     @Test
     void addNewScheduleSuccess1() {
 
@@ -51,7 +60,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00),true));
+                LocalTime.of(10,30),true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
@@ -75,6 +84,7 @@ class ScheduleServiceTest {
         when(scheduleRepository.save(any(Schedule.class))).thenReturn(schedule);
 
         String actual = scheduleService.addNewSchedule(schedule).toString();
+        log.info("the actual value is  -{} ",actual);
 
         assertEquals(expected,actual);
     }
@@ -86,7 +96,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,2,10),
-                LocalTime.of(10,00),true));
+                LocalTime.of(10,0),true));
 
         schedule.setScheduleName("model exam");
         schedule.setScheduleType("exam");
@@ -120,7 +130,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,4,10),
-                LocalTime.of(10,00),true));
+                LocalTime.of(10,0),true));
 
         schedule.setScheduleName("Class Test 1");
         schedule.setScheduleType("Test");
@@ -149,7 +159,7 @@ class ScheduleServiceTest {
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,10),
-                LocalTime.of(10,00), true));
+                LocalTime.of(10,0), true));
 
         schedule.setScheduleName(" ");
         schedule.setScheduleType("Test");
