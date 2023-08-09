@@ -58,7 +58,7 @@ public class ResultsService{
             log.info("Class not found. Throws NotFoundException");
             throw new NotFoundException("Class not found");
         }
-        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){
             log.info("No schedules found for this class. Throws NotFoundException");
             throw new NotFoundException("No schedules found for this class.");
@@ -347,7 +347,7 @@ public class ResultsService{
             log.info("No class found for the class name - {}. Throws InvalidValueException",className);
             throw new InvalidValueException("Invalid Class Provided. Please enter a valid Class");
         }
-        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){
             throw new NotFoundException("No schedules found for this class");
         }

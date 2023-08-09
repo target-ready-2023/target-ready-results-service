@@ -3,7 +3,7 @@ package com.target.targetreadyresultsservice.Dto;
 public class ResultsDto {
     public String resultsCode;
 
-    public String stuentId;
+    public String studentId;
 
     public String scheduleCode;
 
@@ -21,12 +21,12 @@ public class ResultsDto {
         this.resultsCode = resultsCode;
     }
 
-    public String getStuentId() {
-        return stuentId;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setStuentId(String stuentId) {
-        this.stuentId = stuentId;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 
     public String getScheduleCode() {
@@ -61,9 +61,9 @@ public class ResultsDto {
         this.totalPercentage = totalPercentage;
     }
 
-    public ResultsDto(String resultsCode, String stuentId, String scheduleCode, String markList, Double totalMarks, Double totalPercentage) {
+    public ResultsDto(String resultsCode, String studentId, String scheduleCode, String markList, Double totalMarks, Double totalPercentage) {
         this.resultsCode = resultsCode;
-        this.stuentId = stuentId;
+        this.studentId = studentId;
         this.scheduleCode = scheduleCode;
         this.markList = markList;
         this.totalMarks = totalMarks;

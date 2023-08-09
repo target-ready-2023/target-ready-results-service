@@ -9,8 +9,6 @@ import com.target.targetreadyresultsservice.model.*;
 import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -46,7 +44,6 @@ class ResultsServiceTest {
         resultsService = new ResultsService(resultsRepository,studentService,
                 scheduleService, classService,subjectService);
     }
-    private static final Logger log = LoggerFactory.getLogger(ResultsServiceTest.class);
 
     @Test
     void addNewResultTestSuccess() {
@@ -550,7 +547,7 @@ class ResultsServiceTest {
                 new Schedule("EC420JULY2022","C4",subjectScheduleList,
                         "exam","model exam","2022-2024",false));
 
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(schedule);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
                 List.of(new Marks("S999", 45, 0))));
@@ -577,7 +574,7 @@ class ResultsServiceTest {
     @Test
     void getClassResultWithNoSchedules() {
         when(classService.getClassCodeFromName(any(String.class))).thenReturn("C4");
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(new ArrayList<>());
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(new ArrayList<>());
 
         assertThrows(NotFoundException.class,()->resultsService.getClassResult("C4","2023-2024"));
     }
@@ -601,7 +598,7 @@ class ResultsServiceTest {
                 new Schedule("EC420JULY2022","C4",subjectScheduleList,
                         "Test","Class Test 1","2022-2024",false));
 
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(schedule);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(new ArrayList<>());
 
@@ -646,7 +643,7 @@ class ResultsServiceTest {
 
         List<Schedule> schedule = List.of(s1,s2);
 
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(schedule);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
                 List.of(new Marks("S999", 45, 0))),
@@ -703,7 +700,7 @@ class ResultsServiceTest {
 
         List<Schedule> schedule = List.of(s1,s2);
 
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(schedule);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         List<Results> resultsList = List.of(new Results("2","EC420JULY2023",
                         List.of(new Marks("S999", 45, 67))),
@@ -733,7 +730,7 @@ class ResultsServiceTest {
                 "Test","Class Test 2","2023-2024",false);
 
         List<Schedule> scheduleList = List.of(s1,s2);
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(scheduleList);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(scheduleList);
 
         Results r1 = new Results("2","TC420JULY2023",
                 List.of(new Marks("S999", 45, 0)));
@@ -776,7 +773,7 @@ class ResultsServiceTest {
         ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
         when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
 
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(new ArrayList<>());
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(new ArrayList<>());
         assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("4",
                 "2023-2024","Test 1"));
     }
@@ -796,7 +793,7 @@ class ResultsServiceTest {
                 "Test","Class Test 2","2023-2024",false);
 
         List<Schedule> scheduleList = List.of(s1,s2);
-        when(scheduleService.getScheduleByClass(any(String.class))).thenReturn(scheduleList);
+        when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(scheduleList);
 
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(new ArrayList<>());
         assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("4",

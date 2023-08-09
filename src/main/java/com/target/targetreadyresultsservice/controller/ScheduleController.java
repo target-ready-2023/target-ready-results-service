@@ -53,6 +53,30 @@ public class ScheduleController {
         }
     }
 
+    //get all schedules by academic year
+    @GetMapping("/year")
+    public ResponseEntity<List<Schedule>> getAllScheduleByAcYear(
+            @RequestParam("acYear") String acYear
+    ){
+        try{
+            List<Schedule> scheduleList = scheduleService.getScheduleByYear(acYear);
+            if(scheduleList.isEmpty()){
+                throw new NotFoundException("No schedules found");
+            }
+            log.info("All schedules for the academic year - {} retrieved successfully as - {}",acYear,scheduleList);
+            return new ResponseEntity<>(scheduleList, HttpStatus.OK);
+        } catch (NotFoundException e){
+            log.info("exception occurred - NotFoundException {}", e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (NullValueException | BlankValueException e){
+            log.info("exception occurred due to values provided - {}", e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        } catch (Exception e){
+            log.info("exception occurred {}", e.getMessage());
+            return new ResponseEntity("Action failed",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
     //get schedule by scheduleCode
     @GetMapping("/{scheduleCode}")
     public ResponseEntity<Schedule> getSchedule(
@@ -73,13 +97,14 @@ public class ScheduleController {
         }
     }
 
-    //get active schedule by classCode
-    @GetMapping("/{classCode}/active")
+    //get active schedule by classCode in an academic year
+    @GetMapping("/{classCode}/{acYear}/active")
     public ResponseEntity<List<Schedule>> getActiveSchedule(
-               @PathVariable String classCode
+               @PathVariable String classCode,
+               @PathVariable String acYear
        ){
         try{
-            List<Schedule> activeScheduleList = scheduleService.getActiveSchedule(classCode);
+            List<Schedule> activeScheduleList = scheduleService.getActiveSchedule(classCode,acYear);
             log.info("Active schedules for a class retrieved successfully - {}",activeScheduleList);
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
@@ -93,11 +118,14 @@ public class ScheduleController {
         }
     }
 
-    //get all schedules by classCode (includes both active and inactive)
-    @GetMapping("/{classCode}/all")
-    public ResponseEntity<List<Schedule>> getScheduleByClass(@PathVariable String classCode){
+    //get all schedules by classCode in an academic year(includes both active and inactive)
+    @GetMapping("/{classCode}/{acYear}/all")
+    public ResponseEntity<List<Schedule>> getScheduleByClass(
+            @PathVariable String classCode,
+            @PathVariable String acYear
+    ){
         try{
-            List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+            List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
             log.info("schedule list retrieved successfully - {}",scheduleList);
             return new ResponseEntity<>(scheduleList,HttpStatus.OK);
         }
