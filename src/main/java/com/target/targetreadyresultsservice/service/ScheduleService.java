@@ -361,4 +361,22 @@ public class ScheduleService {
         log.info("Schedule list for the academic year - {} found as - {}",acYear,scheduleList);
         return scheduleList;
     }
+
+    //get list of acYears for a class
+    public List<String> getScheduleAcYearsForClass(String classCode) {
+        List<String> acYears = new ArrayList<>();
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        log.info("scheduleList found as  - {}",scheduleList);
+        for (Schedule s : scheduleList) {
+            if(!acYears.contains(s.getYear())){
+                acYears.add(s.getYear());
+            }
+        }
+        if(acYears.isEmpty()){
+            log.info("acYears not found");
+            throw new NotFoundException("No schedules found");
+        }
+        log.info("acYears found as - {}",acYears);
+        return acYears;
+    }
 }

@@ -239,4 +239,24 @@ public class ScheduleController {
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
+
+    //get the list of acYears for a class
+    @GetMapping("/{classCode}/acYears")
+    public ResponseEntity<List<String>> getScheduleAcYearsForClass(@PathVariable String classCode){
+        try{
+            List<String> acYears = scheduleService.getScheduleAcYearsForClass(classCode);
+            if(acYears.isEmpty()){
+                log.info("acYears is empty - Throws NotFoundException");
+                throw new NotFoundException("No schedules found for the given class");
+            }
+            log.info("acYears found as - {}",acYears);
+            return new ResponseEntity<>(acYears,HttpStatus.OK);
+        }catch (NotFoundException e){
+            log.info("acYears not found - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
 }
