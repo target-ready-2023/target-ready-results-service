@@ -254,7 +254,11 @@ public class ScheduleController {
         }catch (NotFoundException e){
             log.info("acYears not found - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        }catch (BlankValueException e){
+            log.info("Exception due to the values provided - Throws BlankValueException");
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        }
+        catch (Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
