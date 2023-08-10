@@ -56,12 +56,12 @@ public class ResultsController {
     //get class results for a particular test (only tests, not exams or final exams)
     @GetMapping("/classTest")
     public ResponseEntity<List<Results>> getClassTestResults(
-            @RequestParam("className") String className,
+            @RequestParam("classCode") String classCode,
             @RequestParam("academicYear") String acYear,
-             @RequestParam("scheduleName") String scName
+             @RequestParam("scheduleCode") String scCode
     ){
         try{
-            List<Results> classTestResults = resultsService.getClassTestResults(className, acYear,scName);
+            List<Results> classTestResults = resultsService.getClassTestResults(classCode, acYear,scCode);
             log.info("Class test results retrieved successfully - {}",classTestResults);
             return new ResponseEntity<>(classTestResults,HttpStatus.OK);
         }

@@ -574,4 +574,30 @@ class ScheduleServiceTest {
     void getScheduleByYearNullAcYear() {
         assertThrows(NullValueException.class,()->scheduleService.getScheduleByYear(null));
     }
+
+    @Test
+    void getScheduleAcYearsForClassSuccess() {
+        List<Schedule> schedules = new ArrayList<>();
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023,7,20),
+                LocalTime.of(10,00), false));
+        schedules.add(new Schedule("TC9910JULY2023","C99",subjectScheduleList,
+                "Test","Class Test 1","2023-2024",false));
+        when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(schedules);
+
+        List<String> expected = List.of("2023-2024");
+        List<String> actual = scheduleService.getScheduleAcYearsForClass("C99");
+        assertEquals(expected,actual);
+    }
+
+    @Test
+    void getScheduleAcYearsForClassEmpty() {
+        when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class, () -> scheduleService.getScheduleAcYearsForClass("C99"));
+    }
+
+    @Test
+    void getScheduleAcYearsForClassBlank() {
+        assertThrows(BlankValueException.class, () -> scheduleService.getScheduleAcYearsForClass(" "));
+    }
 }

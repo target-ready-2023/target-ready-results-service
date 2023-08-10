@@ -477,4 +477,48 @@ public class ScheduleControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    void getScheduleAcYearsForClassSuccessful() throws Exception{
+        when(scheduleService.getScheduleAcYearsForClass(any(String.class))).thenReturn(List.of("2023-204"));
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C11/acYears")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleAcYearsForClassNotFound() throws Exception{
+        when(scheduleService.getScheduleAcYearsForClass(any(String.class))).thenReturn(new ArrayList<>());
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C11/acYears")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleAcYearsForClassBlank() throws Exception{
+        when(scheduleService.getScheduleAcYearsForClass(any(String.class))).thenThrow(BlankValueException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/ /acYears")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleAcYearsForClassException() throws Exception{
+        when(scheduleService.getScheduleAcYearsForClass(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C11/acYears")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

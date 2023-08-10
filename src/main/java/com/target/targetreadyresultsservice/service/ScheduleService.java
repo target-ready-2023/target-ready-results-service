@@ -364,8 +364,16 @@ public class ScheduleService {
 
     //get list of acYears for a class
     public List<String> getScheduleAcYearsForClass(String classCode) {
+        if(classCode.isBlank()){
+            log.info("Class code is blank. throws BlankValueException");
+            throw new BlankValueException("Please provide a class code");
+        }
         List<String> acYears = new ArrayList<>();
         List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        if(scheduleList.isEmpty()){
+            log.info("No schedules found for - {}",classCode);
+            throw new NotFoundException("No schedules found for this class");
+        }
         log.info("scheduleList found as  - {}",scheduleList);
         for (Schedule s : scheduleList) {
             if(!acYears.contains(s.getYear())){

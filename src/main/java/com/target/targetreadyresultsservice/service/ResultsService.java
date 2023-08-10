@@ -329,8 +329,8 @@ public class ResultsService{
     }
 
     //get result for a given schedule in a class for an academic year
-    public List<Results> getClassTestResults(String className, String acYear, String scName) {
-        if (className.isBlank()) {
+    public List<Results> getClassTestResults(String classCode, String acYear, String scCode) {
+        if (classCode.isBlank()) {
             log.info("No class name provided. Throws BlankValueException");
             throw new BlankValueException("Please enter a Class Name");
         }
@@ -338,14 +338,9 @@ public class ResultsService{
             log.info("No academic year provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Academic Year");
         }
-        if (scName.isBlank()) {
+        if (scCode.isBlank()) {
             log.info("No schedule name provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Schedule Name");
-        }
-        String classCode = classService.getClassCodeFromName(className);
-        if (classCode.isBlank() || classCode.isEmpty()) {
-            log.info("No class found for the class name - {}. Throws InvalidValueException",className);
-            throw new InvalidValueException("Invalid Class Provided. Please enter a valid Class");
         }
         List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){
@@ -354,10 +349,9 @@ public class ResultsService{
         log.info("Schedule list found as - {}",scheduleList);
         List<Results> classTestResultList = new ArrayList<>();
         for (Schedule sc : scheduleList) {
-            if (sc.getYear().equals(acYear) && sc.getScheduleName().equals(scName)) {
-                String schedule = sc.getScheduleCode();
-                log.info("The schedule code found (inside loop) is - {}",schedule);
-                 classTestResultList =resultsRepository.findAllByscheduleCode(schedule);
+            if (sc.getScheduleCode().equals(scCode)) {
+                log.info("The schedule code found (inside loop) is - {}",sc);
+                 classTestResultList =resultsRepository.findAllByscheduleCode(sc.getScheduleCode());
             }
         }
         if (classTestResultList.isEmpty()) {
