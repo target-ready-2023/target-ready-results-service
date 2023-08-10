@@ -551,7 +551,9 @@ public class ResultsService{
         }
         Collections.sort(studentMarkList,Collections.reverseOrder());
         log.info("Top 5 students found as - {}",studentMarkList.subList(0,5));
-        return studentMarkList.subList(0,5);
+        if(studentMarkList.size()>5)
+            return studentMarkList.subList(0,5);
+        else return studentMarkList;
     }
 
     public List<StudentDto> getToppersList(String acYear) {
