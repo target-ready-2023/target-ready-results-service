@@ -1,5 +1,6 @@
 package com.target.targetreadyresultsservice.controller;
 
+import com.target.targetreadyresultsservice.Dto.ResultsDto;
 import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
@@ -32,13 +33,13 @@ public class ResultsController {
 
     //get class results of an academic year NOTE: acYear configured in DateTimeConfig
     @GetMapping("/classResults")
-    public ResponseEntity<List<Results>> getClassResults(
+    public ResponseEntity<List<ResultsDto>> getClassResults(
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear
 
     ){
         try{
-            List<Results> classResults = resultsService.getClassResult(className, acYear);
+            List<ResultsDto> classResults = resultsService.getClassResult(className, acYear);
             log.info("Class Results retrieved successfully - {}",classResults);
             return new ResponseEntity<>(classResults,HttpStatus.OK);
         }
@@ -54,14 +55,15 @@ public class ResultsController {
 
 
     //get class results for a particular test (only tests, not exams or final exams)
+
     @GetMapping("/classTest")
-    public ResponseEntity<List<Results>> getClassTestResults(
+    public ResponseEntity<List<ResultsDto>> getClassTestResults(
             @RequestParam("classCode") String classCode,
             @RequestParam("academicYear") String acYear,
              @RequestParam("scheduleCode") String scCode
     ){
         try{
-            List<Results> classTestResults = resultsService.getClassTestResults(classCode, acYear,scCode);
+            List<ResultsDto> classTestResults = resultsService.getClassTestResults(classCode, acYear,scCode);
             log.info("Class test results retrieved successfully - {}",classTestResults);
             return new ResponseEntity<>(classTestResults,HttpStatus.OK);
         }
@@ -181,13 +183,13 @@ public class ResultsController {
 
     //get all results of one student for an academic year (including all tests, exams and final exam)
     @GetMapping("/student")
-    public ResponseEntity<List<Results>> getStudentResults(
+    public ResponseEntity<List<ResultsDto>> getStudentResults(
             @RequestParam("rollNumber") String rollNumber,
             @RequestParam("className") String className,
-            @RequestParam("acYear") String acYear
+            @RequestParam("academicYear") String acYear
             ){
         try{
-            List<Results> resultsList = resultsService.getStudentResult(rollNumber,className,acYear);
+            List<ResultsDto> resultsList = resultsService.getStudentResult(rollNumber,className,acYear);
             if(resultsList.isEmpty()){
                 throw new NotFoundException("No results found");
             }
@@ -205,14 +207,14 @@ public class ResultsController {
 
     //get student results for one test/exam or final exam
     @GetMapping("/studentTestResult")
-    public ResponseEntity<Results> getStudentTestResult(
+    public ResponseEntity<ResultsDto> getStudentTestResult(
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear,
             @RequestParam("scheduleName") String scName,
             @RequestParam("rollNumber")  String rollNo
     ){
         try{
-            Results studentResult = resultsService.getStudentTestResult(className,acYear,scName, rollNo);
+            ResultsDto studentResult = resultsService.getStudentTestResult(className,acYear,scName, rollNo);
             if(studentResult==null){
                 throw new NotFoundException("No results Found");
             }
