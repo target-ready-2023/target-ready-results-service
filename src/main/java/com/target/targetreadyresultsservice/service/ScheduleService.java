@@ -52,7 +52,21 @@ public class ScheduleService {
             log.info("No class code provided - Throws BlankValueException");
             throw new BlankValueException("Please provide a class code");
         }
-        List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        if(scheduleList.isEmpty()){
+            log.info("No schedules found for the class - {}",classCode);
+            throw new NotFoundException("No schedules found for the given class");
+        }
+        log.info("scheduleList found as  - {}",scheduleList);
+        LocalDate date = LocalDate.now();
+        String currentAcYear = findScheduleYear(date);
+        log.info("Current AcYear found as - {}",currentAcYear);
+        List<Schedule> activeList = new ArrayList<>();
+        for (Schedule s : scheduleList) {
+            if(s.getYear().equals(currentAcYear)){
+                activeList.add(s);
+            }
+        }
         activeList.removeIf(s -> !s.getScheduleStatus());
         if(activeList.isEmpty()){
             log.info("Exception occurred - activeList is empty and throws NullValueException");
