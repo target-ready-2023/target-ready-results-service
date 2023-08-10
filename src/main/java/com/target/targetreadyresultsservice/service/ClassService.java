@@ -8,9 +8,12 @@ import com.target.targetreadyresultsservice.repository.ClassRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -35,12 +38,33 @@ public class ClassService {
                 ClassDto classInfo = new ClassDto(level.getCode(), level.getName(), subjects);
                 classes.add(classInfo);
             }
+            Collections.sort(classes, new Comparator<ClassDto>() {
+                @Override
+                public int compare(ClassDto o1, ClassDto o2) {
+                    String s1=o1.getName();
+                    String s2=o2.getName();
+
+                    boolean isNumeric1 = s1.matches("\\d+");
+                    boolean isNumeric2 = s2.matches("\\d+");
+
+                    if (isNumeric1 && isNumeric2) {
+                        int num1 = Integer.parseInt(s1);
+                        int num2 = Integer.parseInt(s2);
+                        return Integer.compare(num1, num2);
+                    } else if (isNumeric1) {
+                        return -1;
+                    } else if (isNumeric2) {
+                        return 1;
+                    } else {
+                        return s1.compareToIgnoreCase(s2);
+                    }
+                }
+            });
             return classes;
         }
         else{
             return null;
         }
-
     }
 
     public ClassDto getClassLevelById(String code){
