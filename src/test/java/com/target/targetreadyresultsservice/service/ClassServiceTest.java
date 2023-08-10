@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.repository.ClassRepository;
 

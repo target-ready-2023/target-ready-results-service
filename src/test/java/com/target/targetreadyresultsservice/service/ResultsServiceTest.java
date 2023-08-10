@@ -717,9 +717,6 @@ class ResultsServiceTest {
 
     @Test
     void getClassTestResultsSuccessful() {
-        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
-        when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
-
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10, 0), true));
@@ -740,14 +737,14 @@ class ResultsServiceTest {
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
 
         List<Results> expected = List.of(r1,r2);
-        List<Results> actual = resultsService.getClassTestResults("4","2023-2024","Class Test 1");
+        List<Results> actual = resultsService.getClassTestResults("C4","2023-2024","TC420JULY2023");
 
         assertEquals(expected,actual);
     }
 
     @Test
     void getClassTestResultsReturnsBlankValueException() {
-        assertThrows(BlankValueException.class,()->resultsService.getClassTestResults("","",","));
+        assertThrows(BlankValueException.class,()->resultsService.getClassTestResults("","",""));
     }
 
     @Test
@@ -756,33 +753,20 @@ class ResultsServiceTest {
     }
 
     @Test
-    void getClassTestResultsScNameBlank(){
+    void getClassTestResultsScCodeBlank(){
         assertThrows(BlankValueException.class,()->resultsService.getClassTestResults("4",
                 "2023-2024",""));
     }
 
     @Test
-    void getClassTestResultsClassNotFound() {
-        when(classService.getClassCodeFromName(any(String.class))).thenReturn("");
-        assertThrows(InvalidValueException.class,()->resultsService.getClassTestResults("4",
-                "2023-2024","Test 1"));
-    }
-
-    @Test
     void getClassTestResultsSchedulesNotFound() {
-        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
-        when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
-
         when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(new ArrayList<>());
-        assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("4",
-                "2023-2024","Test 1"));
+        assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("C4",
+                "2023-2024","TC420JULY2023"));
     }
 
     @Test
     void getClassTestResultsNotFound(){
-        ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
-        when(classService.getClassCodeFromName(any(String.class))).thenReturn(classDto.getName());
-
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
                 LocalDate.of(2023,7,20),
                 LocalTime.of(10, 0), true));
@@ -796,8 +780,8 @@ class ResultsServiceTest {
         when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(scheduleList);
 
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(new ArrayList<>());
-        assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("4",
-                "2023-2024","Test 1"));
+        assertThrows(NotFoundException.class,()->resultsService.getClassTestResults("C4",
+                "2023-2024","TC420JULY2023"));
     }
 
     @Test

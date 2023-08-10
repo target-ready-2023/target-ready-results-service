@@ -109,7 +109,6 @@ public class ClassService {
     }
 
     public String getClassCodeFromName(String className) {
-
         String classCode = "";
         List<ClassDto> classDtoList = getAllClasses();
         if (classDtoList.isEmpty()) {

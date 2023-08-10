@@ -127,17 +127,17 @@ public class ScheduleService {
         String year = String.valueOf(date.getYear());
 
         //an academic year is from 1st June of a year to 31st March of the next year
-        log.info("Month before acYear start - {}",DateTimeConfig.MONTH_BEFORE_AC_START);
-        log.info("Day before acYEar start - {}",DateTimeConfig.DAY_BEFORE_AC_START);
-        log.info("Month after acYear end - {}",DateTimeConfig.MONTH_AFTER_AC_END);
-        log.info("Day after acYear end - {}",DateTimeConfig.DAY_AFTER_AC_END);
+        log.info("Month before acYear start - {}",DateTimeConfig.MONTH_BEFORE_YEAR_START);
+        log.info("Day before acYEar start - {}",DateTimeConfig.DAY_BEFORE_YEAR_START);
+        log.info("Month after acYear end - {}",DateTimeConfig.MONTH_AFTER_YEAR_END);
+        log.info("Day after acYear end - {}",DateTimeConfig.DAY_AFTER_YEAR_END);
 
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_BEFORE_AC_START,DateTimeConfig.DAY_BEFORE_AC_START)) &&
-        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_BEFORE_YEAR_START,DateTimeConfig.DAY_BEFORE_YEAR_START)) &&
+        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, DateTimeConfig.MONTH_AFTER_YEAR_END, DateTimeConfig.DAY_AFTER_YEAR_END))){
             return year + "-" + Integer.toString(Integer.parseInt(year)+1);
         }
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, DateTimeConfig.MONTH_BEFORE_AC_START, DateTimeConfig.DAY_BEFORE_AC_START)) &&
-                date.isBefore(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, DateTimeConfig.MONTH_BEFORE_YEAR_START, DateTimeConfig.DAY_BEFORE_YEAR_START)) &&
+                date.isBefore(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_AFTER_YEAR_END, DateTimeConfig.DAY_AFTER_YEAR_END))){
             return Integer.parseInt(year)-1 +"-"+year;
         }
         log.info("Invalid date for exam provided. Cannot find the academic year");

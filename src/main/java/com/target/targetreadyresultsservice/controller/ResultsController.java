@@ -30,7 +30,7 @@ public class ResultsController {
 
     private static final Logger log = LoggerFactory.getLogger(ResultsController.class);
 
-    //get class results of an academic year i.e., 1st June of (year) to 31st March of (year+1)
+    //get class results of an academic year NOTE: acYear configured in DateTimeConfig
     @GetMapping("/classResults")
     public ResponseEntity<List<Results>> getClassResults(
             @RequestParam("className") String className,

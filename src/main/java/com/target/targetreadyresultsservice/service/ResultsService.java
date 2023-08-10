@@ -331,16 +331,16 @@ public class ResultsService{
     //get result for a given schedule in a class for an academic year
     public List<Results> getClassTestResults(String classCode, String acYear, String scCode) {
         if (classCode.isBlank()) {
-            log.info("No class name provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter a Class Name");
+            log.info("No class code provided. Throws BlankValueException");
+            throw new BlankValueException("Please enter a Class code");
         }
         if (acYear.isBlank()) {
             log.info("No academic year provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter an Academic Year");
+            throw new BlankValueException("Please enter an academic Year");
         }
         if (scCode.isBlank()) {
-            log.info("No schedule name provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter an Schedule Name");
+            log.info("No schedule code provided. Throws BlankValueException");
+            throw new BlankValueException("Please enter a schedule code");
         }
         List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){

@@ -60,6 +60,19 @@ public class ClassControllerTest {
     }
 
     @Test
+    void savaClassShouldReturnRunTime() throws Exception{
+        classLevel = new ClassLevel("C4","4");
+        when(classService.setClassLevelInfo(any(ClassLevel.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(post(END_POINT_PATH)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(classLevel)));
+
+        response.andExpect(MockMvcResultMatchers.status().is4xxClientError())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
     void getAllClassDetailsShouldReturnClassDto() throws  Exception{
         List<ClassDto> classDto = List.of(new ClassDto("C4","4",List.of("Math","Social","English")),
                                           new ClassDto("C5","5",List.of("Math","Social","Physics")) );

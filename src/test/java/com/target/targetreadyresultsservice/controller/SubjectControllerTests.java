@@ -244,5 +244,30 @@ public class SubjectControllerTests {
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed()).andDo(MockMvcResultHandlers.print());
 
     }
+    @Test
+    public void SubjectController_getSubjectsGivenClassCode_Successful() throws Exception{
+        List<Subject> subjects = List.of(new Subject("S_PhC1","Physics",10,"C1",20,80));
+        when(subjectService.getSubjectsObjectGivenClassCode(any(String.class))).thenReturn(subjects);
+        ResultActions response=mockMvc.perform(get("/subjects/v1/subject/class/C1")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        response.andExpect(MockMvcResultMatchers.status().isOk()).andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    public void SubjectController_getSubjectsGivenClassCode_NotFound() throws Exception{
+        when(subjectService.getSubjectsObjectGivenClassCode(any(String.class))).thenReturn(null);
+        ResultActions response=mockMvc.perform(get("/subjects/v1/subject/class/C1")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        response.andExpect(MockMvcResultMatchers.status().isNotFound()).andDo(MockMvcResultHandlers.print());
+    }
+    @Test
+    public void SubjectController_getSubjectsGivenClassCode_Exception() throws Exception{
+        when(subjectService.getSubjectsObjectGivenClassCode(any(String.class))).thenThrow(RuntimeException.class);
+        ResultActions response=mockMvc.perform(get("/subjects/v1/subject/class/C1")
+                .contentType(MediaType.APPLICATION_JSON)
+        );
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed()).andDo(MockMvcResultHandlers.print());
+    }
 }
 
