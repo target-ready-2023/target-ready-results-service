@@ -533,12 +533,12 @@ public class ResultsService{
 
     //get top 5 students from a class in an academic year
     public List<StudentDto> getLeaderboard(String className, String acYear) {
-            List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(className));
-            if(studentList.isEmpty()){
-                throw new NotFoundException("No students found in studentList");
-            }
-            log.info("Student list found as - {}",studentList);
-            List<StudentDto> studentMarkList = new ArrayList<>();
+        List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(className));
+        if(studentList.isEmpty()){
+            throw new NotFoundException("No students found in studentList");
+        }
+        log.info("Student list found as - {}",studentList);
+        List<StudentDto> studentMarkList = new ArrayList<>();
         for (Student s: studentList) {
             StudentDto student = new StudentDto(
                     s.getStudentId(),
