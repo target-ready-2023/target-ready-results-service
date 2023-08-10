@@ -97,14 +97,13 @@ public class ScheduleController {
         }
     }
 
-    //get active schedule by classCode in an academic year
-    @GetMapping("/{classCode}/{acYear}/active")
+    //get active schedule by classCode
+    @GetMapping("/{classCode}/active")
     public ResponseEntity<List<Schedule>> getActiveSchedule(
-               @PathVariable String classCode,
-               @PathVariable String acYear
+               @PathVariable String classCode
        ){
         try{
-            List<Schedule> activeScheduleList = scheduleService.getActiveSchedule(classCode,acYear);
+            List<Schedule> activeScheduleList = scheduleService.getActiveSchedule(classCode);
             log.info("Active schedules for a class retrieved successfully - {}",activeScheduleList);
             return new ResponseEntity<>(activeScheduleList, HttpStatus.OK);
         }
@@ -260,6 +259,28 @@ public class ScheduleController {
         catch (Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
+        }
+    }
+
+    //get list of schedule names for a class in the current academic year
+    @GetMapping("/current/scNames")
+    private ResponseEntity<List<String>> getScheduleNamesForCurrentAcYear(
+            @RequestParam("classCode") String classCode
+    ){
+        try{
+            List<String> scheduleNameList = scheduleService.getScheduleNamesForCurrentAcYear(classCode);
+            if(scheduleNameList.isEmpty()){
+                log.info("scheduleNameList is empty. Throws NotFoundException");
+                throw new NotFoundException("No schedules found");
+            }
+            log.info("Schedule name list found successfully as - {}",scheduleNameList);
+            return new ResponseEntity<>(scheduleNameList,HttpStatus.OK);
+        }catch (NotFoundException e){
+            log.info("No schedules found");
+            return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            log.info("Exception occurred - {}",e.getMessage());
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }
     }
 }

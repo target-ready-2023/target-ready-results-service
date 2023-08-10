@@ -46,23 +46,13 @@ public class ScheduleService {
         return scheduleRepository.findAll();
     }
 
-    // get active Schedules by class by acYear
-    public List<Schedule> getActiveSchedule(String classCode, String acYear){
+    // get active Schedules by class
+    public List<Schedule> getActiveSchedule(String classCode){
         if(classCode.isBlank()){
             log.info("No class code provided - Throws BlankValueException");
             throw new BlankValueException("Please provide a class code");
         }
-        if(acYear.isBlank()){
-            log.info("No acYear code provided - Throws BlankValueException");
-            throw new BlankValueException("Please provide an academic year");
-        }
-        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
-        List<Schedule> activeList = new ArrayList<>();
-        for (Schedule s : scheduleList) {
-            if(s.getYear().equals(acYear)){
-                activeList.add(s);
-            }
-        }
+        List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
         activeList.removeIf(s -> !s.getScheduleStatus());
         if(activeList.isEmpty()){
             log.info("Exception occurred - activeList is empty and throws NullValueException");
@@ -116,14 +106,14 @@ public class ScheduleService {
         String code = addScheduleCode(schedule);
         log.info("Schedule code set as - {}",code);
         schedule.setScheduleCode(code);
-        schedule.setYear(findScheduleYear(schedule.getSubjectSchedule()));
+        LocalDate date = schedule.getSubjectSchedule().get(0).getDate();
+        schedule.setYear(findScheduleYear(date));
         scheduleRepository.save(schedule);
         log.info("Schedule added successfully");
         return schedule;
     }
 
-    private String findScheduleYear(List<SubjectSchedule> subjectSchedule) {
-        LocalDate date = subjectSchedule.get(0).getDate();
+    private String findScheduleYear(LocalDate date) {
         String year = String.valueOf(date.getYear());
 
         //an academic year is from 1st June of a year to 31st March of the next year
@@ -192,7 +182,8 @@ public class ScheduleService {
         sc.setSubjectSchedule(schedule.getSubjectSchedule());
         sc.setScheduleType(schedule.getScheduleType());
         sc.setScheduleName(schedule.getScheduleName());
-        sc.setYear(findScheduleYear(schedule.getSubjectSchedule()));
+        LocalDate date = schedule.getSubjectSchedule().get(0).getDate();
+        sc.setYear(findScheduleYear(date));
         sc.setScheduleStatus(schedule.getScheduleStatus());
         scheduleRepository.save(sc);
         log.info("Schedule updated successfully");
@@ -317,6 +308,7 @@ public class ScheduleService {
         throw new NotFoundException("Schedule not found!");
     }
 
+    //list of schedule names for a class in a year
     public List<String> getScheduleNamesForClass(String className, String acYear) {
         List<ClassDto> classDto = classService.getClassLeveByName(className);
         log.info("Class found as - {}",classDto);
@@ -386,5 +378,25 @@ public class ScheduleService {
         }
         log.info("acYears found as - {}",acYears);
         return acYears;
+    }
+
+    //get schedule name list for a class in the current academic year
+    public List<String> getScheduleNamesForCurrentAcYear(String classCode) {
+        LocalDate date = LocalDate.now();
+        log.info("Current date is - {}",date);
+        String currentAcYear = findScheduleYear(date);
+        log.info("Current AcYear found as - {}",currentAcYear);
+        List<Schedule> scheduleList = getScheduleByClass(classCode,currentAcYear);
+        if(scheduleList.isEmpty()){
+            log.info("No schedules found for the acYear - {}",currentAcYear);
+            throw new NotFoundException("No schedules found for the current academic year");
+        }
+        log.info("Schedule list found as - {}",scheduleList);
+        List<String> scheduleNameList = new ArrayList<>();
+        for (Schedule s : scheduleList) {
+            scheduleNameList.add(s.getScheduleName());
+        }
+        log.info("The schedule name list for the current academic year is  - {}",scheduleNameList);
+        return scheduleNameList;
     }
 }

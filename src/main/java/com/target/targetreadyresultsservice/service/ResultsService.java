@@ -99,7 +99,7 @@ public class ResultsService{
 
         //exceptionChecks has the initial exception checks common to put and post
         exceptionChecks(result);
-        log.info("Successfully cleared exception checks for adding new result");
+        log.info("Successfully cleared the initial exception checks for adding new result");
 
         Schedule schedule = scheduleService.getScheduleDetails(result.getScheduleCode());
 
