@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Dto.ResultsDto;
 import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
@@ -10,13 +11,11 @@ import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class ResultsService{
@@ -44,7 +43,7 @@ public class ResultsService{
     private static final Logger log = LoggerFactory.getLogger(ResultsService.class);
 
     //get results for all tests, exams and final exam for a class in an academic year
-    public List<Results> getClassResult(String className, String acYear) {
+    public List<ResultsDto> getClassResult(String className, String acYear) {
         if (className.isBlank()) {
             log.info("Class name is not provided. Throws BlankValueException");
             throw new BlankValueException("Please enter a Class Name");
@@ -70,12 +69,27 @@ public class ResultsService{
                 classResultList.addAll(resultsRepository.findAllByscheduleCode(schedule));
             }
         }
+        List<ResultsDto> classResultsDtoList = new ArrayList<>();
+        for (Results r:
+             classResultList) {
+            Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
+            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            ResultsDto result = new ResultsDto(
+                    r.getResultsCode(),
+                    r.getStudentId(),
+                    r.getScheduleCode(),
+                    r.getMarksList(),
+                    aggregates.get(0),
+                    aggregates.get(1)
+            );
+            classResultsDtoList.add(result);
+        }
         if (classResultList.isEmpty()) {
             log.info("No results found. Throws NotFoundException");
             throw new NotFoundException("Results not Found");
         }
         log.info("Class results found successfully as - {}",classResultList);
-        return classResultList;
+        return classResultsDtoList;
     }
 
     //add a new result for a student
@@ -300,11 +314,11 @@ public class ResultsService{
             throw new NotFoundException("Class not found");
         }
         //get the list of all the results for a class in an academic year
-        List<Results> resultsList = getClassResult(classOfStudent.getName(),acYear);
+        List<ResultsDto> resultsList = getClassResult(classOfStudent.getName(),acYear);
         double avgInternals = 0;
         //count is used to find the number of tests
         int count = 0;
-        for (Results r : resultsList) {
+        for (ResultsDto r : resultsList) {
             Schedule thisSchedule = scheduleService.getScheduleDetails(r.getScheduleCode());
             //add the internal marks for the subject if schedule type is test
             if(thisSchedule.getScheduleType().equalsIgnoreCase("Test") &&
@@ -329,7 +343,7 @@ public class ResultsService{
     }
 
     //get result for a given schedule in a class for an academic year
-    public List<Results> getClassTestResults(String className, String acYear, String scName) {
+    public List<ResultsDto> getClassTestResults(String className, String acYear, String scName) {
         if (className.isBlank()) {
             log.info("No class name provided. Throws BlankValueException");
             throw new BlankValueException("Please enter a Class Name");
@@ -344,11 +358,12 @@ public class ResultsService{
         }
         String classCode = classService.getClassCodeFromName(className);
         if (classCode.isBlank() || classCode.isEmpty()) {
-            log.info("No class found for the class name - {}. Throws InvalidValueException",className);
-            throw new InvalidValueException("Invalid Class Provided. Please enter a valid Class");
+            log.info("No class found for the class name - {}. Throws NotFoundException",className);
+            throw new NotFoundException("Class not found");
         }
         List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
         if(scheduleList.isEmpty()){
+            log.info("No schedules found for this class. Throws NotFoundException");
             throw new NotFoundException("No schedules found for this class");
         }
         log.info("Schedule list found as - {}",scheduleList);
@@ -357,19 +372,34 @@ public class ResultsService{
             if (sc.getYear().equals(acYear) && sc.getScheduleName().equals(scName)) {
                 String schedule = sc.getScheduleCode();
                 log.info("The schedule code found (inside loop) is - {}",schedule);
-                 classTestResultList =resultsRepository.findAllByscheduleCode(schedule);
+                 classTestResultList.addAll(resultsRepository.findAllByscheduleCode(schedule));
             }
         }
-        if (classTestResultList.isEmpty()) {
+        List<ResultsDto> classTestResultsDtoList = new ArrayList<>();
+        for (Results r:
+                classTestResultList) {
+            Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
+            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            ResultsDto result = new ResultsDto(
+                    r.getResultsCode(),
+                    r.getStudentId(),
+                    r.getScheduleCode(),
+                    r.getMarksList(),
+                    aggregates.get(0),
+                    aggregates.get(1)
+            );
+            classTestResultsDtoList.add(result);
+        }
+        if (classTestResultsDtoList.isEmpty()) {
             log.info("Results not found for the class provided. Throws NotFoundException");
             throw new NotFoundException("Results not Found");
         }
-        log.info("Results found successfully - {}",classTestResultList);
-        return classTestResultList;
+        log.info("Results found successfully - {}",classTestResultsDtoList);
+        return classTestResultsDtoList;
     }
 
     //get all test,exam and final exam results for one student in an academic year
-    public List<Results> getStudentResult(String rollNumber,String className, String acYear) {
+    public List<ResultsDto> getStudentResult(String rollNumber,String className, String acYear) {
         Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
         if(student==null){
             log.info("Student not found. Throws NotFoundException");
@@ -391,8 +421,23 @@ public class ResultsService{
                 resultsList.add(r);
             }
         }
-        log.info("Results found as - {}",resultsList);
-        return resultsList;
+        List<ResultsDto> resultsDtoList = new ArrayList<>();
+        for (Results r:
+             resultsList) {
+            Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
+            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            ResultsDto result = new ResultsDto(
+                    r.getResultsCode(),
+                    r.getStudentId(),
+                    r.getScheduleCode(),
+                    r.getMarksList(),
+                    aggregates.get(0),
+                    aggregates.get(1)
+            );
+           resultsDtoList.add(result);
+        }
+        log.info("Results found as - {}",resultsDtoList);
+        return resultsDtoList;
     }
 
     //get the result percentage for a student in an academic year
@@ -408,7 +453,7 @@ public class ResultsService{
             log.info("Class not found. Throws NotFoundException");
             throw new NotFoundException("Action failed! CLass not found");
         }
-        List<Results> resultsList = getStudentResult(rollNumber,className,acYear);
+        List<ResultsDto> resultsList = getStudentResult(rollNumber,className,acYear);
         if(resultsList.isEmpty()){
             log.info("No results found for student - {}. Throws NotFoundException",student.getName());
             throw new NotFoundException("No results found for student - "+student.getName());
@@ -419,8 +464,8 @@ public class ResultsService{
         //sum of max internal and external marks for subjects
         double totalPossibleMarks = 0;
 
-        List<Results> finalExamResults = new ArrayList<>();
-        for (Results r : resultsList) {
+        List<ResultsDto> finalExamResults = new ArrayList<>();
+        for (ResultsDto r : resultsList) {
             Schedule schedule = scheduleService.getScheduleDetails(r.getScheduleCode());
             if(schedule.getScheduleCode().startsWith("FE")){
                 finalExamResults.add(r);
@@ -431,7 +476,7 @@ public class ResultsService{
             log.info("Final exam results not found for student - {}",student);
             throw new NotFoundException("No results found");
         }
-        Results results = finalExamResults.get(0);
+        ResultsDto results = finalExamResults.get(0);
         List<Marks> marksList = results.getMarksList();
         for (Marks m :marksList) {
             Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
@@ -455,9 +500,9 @@ public class ResultsService{
     }
 
     //get a particular test result for a student
-    public Results getStudentTestResult(String className, String acYear, String scName, String rollNo) {
+    public ResultsDto getStudentTestResult(String className, String acYear, String scName, String rollNo) {
         Student student = studentService.getStudentFromClassRollNo(className, rollNo);
-        Results result = null;
+        ResultsDto resultsDto = null;
         if(student==null){
             log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student Not Found!");
@@ -475,14 +520,21 @@ public class ResultsService{
             }
             log.info("Schedule found as  - {}",schedule);
             if (schedule.getYear().equals(acYear) && schedule.getScheduleName().equals(scName)) {
-                result = r;
+                List<Double> aggregates= getAgregates(schedule.getScheduleType(),r.getMarksList());
+                resultsDto = new ResultsDto(
+                       r.getResultsCode(),
+                       r.getStudentId(),
+                       r.getScheduleCode(),
+                        r.getMarksList(),
+                        aggregates.get(0),
+                        aggregates.get(1));
             }
         }
-        if(result==null){
+        if(resultsDto==null){
             throw new NotFoundException("Result not Found");
         }
-        log.info("Result found as  - {}",result);
-        return result;
+        log.info("Result found as  - {}",resultsDto);
+        return resultsDto;
     }
 
     //get top 5 students from a class in an academic year
@@ -494,8 +546,13 @@ public class ResultsService{
             log.info("Student list found as - {}",studentList);
             List<StudentDto> studentMarkList = new ArrayList<>();
         for (Student s: studentList) {
-            StudentDto student = new StudentDto(s.getStudentId(),s.getClassCode(),s.getRollNumber(),s.getName(),
-                    getResultPercentage(s.getRollNumber(),className,acYear));
+            StudentDto student = new StudentDto(
+                    s.getStudentId(),
+                    s.getClassCode(),
+                    s.getRollNumber(),
+                    s.getName(),
+                    getResultPercentage(s.getRollNumber(),className,acYear)
+            );
             studentMarkList.add(student);
         }
         Collections.sort(studentMarkList,Collections.reverseOrder());
@@ -520,5 +577,42 @@ public class ResultsService{
             throw new NotFoundException("Toppers List is Empty");
         }
         return toppersList;
+    }
+
+
+    public List<Double> getAgregates(String scheduleType, List<Marks> marksList){
+        Double totalMarks= (double) 0;
+        Double maxtotal = (double) 0;
+        Double percentage;
+        if(scheduleType.equalsIgnoreCase("Test")){
+            for (Marks m:
+                    marksList) {
+                Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
+                totalMarks += m.getInternalMarks();
+                maxtotal  += (double)sub.getMaxTestMarks();
+            }
+        }
+
+        else if(scheduleType.equalsIgnoreCase("Exam")){
+            for (Marks m:
+                    marksList) {
+                Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
+                totalMarks += m.getExternalMarks();
+                maxtotal  += (double)sub.getMaxExamMarks();
+            }
+        }
+        else{
+            for (Marks m:
+                    marksList ) {
+                Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
+                totalMarks += m.getInternalMarks()+m.getExternalMarks();
+                maxtotal  += (double) (sub.getMaxTestMarks()+sub.getMaxExamMarks());
+            }
+        }
+        percentage = (totalMarks*100)/(maxtotal);
+        List<Double> list = new ArrayList<Double>();
+        list.add(totalMarks);
+        list.add(percentage);
+        return list;
     }
 }

@@ -1,13 +1,17 @@
 package com.target.targetreadyresultsservice.Dto;
 
+import com.target.targetreadyresultsservice.model.Marks;
+
+import java.util.List;
+
 public class ResultsDto {
     public String resultsCode;
 
-    public String stuentId;
+    public String studentId;
 
     public String scheduleCode;
 
-    public String markList;
+    public List<Marks> marksList;
 
     public Double totalMarks;
 
@@ -21,12 +25,12 @@ public class ResultsDto {
         this.resultsCode = resultsCode;
     }
 
-    public String getStuentId() {
-        return stuentId;
+    public String getStudentId() {
+        return studentId;
     }
 
-    public void setStuentId(String stuentId) {
-        this.stuentId = stuentId;
+    public void setStudentId(String studentId) {
+        this.studentId = studentId;
     }
 
     public String getScheduleCode() {
@@ -37,12 +41,12 @@ public class ResultsDto {
         this.scheduleCode = scheduleCode;
     }
 
-    public String getMarkList() {
-        return markList;
+    public List<Marks> getMarksList() {
+        return marksList;
     }
 
-    public void setMarkList(String markList) {
-        this.markList = markList;
+    public void setMarksList(List<Marks> marksList) {
+        this.marksList = marksList;
     }
 
     public Double getTotalMarks() {
@@ -61,11 +65,11 @@ public class ResultsDto {
         this.totalPercentage = totalPercentage;
     }
 
-    public ResultsDto(String resultsCode, String stuentId, String scheduleCode, String markList, Double totalMarks, Double totalPercentage) {
+    public ResultsDto(String resultsCode, String studentId, String scheduleCode, List<Marks> marksList, Double totalMarks, Double totalPercentage) {
         this.resultsCode = resultsCode;
-        this.stuentId = stuentId;
+        this.studentId = studentId;
         this.scheduleCode = scheduleCode;
-        this.markList = markList;
+        this.marksList = marksList;
         this.totalMarks = totalMarks;
         this.totalPercentage = totalPercentage;
 
