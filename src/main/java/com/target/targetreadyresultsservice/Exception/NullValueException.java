@@ -12,6 +12,7 @@ public class NullValueException extends RuntimeException{
     }
     public NullValueException(String message){
         super(message);
+        log.info("Null value exception occurred");
     }
     public NullValueException(Throwable cause){
         super(cause);

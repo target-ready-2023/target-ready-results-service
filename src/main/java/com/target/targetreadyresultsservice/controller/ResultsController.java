@@ -36,26 +36,21 @@ public class ResultsController {
     public ResponseEntity<List<ResultsDto>> getClassResults(
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear
-
     ){
         try{
             List<ResultsDto> classResults = resultsService.getClassResult(className, acYear);
             log.info("Class Results retrieved successfully - {}",classResults);
             return new ResponseEntity<>(classResults,HttpStatus.OK);
-        }
-        catch(InvalidValueException | BlankValueException | NotFoundException e){
+        } catch(InvalidValueException | BlankValueException | NotFoundException e){
             log.info("Exception occurred due to the values provided - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch(Exception e){
+        } catch(Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
 
-
     //get class results for a particular test (only tests, not exams or final exams)
-
     @GetMapping("/classTest")
     public ResponseEntity<List<ResultsDto>> getClassTestResults(
             @RequestParam("classCode") String classCode,

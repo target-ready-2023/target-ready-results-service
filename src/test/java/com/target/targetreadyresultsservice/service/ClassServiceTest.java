@@ -61,14 +61,54 @@ public class ClassServiceTest {
 
     @Test
     void getAllClassesShouldReturnClassDto(){
-        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"));
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"),
+                new ClassLevel("C4","5"));
         List<String> subjects = List.of("Physics","Social");
 
         when(classRepository.findAll()).thenReturn(classLevels);
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(subjects);
         List<ClassDto> responseClasses = classService.getAllClasses();
         assertThat(responseClasses).isNotNull();
-        assertThat(1).isEqualTo(responseClasses.size());
+        assertThat(2).isEqualTo(responseClasses.size());
+    }
+
+    @Test
+    void getAllClassesIsNumeric1() {
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"),
+                new ClassLevel("C4","five"));
+        List<String> subjects = List.of("Physics","Social");
+
+        when(classRepository.findAll()).thenReturn(classLevels);
+        when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(subjects);
+        List<ClassDto> responseClasses = classService.getAllClasses();
+        assertThat(responseClasses).isNotNull();
+        assertThat(2).isEqualTo(responseClasses.size());
+    }
+
+    @Test
+    void getAllClassesIsNumeric2() {
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","four"),
+                new ClassLevel("C4","5"));
+        List<String> subjects = List.of("Physics","Social");
+
+        when(classRepository.findAll()).thenReturn(classLevels);
+        when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(subjects);
+        List<ClassDto> responseClasses = classService.getAllClasses();
+        assertThat(responseClasses).isNotNull();
+        assertThat(2).isEqualTo(responseClasses.size());
+    }
+
+    @Test
+    void getAllClassesIsNonNumeric() {
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","four"),
+                new ClassLevel("C4","five"));
+        List<String> subjects = List.of("Physics","Social");
+
+        when(classRepository.findAll()).thenReturn(classLevels);
+        when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(subjects);
+        List<ClassDto> responseClasses = classService.getAllClasses();
+        assertThat(responseClasses).isNotNull();
+        assertThat(2).isEqualTo(responseClasses.size());
     }
 
     @Test
