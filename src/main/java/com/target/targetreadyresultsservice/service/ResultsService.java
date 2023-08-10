@@ -72,10 +72,9 @@ public class ResultsService{
             }
         }
         List<ResultsDto> classResultsDtoList = new ArrayList<>();
-        for (Results r:
-             classResultList) {
+        for (Results r: classResultList) {
             Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
-            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            List<Double> aggregates= getAggregates(s.getScheduleType(),r.getMarksList());
             ResultsDto result = new ResultsDto(
                     r.getResultsCode(),
                     r.getStudentId(),
@@ -235,7 +234,6 @@ public class ResultsService{
 
     //exception checks common for post and put
     public void exceptionChecks(Results r){
-
         //check if student exists
         Student student = studentService.getStudentInfo(r.getStudentId()).orElse(null);
         if(student==null){
@@ -367,15 +365,14 @@ public class ResultsService{
         List<Results> classTestResultList = new ArrayList<>();
         for (Schedule sc : scheduleList) {
             if (sc.getScheduleCode().equals(scCode)) {
-                log.info("The schedule code found (inside loop) is - {}",sc);
+               log.info("The schedule code found (inside loop) is - {}",sc);
                  classTestResultList.addAll(resultsRepository.findAllByscheduleCode(sc.getScheduleCode()));
             }
         }
         List<ResultsDto> classTestResultsDtoList = new ArrayList<>();
-        for (Results r:
-                classTestResultList) {
+        for (Results r: classTestResultList) {
             Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
-            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            List<Double> aggregates= getAggregates(s.getScheduleType(),r.getMarksList());
             ResultsDto result = new ResultsDto(
                     r.getResultsCode(),
                     r.getStudentId(),
@@ -421,7 +418,7 @@ public class ResultsService{
         for (Results r:
              resultsList) {
             Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
-            List<Double> aggregates= getAgregates(s.getScheduleType(),r.getMarksList());
+            List<Double> aggregates= getAggregates(s.getScheduleType(),r.getMarksList());
             ResultsDto result = new ResultsDto(
                     r.getResultsCode(),
                     r.getStudentId(),
@@ -516,7 +513,7 @@ public class ResultsService{
             }
             log.info("Schedule found as  - {}",schedule);
             if (schedule.getYear().equals(acYear) && schedule.getScheduleName().equals(scName)) {
-                List<Double> aggregates= getAgregates(schedule.getScheduleType(),r.getMarksList());
+                List<Double> aggregates= getAggregates(schedule.getScheduleType(),r.getMarksList());
                 resultsDto = new ResultsDto(
                        r.getResultsCode(),
                        r.getStudentId(),
@@ -576,36 +573,32 @@ public class ResultsService{
     }
 
 
-    public List<Double> getAgregates(String scheduleType, List<Marks> marksList){
+    public List<Double> getAggregates(String scheduleType, List<Marks> marksList){
         Double totalMarks= (double) 0;
-        Double maxtotal = (double) 0;
+        Double maxTotal = (double) 0;
         Double percentage;
         if(scheduleType.equalsIgnoreCase("Test")){
-            for (Marks m:
-                    marksList) {
+            for (Marks m: marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
                 totalMarks += m.getInternalMarks();
-                maxtotal  += (double)sub.getMaxTestMarks();
+                maxTotal  += (double)sub.getMaxTestMarks();
             }
         }
-
         else if(scheduleType.equalsIgnoreCase("Exam")){
-            for (Marks m:
-                    marksList) {
+            for (Marks m: marksList) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
                 totalMarks += m.getExternalMarks();
-                maxtotal  += (double)sub.getMaxExamMarks();
+                maxTotal  += (double)sub.getMaxExamMarks();
             }
         }
         else{
-            for (Marks m:
-                    marksList ) {
+            for (Marks m: marksList ) {
                 Subject sub = subjectService.getSubjectById(m.getSubjectCode()).orElse(null);
                 totalMarks += m.getInternalMarks()+m.getExternalMarks();
-                maxtotal  += (double) (sub.getMaxTestMarks()+sub.getMaxExamMarks());
+                maxTotal  += (double) (sub.getMaxTestMarks()+sub.getMaxExamMarks());
             }
         }
-        percentage = (totalMarks*100)/(maxtotal);
+        percentage = (totalMarks*100)/(maxTotal);
         List<Double> list = new ArrayList<Double>();
         list.add(totalMarks);
         list.add(percentage);

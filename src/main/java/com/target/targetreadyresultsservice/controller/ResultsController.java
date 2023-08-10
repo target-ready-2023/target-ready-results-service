@@ -31,28 +31,24 @@ public class ResultsController {
 
     private static final Logger log = LoggerFactory.getLogger(ResultsController.class);
 
-    //get class results of an academic year i.e., 1st June of (year) to 31st March of (year+1)
+    //get class results of an academic year NOTE: acYear configured in DateTimeConfig
     @GetMapping("/classResults")
     public ResponseEntity<List<ResultsDto>> getClassResults(
             @RequestParam("className") String className,
             @RequestParam("academicYear") String acYear
-
     ){
         try{
             List<ResultsDto> classResults = resultsService.getClassResult(className, acYear);
             log.info("Class Results retrieved successfully - {}",classResults);
             return new ResponseEntity<>(classResults,HttpStatus.OK);
-        }
-        catch(InvalidValueException | BlankValueException | NotFoundException e){
+        } catch(InvalidValueException | BlankValueException | NotFoundException e){
             log.info("Exception occurred due to the values provided - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-        }
-        catch(Exception e){
+        } catch(Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity("Action failed!",HttpStatus.EXPECTATION_FAILED);
         }
     }
-
 
     //get class results for a particular test (only tests, not exams or final exams)
     @GetMapping("/classTest")
@@ -62,7 +58,7 @@ public class ResultsController {
              @RequestParam("scheduleCode") String scCode
     ){
         try{
-            List<ResultsDto> classTestResults = resultsService.getClassTestResults(className, acYear,scName);
+            List<ResultsDto> classTestResults = resultsService.getClassTestResults(classCode, acYear,scCode);
             log.info("Class test results retrieved successfully - {}",classTestResults);
             return new ResponseEntity<>(classTestResults,HttpStatus.OK);
         }
