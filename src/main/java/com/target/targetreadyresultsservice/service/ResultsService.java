@@ -11,11 +11,13 @@ import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.List;
 
 @Service
 public class ResultsService{
@@ -57,7 +59,7 @@ public class ResultsService{
             log.info("Class not found. Throws NotFoundException");
             throw new NotFoundException("Class not found");
         }
-        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){
             log.info("No schedules found for this class. Throws NotFoundException");
             throw new NotFoundException("No schedules found for this class.");
@@ -343,25 +345,20 @@ public class ResultsService{
     }
 
     //get result for a given schedule in a class for an academic year
-    public List<ResultsDto> getClassTestResults(String className, String acYear, String scName) {
-        if (className.isBlank()) {
-            log.info("No class name provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter a Class Name");
+    public List<ResultsDto> getClassTestResults(String classCode, String acYear, String scCode) {
+        if (classCode.isBlank()) {
+            log.info("No class code provided. Throws BlankValueException");
+            throw new BlankValueException("Please enter a Class code");
         }
         if (acYear.isBlank()) {
             log.info("No academic year provided. Throws BlankValueException");
             throw new BlankValueException("Please enter an Academic Year");
         }
-        if (scName.isBlank()) {
-            log.info("No schedule name provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter an Schedule Name");
+        if (scCode.isBlank()) {
+            log.info("No schedule code provided. Throws BlankValueException");
+            throw new BlankValueException("Please enter a schedule code");
         }
-        String classCode = classService.getClassCodeFromName(className);
-        if (classCode.isBlank() || classCode.isEmpty()) {
-            log.info("No class found for the class name - {}. Throws NotFoundException",className);
-            throw new NotFoundException("Class not found");
-        }
-        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode);
+        List<Schedule> scheduleList = scheduleService.getScheduleByClass(classCode,acYear);
         if(scheduleList.isEmpty()){
             log.info("No schedules found for this class. Throws NotFoundException");
             throw new NotFoundException("No schedules found for this class");
@@ -369,10 +366,9 @@ public class ResultsService{
         log.info("Schedule list found as - {}",scheduleList);
         List<Results> classTestResultList = new ArrayList<>();
         for (Schedule sc : scheduleList) {
-            if (sc.getYear().equals(acYear) && sc.getScheduleName().equals(scName)) {
-                String schedule = sc.getScheduleCode();
-                log.info("The schedule code found (inside loop) is - {}",schedule);
-                 classTestResultList.addAll(resultsRepository.findAllByscheduleCode(schedule));
+            if (sc.getScheduleCode().equals(scCode)) {
+                log.info("The schedule code found (inside loop) is - {}",sc);
+                 classTestResultList.addAll(resultsRepository.findAllByscheduleCode(sc.getScheduleCode()));
             }
         }
         List<ResultsDto> classTestResultsDtoList = new ArrayList<>();

@@ -46,9 +46,23 @@ public class ScheduleService {
         return scheduleRepository.findAll();
     }
 
-    // get active Schedules by class
-    public List<Schedule> getActiveSchedule(String classCode){
-    List<Schedule> activeList = scheduleRepository.findByclassCode(classCode);
+    // get active Schedules by class by acYear
+    public List<Schedule> getActiveSchedule(String classCode, String acYear){
+        if(classCode.isBlank()){
+            log.info("No class code provided - Throws BlankValueException");
+            throw new BlankValueException("Please provide a class code");
+        }
+        if(acYear.isBlank()){
+            log.info("No acYear code provided - Throws BlankValueException");
+            throw new BlankValueException("Please provide an academic year");
+        }
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        List<Schedule> activeList = new ArrayList<>();
+        for (Schedule s : scheduleList) {
+            if(s.getYear().equals(acYear)){
+                activeList.add(s);
+            }
+        }
         activeList.removeIf(s -> !s.getScheduleStatus());
         if(activeList.isEmpty()){
             log.info("Exception occurred - activeList is empty and throws NullValueException");
@@ -59,15 +73,24 @@ public class ScheduleService {
     }
 
     //get all schedule by class
-    public List<Schedule> getScheduleByClass(String classCode) {
+    public List<Schedule> getScheduleByClass(String classCode, String acYear) {
         List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
         if(scheduleList.isEmpty()){
-            log.info("Exception occurred - scheduleList is empty and throws NullValueException");
+            log.info("Exception occurred - scheduleList is empty and throws NotFoundException");
             throw new NotFoundException("No schedules found for the given class");
         }
+        List<Schedule> schedulesByYear = new ArrayList<>();
+        for (Schedule s :scheduleList) {
+            if(s.getYear().equals(acYear)){
+                schedulesByYear.add(s);
+            }
+        }if(schedulesByYear.isEmpty()){
+            log.info("Exception occurred - schedulesByYear is empty and throws NotFoundException");
+            throw new NotFoundException("No schedules found for the given class in the given academic year");
+        }
         else{
-            log.info("List of schedules found successfully as - {}",scheduleList);
-            return scheduleList;
+            log.info("List of schedules found successfully as - {}",schedulesByYear);
+            return schedulesByYear;
         }
     }
 
@@ -104,17 +127,17 @@ public class ScheduleService {
         String year = String.valueOf(date.getYear());
 
         //an academic year is from 1st June of a year to 31st March of the next year
-        log.info("Month before acYear start - {}",DateTimeConfig.MONTH_BEFORE_AC_START);
-        log.info("Day before acYEar start - {}",DateTimeConfig.DAY_BEFORE_AC_START);
-        log.info("Month after acYear end - {}",DateTimeConfig.MONTH_AFTER_AC_END);
-        log.info("Day after acYear end - {}",DateTimeConfig.DAY_AFTER_AC_END);
+        log.info("Month before acYear start - {}",DateTimeConfig.MONTH_BEFORE_YEAR_START);
+        log.info("Day before acYEar start - {}",DateTimeConfig.DAY_BEFORE_YEAR_START);
+        log.info("Month after acYear end - {}",DateTimeConfig.MONTH_AFTER_YEAR_END);
+        log.info("Day after acYear end - {}",DateTimeConfig.DAY_AFTER_YEAR_END);
 
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_BEFORE_AC_START,DateTimeConfig.DAY_BEFORE_AC_START)) &&
-        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_BEFORE_YEAR_START,DateTimeConfig.DAY_BEFORE_YEAR_START)) &&
+        date.isBefore(LocalDate.of(Integer.parseInt(year)+1, DateTimeConfig.MONTH_AFTER_YEAR_END, DateTimeConfig.DAY_AFTER_YEAR_END))){
             return year + "-" + Integer.toString(Integer.parseInt(year)+1);
         }
-        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, DateTimeConfig.MONTH_BEFORE_AC_START, DateTimeConfig.DAY_BEFORE_AC_START)) &&
-                date.isBefore(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_AFTER_AC_END, DateTimeConfig.DAY_AFTER_AC_END))){
+        if(date.isAfter(LocalDate.of(Integer.parseInt(year)-1, DateTimeConfig.MONTH_BEFORE_YEAR_START, DateTimeConfig.DAY_BEFORE_YEAR_START)) &&
+                date.isBefore(LocalDate.of(Integer.parseInt(year), DateTimeConfig.MONTH_AFTER_YEAR_END, DateTimeConfig.DAY_AFTER_YEAR_END))){
             return Integer.parseInt(year)-1 +"-"+year;
         }
         log.info("Invalid date for exam provided. Cannot find the academic year");
@@ -301,7 +324,7 @@ public class ScheduleService {
             log.info("No class found with class name - {}",className);
             throw new NotFoundException("No class found with the given class name");
         }
-        List<Schedule> scheduleList = getScheduleByClass(classDto.get(0).getCode());
+        List<Schedule> scheduleList = getScheduleByClass(classDto.get(0).getCode(),acYear);
         if(scheduleList.isEmpty()){
             throw new NotFoundException("No schedules found");
         }
@@ -318,5 +341,50 @@ public class ScheduleService {
         }
         log.info("Schedule name list found as - {}",scheduleNameList);
         return scheduleNameList;
+    }
+
+    //get all schedules by acYear
+    public List<Schedule> getScheduleByYear(String acYear) {
+        if(acYear == null) {
+            log.info("No academic year provided - Throws NullValueException");
+            throw new NullValueException("Please provide an academic year");
+        }
+        if(acYear.isBlank()){
+            log.info("No academic year provided - Throws BlankValueException");
+            throw new BlankValueException("Please provide an academic year");
+        }
+        List<Schedule> scheduleList = scheduleRepository.findByyear(acYear);
+        if(scheduleList.isEmpty()){
+            log.info("No schedules found for the given academic year - Throws NotFoundException");
+            throw new NotFoundException("No schedules found for the given academic year");
+        }
+        log.info("Schedule list for the academic year - {} found as - {}",acYear,scheduleList);
+        return scheduleList;
+    }
+
+    //get list of acYears for a class
+    public List<String> getScheduleAcYearsForClass(String classCode) {
+        if(classCode.isBlank()){
+            log.info("Class code is blank. throws BlankValueException");
+            throw new BlankValueException("Please provide a class code");
+        }
+        List<String> acYears = new ArrayList<>();
+        List<Schedule> scheduleList = scheduleRepository.findByclassCode(classCode);
+        if(scheduleList.isEmpty()){
+            log.info("No schedules found for - {}",classCode);
+            throw new NotFoundException("No schedules found for this class");
+        }
+        log.info("scheduleList found as  - {}",scheduleList);
+        for (Schedule s : scheduleList) {
+            if(!acYears.contains(s.getYear())){
+                acYears.add(s.getYear());
+            }
+        }
+        if(acYears.isEmpty()){
+            log.info("acYears not found");
+            throw new NotFoundException("No schedules found");
+        }
+        log.info("acYears found as - {}",acYears);
+        return acYears;
     }
 }

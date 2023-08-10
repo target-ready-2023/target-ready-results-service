@@ -65,7 +65,7 @@ class ResultsControllerTest {
 
     @Test
     void addResultsReturnsNotFoundException() throws Exception{
-        Results result = new Results("","TC420JULY2023",
+        Results result = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
 
         when(resultsService.addNewResult(any(Results.class))).thenThrow(NotFoundException.class);
@@ -252,11 +252,12 @@ class ResultsControllerTest {
     void getClassTestResultsSuccessful() throws Exception{
         Results r = new Results("4","TC420JULY2023",
                 List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4JULY2023");
+        r.setResultsCode("R4TC420JULY2023");
         List<Results> resultsList = List.of(r);
         when(resultsService.getClassResult(any(String.class),any(String.class))).thenReturn(resultsList);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?className=4&academicYear=2023-2024&scheduleName=Class Test 4")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?classCode=C4" +
+                "&academicYear=2023-2024&scheduleCode=TC420JULY2023")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -268,7 +269,8 @@ class ResultsControllerTest {
     void getClassTestResultsReturnsBlankValueException() throws Exception{
         when(resultsService.getClassTestResults(any(String.class),any(String.class),any(String.class))).thenThrow(BlankValueException.class);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?className=4&academicYear=2023-2024&scheduleName=Class Test 4")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?classCode=C4" +
+                "&academicYear=2023-2024&scheduleCode=TC420JULY2023")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
@@ -279,7 +281,8 @@ class ResultsControllerTest {
     void getClassTestResultsReturnsException() throws Exception{
         when(resultsService.getClassTestResults(any(String.class),any(String.class),any(String.class))).thenThrow(RuntimeException.class);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?className=4&academicYear=2023-2024&scheduleName=Class Test 4")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?classCode=C4" +
+                "&academicYear=2023-2024&scheduleCode=TC420JULY2023")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
