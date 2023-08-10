@@ -11,6 +11,7 @@ import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -71,6 +72,10 @@ public class ResultsService{
                 classResultList.addAll(resultsRepository.findAllByscheduleCode(schedule));
             }
         }
+        if (classResultList.isEmpty()) {
+            log.info("No results found. Throws NotFoundException");
+            throw new NotFoundException("Results not Found");
+        }
         List<ResultsDto> classResultsDtoList = new ArrayList<>();
         for (Results r: classResultList) {
             Schedule s = scheduleService.getScheduleDetails(r.getScheduleCode());
@@ -85,11 +90,7 @@ public class ResultsService{
             );
             classResultsDtoList.add(result);
         }
-        if (classResultList.isEmpty()) {
-            log.info("No results found. Throws NotFoundException");
-            throw new NotFoundException("Results not Found");
-        }
-        log.info("Class results found successfully as - {}",classResultList);
+        log.info("Class results found successfully as - {}",classResultsDtoList);
         return classResultsDtoList;
     }
 
@@ -350,7 +351,7 @@ public class ResultsService{
         }
         if (acYear.isBlank()) {
             log.info("No academic year provided. Throws BlankValueException");
-            throw new BlankValueException("Please enter an Academic Year");
+            throw new BlankValueException("Please enter an academic Year");
         }
         if (scCode.isBlank()) {
             log.info("No schedule code provided. Throws BlankValueException");
