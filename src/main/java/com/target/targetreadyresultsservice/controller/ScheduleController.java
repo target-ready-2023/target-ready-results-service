@@ -192,11 +192,10 @@ public class ScheduleController {
             Schedule newSchedule = scheduleService.addNewSchedule(schedule);
             log.info("Schedule added successfully");
             return new ResponseEntity<>(newSchedule,HttpStatus.CREATED);
-        }
-       catch (BlankValueException | NullValueException e){
+        } catch (BlankValueException | NullValueException e){
            log.info("exception occurred - BLankValue Exception - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
-       }catch (NotFoundException e){
+        } catch (NotFoundException e){
             log.info("exception occurred - NotFoundException - {}", e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
         } catch (Exception e){
