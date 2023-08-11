@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -470,6 +471,7 @@ class ResultsServiceTest {
 
     @Test
     void getResultPercentageSuccessful() {
+        DecimalFormat decimalFormat = new DecimalFormat("#.##");
         Student student = new Student("2","Bob","C4","10");
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
@@ -496,7 +498,8 @@ class ResultsServiceTest {
         Subject subject = new Subject("S999","Physics",10,"C4",100,50);
         when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
-        Double expected = ((45.0+67)/(50+100))*100;
+        Double answer = (45.0+67)/(50+100)*100;
+        Double expected = Double.parseDouble(decimalFormat.format(answer));
 
         Double actual = resultsService.getResultPercentage("10","4","2023-2024");
 

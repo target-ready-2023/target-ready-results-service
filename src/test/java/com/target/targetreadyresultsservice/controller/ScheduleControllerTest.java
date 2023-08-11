@@ -523,6 +523,45 @@ public class ScheduleControllerTest {
 
     @Test
     void getScheduleNamesForCurrentAcYearSuccessful() throws Exception{
+        List<String> scheduleNameList = List.of("Class Test 1","Class Test 2","Pre-model exam");
+        when(scheduleService.getScheduleNamesForCurrentAcYear(any(String.class))).thenReturn(scheduleNameList);
 
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/current/scNames?classCode=C11")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleNamesForCurrentAcYearNotFound() throws Exception{
+        when(scheduleService.getScheduleNamesForCurrentAcYear(any(String.class))).thenReturn(new ArrayList<>());
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/current/scNames?classCode=C11")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleNamesForCurrentAcYearBlank() throws Exception{
+        when(scheduleService.getScheduleNamesForCurrentAcYear(any(String.class))).thenThrow(BlankValueException.class);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/current/scNames?classCode= ")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getScheduleNamesForCurrentAcYearException() throws Exception{
+        when(scheduleService.getScheduleNamesForCurrentAcYear(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/current/scNames?classCode=C11")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
     }
 }
