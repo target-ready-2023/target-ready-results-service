@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,6 +43,7 @@ public class ResultsService{
     }
 
     private static final Logger log = LoggerFactory.getLogger(ResultsService.class);
+    DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     //get results for all tests, exams and final exam for a class in an academic year
     public List<ResultsDto> getClassResult(String className, String acYear) {
@@ -338,7 +340,7 @@ public class ResultsService{
         }
         avgInternals=avgInternals/count;
         log.info("Average found successfully as - {}",avgInternals);
-        return avgInternals;
+        return Double.parseDouble(decimalFormat.format(avgInternals));
     }
 
     //get result for a given schedule in a class for an academic year
@@ -488,7 +490,7 @@ public class ResultsService{
             throw new InvalidValueException("Action failed! Total possible marks for subjects cannot be zero");
         }
         log.info("Percentage found as - {}",percentage);
-        return percentage;
+        return Double.parseDouble(decimalFormat.format(percentage));
     }
 
     //get a particular test result for a student
@@ -606,8 +608,10 @@ public class ResultsService{
             throw new InvalidValueException("The max total was found as zero");
         }
         List<Double> list = new ArrayList<Double>();
-        list.add(totalMarks);
-        list.add(percentage);
+        list.add(Double.parseDouble(decimalFormat.format(totalMarks)));
+        log.info("total marks is  - {}",totalMarks);
+        list.add(Double.parseDouble(decimalFormat.format(percentage)));
+        log.info("percentage found is  - {}",percentage);
         return list;
     }
 }

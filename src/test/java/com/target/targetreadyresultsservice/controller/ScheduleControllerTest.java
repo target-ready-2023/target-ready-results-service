@@ -520,4 +520,9 @@ public class ScheduleControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    void getScheduleNamesForCurrentAcYearSuccessful() throws Exception{
+
+    }
 }
