@@ -109,7 +109,7 @@ public class ClassController {
                 classInfo=classService.getAllClasses();
             }
             else{
-                 classInfo = classService.getClassLeveByName(className);
+                 classInfo = classService.getClassLevelByName(className);
             }
             if (classInfo==null || classInfo.isEmpty()) {
                 log.info("No data is found");

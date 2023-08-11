@@ -145,4 +145,48 @@ public class SubjectServiceTests {
         verify(repository,times(1)).deleteById("S_PhC1");
         //assertThrows(RuntimeException.class,()->service.deleteSubject("S-EnC1"));
     }
+
+    @Test
+    public void testToGetSubjectsGivenClassCode(){
+        List<Subject> sub=List.of(new Subject("S_PhC4","Physics",100,"C4",100,25),
+                new Subject("S_MaC4","Math",100,"C4",100,25),
+                new Subject("S_SoC4","Social",100,"C4",100,25));
+        List<String> expectedOutput=List.of("Math","Physics","Social");
+
+        when(repository.findByClassCode(anyString())).thenReturn(sub);
+        List<String> actualOutput=service.getSubjectsGivenClassCode("C4");
+        assertThat(actualOutput).isNotNull();
+        assertEquals(expectedOutput,actualOutput);
+    }
+
+    @Test
+    public void testToGetSubjectsObjectGivenClassCodeToReturnSingleObject(){
+        List<Subject> sub=List.of(new Subject("S_PhC4","Physics",100,"C4",100,25));
+        when(repository.findByClassCode(anyString())).thenReturn(sub);
+        List<Subject> actual=service.getSubjectsObjectGivenClassCode("C4");
+        assertThat(actual).isNotNull();
+        assertThat(actual.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void testToGetSubjectObjectGivenClassCodeReturnsNull(){
+        when(repository.findByClassCode(anyString())).thenReturn(List.of());
+        List<Subject> actual=service.getSubjectsObjectGivenClassCode("C4");
+        assertThat(actual).isNull();
+    }
+
+    @Test
+    public void testToGetSubjectObjectGivenClassCodeReturnsObjectsList(){
+        Subject sub1=new Subject("S_PhC4","Physics",100,"C4",100,25);
+        Subject sub2=new Subject("S_MaC4","Math",100,"C4",100,25);
+        List<Subject> sub = new ArrayList<>();
+        sub.add(sub1);
+        sub.add(sub2);
+        when(repository.findByClassCode(anyString())).thenReturn(sub);
+        List<Subject> actual=service.getSubjectsObjectGivenClassCode("C4");
+        Collections.sort(sub, (s1, s2) -> s1.getSubjectName().compareToIgnoreCase(s2.getSubjectName()));
+        assertThat(actual).isNotNull();
+        assertEquals(sub,actual);
+        assertThat(actual.size()).isEqualTo(2);
+    }
 }

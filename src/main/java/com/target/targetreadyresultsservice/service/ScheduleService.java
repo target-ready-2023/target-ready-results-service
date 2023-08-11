@@ -324,7 +324,7 @@ public class ScheduleService {
 
     //list of schedule names for a class in a year
     public List<String> getScheduleNamesForClass(String className, String acYear) {
-        List<ClassDto> classDto = classService.getClassLeveByName(className);
+        List<ClassDto> classDto = classService.getClassLevelByName(className);
         log.info("Class found as - {}",classDto);
         if(classDto.isEmpty()){
             log.info("No class found with class name - {}",className);

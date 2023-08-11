@@ -1,7 +1,6 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
-import com.target.targetreadyresultsservice.Exception.NotFoundException;
 import com.target.targetreadyresultsservice.model.ClassLevel;
 import com.target.targetreadyresultsservice.repository.ClassRepository;
 
@@ -183,7 +182,7 @@ public class ClassServiceTest {
         when(classRepository.findByNameIgnoreCase(anyString())).thenReturn(List.of(new ClassLevel("C4","4")));
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
 
-        List<ClassDto> responseClasses = classService.getClassLeveByName("4");
+        List<ClassDto> responseClasses = classService.getClassLevelByName("4");
         assertThat(responseClasses).isNotNull();
         assertThat(1).isEqualTo(responseClasses.size());
     }
@@ -192,7 +191,17 @@ public class ClassServiceTest {
     void getClassByClassNameShouldReturnException(){
         when(classRepository.findByNameIgnoreCase(anyString())).thenThrow(RuntimeException.class);
         when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
-        assertThrows(RuntimeException.class, ()-> classService.getClassLeveByName("4"));
+        assertThrows(RuntimeException.class, ()-> classService.getClassLevelByName("4"));
+    }
+
+    @Test
+    void getClassByClassNameShouldReturnNull(){
+        when(classRepository.findByNameIgnoreCase(anyString())).thenReturn(List.of());
+        when(subjectService.getSubjectsGivenClassCode(any(String.class))).thenReturn(List.of("Physics","Social"));
+        List<ClassDto> responseClasses = classService.getClassLevelByName("4");
+        assertThat(responseClasses).isNull();
+        verify(subjectService,times(0)).getSubjectsGivenClassCode(any(String.class));
+
     }
 
     @Test

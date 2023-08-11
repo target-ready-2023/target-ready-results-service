@@ -199,7 +199,7 @@ public class ClassControllerTest {
     @Test
     void getClassDetailsByNameShouldReturnClassDto() throws Exception{
         List<ClassDto> classDto = List.of(new ClassDto("C4","4",List.of("Math","Physics","Social")));
-        when(classService.getClassLeveByName("4")).thenReturn(classDto);
+        when(classService.getClassLevelByName("4")).thenReturn(classDto);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -223,7 +223,7 @@ public class ClassControllerTest {
 
     @Test
     void getClassDetailsByNameShouldReturnNotFound() throws Exception{
-        when(classService.getClassLeveByName("4")).thenReturn((List<ClassDto>) classDto);
+        when(classService.getClassLevelByName("4")).thenReturn((List<ClassDto>) classDto);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -235,7 +235,7 @@ public class ClassControllerTest {
 
     @Test
     void getClassDetailsByNameShouldReturnException() throws Exception{
-        when(classService.getClassLeveByName(any(String.class))).thenThrow(RuntimeException.class);
+        when(classService.getClassLevelByName(any(String.class))).thenThrow(RuntimeException.class);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/search")
                 .contentType(MediaType.APPLICATION_JSON)

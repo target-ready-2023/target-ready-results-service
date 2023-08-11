@@ -8,7 +8,6 @@ import com.target.targetreadyresultsservice.repository.ClassRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -70,53 +69,42 @@ public class ClassService {
     public ClassDto getClassLevelById(String code){
         ClassLevel classLevels = classRepository.findById(code)
                 .orElseThrow(() -> new RuntimeException("Class with given code "+code+" is not found"));
-
             List<String> subjects =subjectService.getSubjectsGivenClassCode(code);
             ClassDto classInfo = new ClassDto(classLevels.getCode(),classLevels.getName(),subjects);
             log.info("Fetching class details with class code {} from db", code);
             return classInfo;
-
     }
 
 
     public ClassLevel setClassLevelInfo(ClassLevel classLevel){
             log.info("storing class {} into db", classLevel);
-
             String id;
             if( classRepository.existsByName(classLevel.getName())){
-                throw new RuntimeException("class already exists with the given className: "+classLevel.getName());
-            }
+                throw new RuntimeException("class already exists with the given className: "+classLevel.getName());}
             else if((classLevel.getName()).isBlank()){
-                throw new RuntimeException("class name cannot be null or empty");
-            }
+                throw new RuntimeException("class name cannot be null or empty");}
             else{
-                id = "C" + (classLevel.getName());
-            }
+                id = "C" + (classLevel.getName());}
             classLevel.setCode(id.toUpperCase());
-            return classRepository.save(classLevel);
-    }
+            return classRepository.save(classLevel);}
 
     public ClassLevel updateClassLevelInfo(String code,ClassLevel classLevel) {
         ClassLevel isClass=classRepository.findById(code)
                 .orElseThrow(() -> new RuntimeException("Class with given code "+code+" is not found"));
         isClass.setName(classLevel.getName());
         log.info("Updating class info with class code {} in th db",code);
-        return classRepository.save(isClass);
-    }
+        return classRepository.save(isClass);}
 
     public String deleteClassLevelInfo(String code) {
         boolean isClass=classRepository.existsById(code);
         if(isClass) {
            classRepository.deleteById(code);
-           return "code";
-        }
-        else throw new RuntimeException("Class with given code "+code+" is not found");
-    }
+           return "code";}
+        else throw new RuntimeException("Class with given code "+code+" is not found");}
 
-    public List<ClassDto> getClassLeveByName(String className) {
+    public List<ClassDto> getClassLevelByName(String className) {
 
         List<ClassLevel> classLevels = classRepository.findByNameIgnoreCase(className);
-
         if(!classLevels.isEmpty()) {
             List<ClassDto> classes = new ArrayList<>();
             for (ClassLevel level : classLevels) {
@@ -124,11 +112,9 @@ public class ClassService {
                 ClassDto classInfo = new ClassDto(level.getCode(), level.getName(), subjects);
                 classes.add(classInfo);
             }
-            return classes;
-        }
+            return classes;}
         else{
-                return null;
-        }
+                return null;}
 
     }
 

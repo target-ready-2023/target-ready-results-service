@@ -15,10 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.TestPropertySource;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -524,7 +521,7 @@ class ScheduleServiceTest {
     @Test
     void getScheduleNamesForClassSuccessful() {
         List<ClassDto> classDto = List.of(new ClassDto("C99","99",List.of("Physics")));
-        when(classService.getClassLeveByName(any(String.class))).thenReturn(classDto);
+        when(classService.getClassLevelByName(any(String.class))).thenReturn(classDto);
 
         List<Schedule> schedules = new ArrayList<>();
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
@@ -542,7 +539,7 @@ class ScheduleServiceTest {
 
     @Test
     void getScheduleNamesForClassListNotFound() {
-        when(classService.getClassLeveByName(any(String.class))).thenReturn(new ArrayList<>());
+        when(classService.getClassLevelByName(any(String.class))).thenReturn(new ArrayList<>());
         assertThrows(NotFoundException.class,()->scheduleService.getScheduleNamesForClass("4","2023-2024"));
     }
 

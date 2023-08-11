@@ -134,16 +134,22 @@ public class SubjectService {
         {
             return null;
         }
-        Collections.sort(subInfo, new Comparator<Subject>() {
-            @Override
-            public int compare(Subject o1, Subject o2) {
-                String s1= o1.getSubjectName();
-                String s2 = o2.getSubjectName();
+        else if(subInfo.size()==1){
+            return subInfo;
+        }
+        else{
+            Collections.sort(subInfo, new Comparator<Subject>() {
+                @Override
+                public int compare(Subject o1, Subject o2) {
+                    String s1= o1.getSubjectName();
+                    String s2 = o2.getSubjectName();
 
-                return s1.compareToIgnoreCase(s2);
-            }
-        });
-        return subInfo;
+                    return s1.compareToIgnoreCase(s2);
+                }
+            });
+            return subInfo;
+        }
+
     }
 }
 
