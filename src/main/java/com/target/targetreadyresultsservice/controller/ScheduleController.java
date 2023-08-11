@@ -278,7 +278,10 @@ public class ScheduleController {
         }catch (NotFoundException e){
             log.info("No schedules found");
             return new ResponseEntity(e.getMessage(),HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        }catch (BlankValueException e){
+            log.info("No class code provided");
+            return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
+        } catch (Exception e){
             log.info("Exception occurred - {}",e.getMessage());
             return new ResponseEntity(e.getMessage(),HttpStatus.EXPECTATION_FAILED);
         }

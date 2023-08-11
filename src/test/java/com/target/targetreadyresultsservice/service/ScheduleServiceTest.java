@@ -370,16 +370,16 @@ class ScheduleServiceTest {
 
         when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(schedules);
 
-        List<Schedule> response = scheduleService.getActiveSchedule("C99","2023-2024");
+        List<Schedule> response = scheduleService.getActiveSchedule("C99");
 
         assertEquals(schedules,response);
 
     }
 
     @Test
-    void getActiveScheduleByClassReturnsNullValueException(){
+    void getActiveScheduleByClassReturnsNotFoundException(){
         when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(new ArrayList<>());
-        assertThrows(NullValueException.class,()->scheduleService.getActiveSchedule("C99","2023-2024"));
+        assertThrows(NotFoundException.class,()->scheduleService.getActiveSchedule("C99"));
     }
 
     @Test
@@ -399,9 +399,9 @@ class ScheduleServiceTest {
     }
 
     @Test
-    void getScheduleByClassReturnsNullValueException(){
+    void getScheduleByClassReturnsNotFoundException(){
         when(scheduleRepository.findByclassCode(any(String.class))).thenReturn(new ArrayList<>());
-        assertThrows(NullValueException.class,()->scheduleService.getActiveSchedule("C99","2023-2024"));
+        assertThrows(NotFoundException.class,()->scheduleService.getActiveSchedule("C99"));
     }
 
     @Test

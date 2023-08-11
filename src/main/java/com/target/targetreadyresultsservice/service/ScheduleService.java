@@ -396,10 +396,14 @@ public class ScheduleService {
 
     //get schedule name list for a class in the current academic year
     public List<String> getScheduleNamesForCurrentAcYear(String classCode) {
+        if(classCode.isBlank()){
+            log.info("Class code not provided. Throws BlankValueException");
+            throw new BlankValueException("Please provide the required class code");
+        }
         LocalDate date = LocalDate.now();
         log.info("Current date is - {}",date);
         String currentAcYear = findScheduleYear(date);
-        log.info("Current AcYear found as - {}",currentAcYear);
+        log.info("Current acYear found as - {}",currentAcYear);
         List<Schedule> scheduleList = getScheduleByClass(classCode,currentAcYear);
         if(scheduleList.isEmpty()){
             log.info("No schedules found for the acYear - {}",currentAcYear);

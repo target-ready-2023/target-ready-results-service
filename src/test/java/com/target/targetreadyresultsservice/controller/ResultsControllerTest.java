@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.target.targetreadyresultsservice.Dto.ResultsDto;
 import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
@@ -175,14 +176,13 @@ class ResultsControllerTest {
 
     @Test
     void getStudentResultsSuccessful() throws Exception{
-        Results r = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4JULY2023");
-        List<Results> resultsList = List.of(r);
+        ResultsDto r = new ResultsDto("R4JULY2023","4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)),50.0,100.0);
+        List<ResultsDto> resultsDtoList = List.of(r);
 
-        when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(resultsList);
+        when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(resultsDtoList);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&academicYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
@@ -193,7 +193,7 @@ class ResultsControllerTest {
     void getStudentResultsReturnsException() throws Exception{
         when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenThrow(RuntimeException.class);
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&academicYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
@@ -204,7 +204,7 @@ class ResultsControllerTest {
     void getStudentResultsReturnsNotFoundException() throws Exception{
         when(resultsService.getStudentResult(any(String.class),any(String.class),any(String.class))).thenReturn(new ArrayList<>());
 
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&acYear=2023-2024")
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/student?rollNumber=4&className=4&academicYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -213,11 +213,10 @@ class ResultsControllerTest {
 
     @Test
     void getClassResultsSuccessful() throws Exception{
-        Results r = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4JULY2023");
-        List<Results> resultsList = List.of(r);
-        when(resultsService.getClassResult(any(String.class),any(String.class))).thenReturn(resultsList);
+        ResultsDto r = new ResultsDto("R4JULY2023","4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)),50.0,100.0);
+        List<ResultsDto> resultsDtoList = List.of(r);
+        when(resultsService.getClassResult(any(String.class),any(String.class))).thenReturn(resultsDtoList);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classResults?className=4&academicYear=2023-2024")
                 .contentType(MediaType.APPLICATION_JSON));
@@ -250,11 +249,10 @@ class ResultsControllerTest {
 
     @Test
     void getClassTestResultsSuccessful() throws Exception{
-        Results r = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4TC420JULY2023");
-        List<Results> resultsList = List.of(r);
-        when(resultsService.getClassResult(any(String.class),any(String.class))).thenReturn(resultsList);
+        ResultsDto r = new ResultsDto("R4JULY2023","4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)),50.0,100.0);
+        List<ResultsDto> resultsDtoList = List.of(r);
+        when(resultsService.getClassResult(any(String.class),any(String.class))).thenReturn(resultsDtoList);
 
         ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/classTest?classCode=C4" +
                 "&academicYear=2023-2024&scheduleCode=TC420JULY2023")
@@ -379,9 +377,8 @@ class ResultsControllerTest {
 
     @Test
     void getStudentTestResultSuccessful() throws Exception{
-        Results r = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999",45,0)));
-        r.setResultsCode("R4JULY2023");
+        ResultsDto r = new ResultsDto("R4JULY2023","4","TC420JULY2023",
+                List.of(new Marks("S999",45,0)),50.0,100.0);
         when(resultsService.getStudentTestResult(any(String.class),any(String.class),
                 any(String.class),any(String.class))).thenReturn(r);
 
