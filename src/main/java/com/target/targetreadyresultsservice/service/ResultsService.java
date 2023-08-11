@@ -15,10 +15,8 @@ import org.springframework.data.util.Pair;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ResultsService{
@@ -303,7 +301,7 @@ public class ResultsService{
 
         Student student = studentService.getStudentFromClassRollNo(className,rollNumber);
         log.info("Student found as - {}.This is from average",student);
-        if(student==null){
+        if(student==null) {
             log.info("Student not found. Throws NotFoundException");
             throw new NotFoundException("Student not found");
         }
@@ -601,7 +599,12 @@ public class ResultsService{
                 maxTotal  += (double) (sub.getMaxTestMarks()+sub.getMaxExamMarks());
             }
         }
-        percentage = (totalMarks*100)/(maxTotal);
+        if(maxTotal!=0) {
+            percentage = (totalMarks * 100) / (maxTotal);
+        }
+        else{
+            throw new InvalidValueException("The max total was found as zero");
+        }
         List<Double> list = new ArrayList<Double>();
         list.add(totalMarks);
         list.add(percentage);

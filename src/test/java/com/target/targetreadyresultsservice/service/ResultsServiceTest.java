@@ -1,6 +1,7 @@
 package com.target.targetreadyresultsservice.service;
 
 import com.target.targetreadyresultsservice.Dto.ClassDto;
+import com.target.targetreadyresultsservice.Dto.ResultsDto;
 import com.target.targetreadyresultsservice.Dto.StudentDto;
 import com.target.targetreadyresultsservice.Exception.BlankValueException;
 import com.target.targetreadyresultsservice.Exception.InvalidValueException;
@@ -9,6 +10,8 @@ import com.target.targetreadyresultsservice.model.*;
 import com.target.targetreadyresultsservice.repository.ResultsRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
@@ -44,6 +47,8 @@ class ResultsServiceTest {
         resultsService = new ResultsService(resultsRepository,studentService,
                 scheduleService, classService,subjectService);
     }
+
+    private static final Logger log = LoggerFactory.getLogger(ResultsServiceTest.class);
 
     @Test
     void addNewResultTestSuccess() {
@@ -396,12 +401,15 @@ class ResultsServiceTest {
 
     @Test
     void getStudentResult(){
-        Student student = new Student("2","Bob","C4","10");
+        Student student = new Student("S2","Bob","C4","10");
 
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
-        List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 50, 0))));
+        Results r = new Results("S2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0)));
+        r.setResultsCode("RS2TC420JULY2023");
+
+        List<Results> resultsList = List.of(r);
         when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
@@ -411,13 +419,22 @@ class ResultsServiceTest {
         Schedule schedule = new Schedule("TC420JULY2023","C4",subjectScheduleList,
                 "Test","Class Test 1","2023-2024",true);
 
+        Subject subject = new Subject("S999","Class four subject",
+                10,"C4",100,50);
+
+
         when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
 
-        List<Results> expected = List.of(new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 50, 0))));
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule);
+        //in getAggregates
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
-        List<Results> actual = resultsService.getStudentResult("2","4","2023-2024");
+        List<ResultsDto> expected = List.of(new ResultsDto("RS2TC420JULY2023","S2","TC420JULY2023",
+                List.of(new Marks("S999",50,0)),50.0,100.0));
 
+        List<ResultsDto> actual = resultsService.getStudentResult("2","4","2023-2024");
+        log.info("actual is - {}",actual);
+        log.info("Expected is  - {}",expected);
         assertEquals(expected.toString(),actual.toString());
     }
 
@@ -550,13 +567,18 @@ class ResultsServiceTest {
         when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0))));
+                List.of(new Marks("S999", 50, 0))));
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
 
-        List<Results> expected = List.of(new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0))));
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule.get(0));
+        //in getAggregates
+        Subject subject = new Subject("S999","Physics",10,"C4",0,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
-        List<Results> actual = resultsService.getClassResult("4","2023-2024");
+        List<ResultsDto> expected = List.of(new ResultsDto(null,"2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0)),50.0,100.0));
+
+        List<ResultsDto> actual = resultsService.getClassResult("4","2023-2024");
 
         assertEquals(expected.toString(),actual.toString());
     }
@@ -630,6 +652,7 @@ class ResultsServiceTest {
         ClassDto classDto = new ClassDto("C4","4",List.of("S999"));
         when(classService.getClassLevelById(any(String.class))).thenReturn(classDto);
 
+        //in getClassResult
         when(classService.getClassCodeFromName(any(String.class))).thenReturn("C4");
 
         List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
@@ -646,15 +669,24 @@ class ResultsServiceTest {
         when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(schedule);
 
         List<Results> resultsList = List.of(new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0))),
+                List.of(new Marks("S999", 50, 0))),
                 new Results("2","TC420JUNE2023",
-                        List.of(new Marks("S999", 30, 0))));
+                        List.of(new Marks("S999", 50, 0))));
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
 
-        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
-        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s2);
-
-        Double expected = (45.0+30.0)/2;
+        int i = 0;
+        for (Results r : resultsList) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule.get(i));
+            i++;
+            Subject subject = new Subject("S999","Physics",10,"C4",0,50);
+            when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        }
+        i=0;
+        for (Schedule s :schedule) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule.get(i));
+            i++;
+        }
+        Double expected = (50.0+50.0)/2;
 
         Double actual = resultsService.getAverageForSubject("10","4",
                 "2023-2024","S999");
@@ -708,9 +740,18 @@ class ResultsServiceTest {
                         List.of(new Marks("S999", 30, 45))));
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
 
-        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
-        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s2);
-
+        int i = 0;
+        for (Results r : resultsList) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule.get(i));
+            i++;
+            Subject subject = new Subject("S999","Physics",10,"C4",0,50);
+            when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        }
+        i=0;
+        for (Schedule s :schedule) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(schedule.get(i));
+            i++;
+        }
         assertThrows(InvalidValueException.class,()->resultsService.getAverageForSubject("10","4",
                 "2023-2024","S999"));
     }
@@ -730,16 +771,28 @@ class ResultsServiceTest {
         when(scheduleService.getScheduleByClass(any(String.class),any(String.class))).thenReturn(scheduleList);
 
         Results r1 = new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0)));
+                List.of(new Marks("S999", 50, 0)));
         Results r2 = new Results("4","TC420JULY2023",
-                List.of(new Marks("S999", 30, 0)));
+                List.of(new Marks("S999", 50, 0)));
         List<Results> resultsList = List.of(r1,r2);
         when(resultsRepository.findAllByscheduleCode(any(String.class))).thenReturn(resultsList);
 
-        List<Results> expected = List.of(r1,r2);
-        List<Results> actual = resultsService.getClassTestResults("C4","2023-2024","TC420JULY2023");
+        int i=0;
+        for (Results r : resultsList) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(scheduleList.get(i));
+            i++;
+            Subject subject = new Subject("S999","Physics",10,"C4",0,50);
+            when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+        }
 
-        assertEquals(expected,actual);
+        List<ResultsDto> expected = List.of(new ResultsDto(null,"2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0)),50.0,100.0),
+                new ResultsDto(null,"4","TC420JULY2023",
+                        List.of(new Marks("S999", 50, 0)),50.0,100.0));
+
+        List<ResultsDto> actual = resultsService.getClassTestResults("C4","2023-2024","TC420JULY2023");
+
+        assertEquals(expected.toString(),actual.toString());
     }
 
     @Test
@@ -790,7 +843,7 @@ class ResultsServiceTest {
         when(studentService.getStudentFromClassRollNo(any(String.class),any(String.class))).thenReturn(student);
 
         Results r1 = new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0)));
+                List.of(new Marks("S999", 50, 0)));
 
         List<Results> resultsList = List.of(r1);
         when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
@@ -803,10 +856,13 @@ class ResultsServiceTest {
 
         when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
 
-        Results expected = new Results("2","TC420JULY2023",
-                List.of(new Marks("S999", 45, 0)));
+        Subject subject = new Subject("S999","Physics",10,"C4",0,50);
+        when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
 
-        Results actual = resultsService.getStudentTestResult("4","2023-2024","Class Test 1","10");
+        ResultsDto expected = new ResultsDto(null,"2","TC420JULY2023",
+                List.of(new Marks("S999", 50, 0)),50.0,100.0);
+
+        ResultsDto actual = resultsService.getStudentTestResult("4","2023-2024","Class Test 1","10");
 
         assertEquals(expected.toString(),actual.toString());
     }

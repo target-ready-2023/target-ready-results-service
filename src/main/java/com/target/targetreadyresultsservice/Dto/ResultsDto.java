@@ -72,7 +72,17 @@ public class ResultsDto {
         this.marksList = marksList;
         this.totalMarks = totalMarks;
         this.totalPercentage = totalPercentage;
+    }
 
-
+    @Override
+    public String toString() {
+        return "ResultsDto{" +
+                "resultsCode='" + resultsCode + '\'' +
+                ", studentId='" + studentId + '\'' +
+                ", scheduleCode='" + scheduleCode + '\'' +
+                ", marksList=" + marksList +
+                ", totalMarks=" + totalMarks +
+                ", totalPercentage=" + totalPercentage +
+                '}';
     }
 }
