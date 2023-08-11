@@ -240,19 +240,18 @@ public class ScheduleControllerTest {
                 LocalTime.of(10, 00), true));
         List<Schedule> scheduleList = List.of(new Schedule("TC9910JULY2023","C99", subjectScheduleList,
                 "Test", "Class Test 1", "2023-2024",true));
-        when(scheduleService.getActiveSchedule(any(String.class),any(String.class))).thenReturn(scheduleList);
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/2023-2024/active")
+        when(scheduleService.getActiveSchedule(any(String.class))).thenReturn(scheduleList);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/active")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
-
     }
 
     @Test
     void getActiveSchedulesByClassReturnsNullValueException() throws Exception{
-        when(scheduleService.getActiveSchedule(any(String.class),any(String.class))).thenThrow(NullValueException.class);
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/2023-2024/active")
+        when(scheduleService.getActiveSchedule(any(String.class))).thenThrow(NullValueException.class);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/active")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isNotFound())
@@ -261,8 +260,8 @@ public class ScheduleControllerTest {
 
     @Test
     void getActiveSchedulesByClassReturnsException() throws Exception{
-        when(scheduleService.getActiveSchedule(any(String.class),any(String.class))).thenThrow(RuntimeException.class);
-        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/2023-2024/active")
+        when(scheduleService.getActiveSchedule(any(String.class))).thenThrow(RuntimeException.class);
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/C99/active")
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())

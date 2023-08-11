@@ -399,7 +399,7 @@ public class ScheduleService {
         LocalDate date = LocalDate.now();
         log.info("Current date is - {}",date);
         String currentAcYear = findScheduleYear(date);
-        log.info("Current AcYear found as - {}",currentAcYear);
+        log.info("Current acYear found as - {}",currentAcYear);
         List<Schedule> scheduleList = getScheduleByClass(classCode,currentAcYear);
         if(scheduleList.isEmpty()){
             log.info("No schedules found for the acYear - {}",currentAcYear);
