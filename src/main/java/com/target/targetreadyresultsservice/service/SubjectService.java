@@ -2,17 +2,19 @@ package com.target.targetreadyresultsservice.service;
 
 
 //import com.target.targetreadyresultsservice.controller.ResultsController;
+import com.target.targetreadyresultsservice.Dto.ClassDto;
 import com.target.targetreadyresultsservice.controller.SubjectController;
 import com.target.targetreadyresultsservice.model.Subject;
 import com.target.targetreadyresultsservice.repository.SubjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,6 +41,7 @@ public class SubjectService {
                 String sub =s.getSubjectName();
                 subNames.add(sub);
         }
+        Collections.sort(subNames);
         return subNames;
     }
 
@@ -131,6 +134,15 @@ public class SubjectService {
         {
             return null;
         }
+        Collections.sort(subInfo, new Comparator<Subject>() {
+            @Override
+            public int compare(Subject o1, Subject o2) {
+                String s1= o1.getSubjectName();
+                String s2 = o2.getSubjectName();
+
+                return s1.compareToIgnoreCase(s2);
+            }
+        });
         return subInfo;
     }
 }
