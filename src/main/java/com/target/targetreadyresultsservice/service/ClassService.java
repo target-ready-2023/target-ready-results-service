@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -41,23 +42,36 @@ public class ClassService {
             Collections.sort(classes, new Comparator<ClassDto>() {
                 @Override
                 public int compare(ClassDto o1, ClassDto o2) {
-                    String s1=o1.getName();
-                    String s2=o2.getName();
+                    String[] s1=o1.getName().split("((?<=[0-9])(?=[A-Za-z]))");
+                    String[] s2=o2.getName().split("((?<=[0-9])(?=[A-Za-z]))");
 
-                    boolean isNumeric1 = s1.matches("\\d+");
-                    boolean isNumeric2 = s2.matches("\\d+");
-
-                    if (isNumeric1 && isNumeric2) {
-                        int num1 = Integer.parseInt(s1);
-                        int num2 = Integer.parseInt(s2);
-                        return Integer.compare(num1, num2);
-                    } else if (isNumeric1) {
-                        return -1;
-                    } else if (isNumeric2) {
-                        return 1;
-                    } else {
-                        return s1.compareToIgnoreCase(s2);
+                    int i=0;
+                    if(Arrays.equals(s1, s2))
+                        return 0;
+                    else{
+                        for(i=0;i<Math.min(s1.length, s2.length);i++)
+                            if(!s1[i].equals(s2[i])) {
+                                if(!s1[i].matches("[0-9]+") && !s2[i].matches("[0-9]+")) {
+                                    if(s1[i].compareTo(s2[i])>0)
+                                        return 1;
+                                    else
+                                        return -1;
+                                }
+                                else {
+                                    int nu1 = Integer.parseInt(s1[i]);
+                                    int nu2 = Integer.parseInt(s2[i]);
+                                    if(nu1>nu2)
+                                        return 1;
+                                    else
+                                        return -1;
+                                }
+                            }
                     }
+
+                    if(s1.length>i)
+                        return 1;
+                    else
+                        return -1;
                 }
             });
             return classes;

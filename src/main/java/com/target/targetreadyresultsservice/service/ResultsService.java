@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.List;
 
+import static java.util.Collections.reverse;
+
 @Service
 public class ResultsService{
     @Autowired
@@ -549,9 +551,10 @@ public class ResultsService{
             studentMarkList.add(student);
         }
         Collections.sort(studentMarkList,Collections.reverseOrder());
-        log.info("Top 5 students found as - {}",studentMarkList.subList(0,5));
-        if(studentMarkList.size()>5)
-            return studentMarkList.subList(0,5);
+        log.info("StudentDto List for LeaderBoard found as - {}",studentMarkList);
+        if(studentMarkList.size()>=5) {
+            return studentMarkList.subList(0, 5);
+        }
         else return studentMarkList;
     }
 
@@ -561,12 +564,26 @@ public class ResultsService{
         if(classList.isEmpty()){
             throw new NotFoundException("Class list is Empty");
         }
-        //need to sort class by classLevel
-        //code here
         for (ClassDto c :
              classList) {
-            List<StudentDto> rankList = getLeaderboard(c.getName(),acYear);
-            toppersList.add(rankList.get(0));
+            List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(c.getName()));
+            if(studentList==null || studentList.isEmpty()){
+                log.info("No students found in class - {}",c.getName());
+                continue;
+            }
+            List<StudentDto> classRankList = new ArrayList<>();
+            for (Student s: studentList) {
+                StudentDto student = new StudentDto(
+                        s.getStudentId(),
+                        s.getClassCode(),
+                        s.getRollNumber(),
+                        s.getName(),
+                        getResultPercentage(s.getRollNumber(),c.getName(),acYear)
+                );
+                classRankList.add(student);
+            }
+            Collections.sort(classRankList); //sorts in ascending order
+            toppersList.add(0,classRankList.get(classRankList.size()-1)); //gets the highest score, which is the last element
         }
         if(toppersList.isEmpty()){
             throw new NotFoundException("Toppers List is Empty");
