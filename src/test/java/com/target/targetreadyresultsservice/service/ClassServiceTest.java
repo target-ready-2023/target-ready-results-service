@@ -74,7 +74,7 @@ public class ClassServiceTest {
     @Test
     void getAllClassesIsNumeric1() {
         List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4"),
-                new ClassLevel("C4","five"));
+                new ClassLevel("C4","4a"));
         List<String> subjects = List.of("Physics","Social");
 
         when(classRepository.findAll()).thenReturn(classLevels);
@@ -86,8 +86,8 @@ public class ClassServiceTest {
 
     @Test
     void getAllClassesIsNumeric2() {
-        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","four"),
-                new ClassLevel("C4","5"));
+        List<ClassLevel> classLevels = List.of(new ClassLevel("C4","4a"),
+                new ClassLevel("C5","5"));
         List<String> subjects = List.of("Physics","Social");
 
         when(classRepository.findAll()).thenReturn(classLevels);
