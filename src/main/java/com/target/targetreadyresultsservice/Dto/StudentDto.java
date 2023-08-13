@@ -1,34 +1,34 @@
 package com.target.targetreadyresultsservice.Dto;
 
 public class StudentDto implements Comparable<StudentDto> {
-    String studentId;
-    String classCode;
+    String studentid;
+    String className;
     String rollNum;
     String name;
     Double totalMarks;
 
-    public StudentDto(String studentId, String classCode, String rollNum, String name, Double totalMarks) {
-        this.studentId = studentId;
-        this.classCode = classCode;
+    public StudentDto(String studentid, String classCode, String rollNum, String name, Double totalMarks) {
+        this.studentid = studentid;
+        this.className = classCode;
         this.rollNum = rollNum;
         this.name = name;
         this.totalMarks = totalMarks;
     }
 
-    public String getStudentId() {
-        return studentId;
+    public String getStudentid() {
+        return studentid;
     }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
+    public void setStudentid(String studentid) {
+        this.studentid = studentid;
     }
 
-    public String getClassCode() {
-        return classCode;
+    public String getClassName() {
+        return className;
     }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String getRollNum() {
