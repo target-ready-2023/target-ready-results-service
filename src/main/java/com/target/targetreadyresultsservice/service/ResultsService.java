@@ -543,7 +543,7 @@ public class ResultsService{
         for (Student s: studentList) {
             StudentDto student = new StudentDto(
                     s.getStudentId(),
-                    s.getClassCode(),
+                    className,
                     s.getRollNumber(),
                     s.getName(),
                     getResultPercentage(s.getRollNumber(),className,acYear)
@@ -566,7 +566,7 @@ public class ResultsService{
         }
         for (ClassDto c :
              classList) {
-            List<Student> studentList = studentService.getStudentDetailsByClassCode(classService.getClassCodeFromName(c.getName()));
+            List<Student> studentList = studentService.getStudentDetailsByClassCode(c.getCode());
             if(studentList==null || studentList.isEmpty()){
                 log.info("No students found in class - {}",c.getName());
                 continue;
@@ -575,7 +575,7 @@ public class ResultsService{
             for (Student s: studentList) {
                 StudentDto student = new StudentDto(
                         s.getStudentId(),
-                        s.getClassCode(),
+                        c.getName(),
                         s.getRollNumber(),
                         s.getName(),
                         getResultPercentage(s.getRollNumber(),c.getName(),acYear)

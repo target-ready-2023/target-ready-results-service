@@ -2,14 +2,14 @@ package com.target.targetreadyresultsservice.Dto;
 
 public class StudentDto implements Comparable<StudentDto> {
     String studentid;
-    String classCode;
+    String className;
     String rollNum;
     String name;
     Double totalMarks;
 
     public StudentDto(String studentid, String classCode, String rollNum, String name, Double totalMarks) {
         this.studentid = studentid;
-        this.classCode = classCode;
+        this.className = classCode;
         this.rollNum = rollNum;
         this.name = name;
         this.totalMarks = totalMarks;
@@ -23,12 +23,12 @@ public class StudentDto implements Comparable<StudentDto> {
         this.studentid = studentid;
     }
 
-    public String getClassCode() {
-        return classCode;
+    public String getClassName() {
+        return className;
     }
 
-    public void setClassCode(String classCode) {
-        this.classCode = classCode;
+    public void setClassName(String className) {
+        this.className = className;
     }
 
     public String getRollNum() {
