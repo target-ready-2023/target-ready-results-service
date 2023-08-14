@@ -499,4 +499,45 @@ class ResultsControllerTest {
         response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
                 .andDo(MockMvcResultHandlers.print());
     }
+
+    @Test
+    void getToppersListSuccessful() throws  Exception{
+        List<StudentDto> studentDtoList = List.of(new StudentDto("8","C12","15","Carl",100.0),
+                new StudentDto("6","C11","12","Ann",93.0),
+                new StudentDto("4","C10","10","Bob",99.0),
+                new StudentDto("7","C9","30","Rob",97.0),
+                new StudentDto("5","C8","1","Alice",95.0),
+                new StudentDto("8","C7","15","Carl",100.0),
+                 new StudentDto("6","C6","12","Ann",93.0),
+                new StudentDto("4","C5","10","Bob",99.0),
+                new StudentDto("7","C4","30","Rob",97.0),
+                new StudentDto("5","C3","1","Alice",90.0));
+                when(resultsService.getToppersList(any(String.class))).thenReturn(studentDtoList);
+
+                ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/schoolToppers?academicYear=2023-2024")
+                        .contentType(MediaType.APPLICATION_JSON));
+                response.andExpect(MockMvcResultMatchers.status().isOk())
+                        .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getToppersListReturnsNotFoundException() throws Exception{
+        when(resultsService.getToppersList(any(String.class))).thenThrow(NotFoundException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/schoolToppers?academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+        response.andExpect(MockMvcResultMatchers.status().isNotFound())
+                .andDo(MockMvcResultHandlers.print());
+    }
+
+    @Test
+    void getToppersListReturnsException() throws Exception{
+        when(resultsService.getToppersList(any(String.class))).thenThrow(RuntimeException.class);
+
+        ResultActions response = mockMvc.perform(get(END_POINT_PATH+"/schoolToppers?academicYear=2023-2024")
+                .contentType(MediaType.APPLICATION_JSON));
+
+        response.andExpect(MockMvcResultMatchers.status().isExpectationFailed())
+                .andDo(MockMvcResultHandlers.print());
+    }
 }

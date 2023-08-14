@@ -975,4 +975,56 @@ class ResultsServiceTest {
         when(studentService.getStudentDetailsByClassCode(any(String.class))).thenReturn(new ArrayList<>());
         assertThrows(NotFoundException.class,()->resultsService.getLeaderboard("4","2023-2024"));
     }
+
+    @Test
+    void getToppersListTestingForSuccess() {
+        List<ClassDto> classList = List.of(
+                new ClassDto("C6", "6", List.of("S999"))
+        );
+        List<Student> studentList = List.of(
+                new Student("1", "Student1", "C6", "10")
+        );
+        List<Results> resultsList = List.of(
+                new Results("1", "FE420JULY2023",
+                        List.of(new Marks("S999", 50, 100)))
+        );
+        List<SubjectSchedule> subjectScheduleList = List.of(new SubjectSchedule("S999",
+                LocalDate.of(2023, 7, 20),
+                LocalTime.of(10, 0), false));
+        Schedule s1 = new Schedule("FEC420JULY2023", "C6", subjectScheduleList,
+                "final exam", "final exam", "2023-2024", false);
+        Subject subject = new Subject("S999", "Class six subject",
+                10, "C6", 100, 50);
+
+        when(classService.getAllClasses()).thenReturn(classList);
+        when(studentService.getStudentDetailsByClassCode(any(String.class))).thenReturn(studentList);
+
+        when(studentService.getStudentFromClassRollNo(any(String.class), any(String.class))).thenReturn(studentList.get(0));
+        when(classService.getClassLevelById(any(String.class))).thenReturn(classList.get(0));
+
+        //goes to getStudentResult function
+        when(studentService.getStudentFromClassRollNo(any(String.class), any(String.class))).thenReturn(studentList.get(0));
+        when(resultsRepository.findAllBystudentId(any(String.class))).thenReturn(resultsList);
+
+        // count++;
+        for (Results r : resultsList) {
+            when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
+        }
+
+        //back to percentage
+        when(scheduleService.getScheduleDetails(any(String.class))).thenReturn(s1);
+
+        List<Marks> marksList = resultsList.get(0).getMarksList();
+        for (Marks m : marksList) {
+            when(subjectService.getSubjectById(any(String.class))).thenReturn(Optional.of(subject));
+
+        }
+        List<StudentDto> studentDtoList = resultsService.getToppersList("2023-2024");
+        assertEquals(studentList.get(0).getName(),studentDtoList.get(0).getName());
+    }
+    @Test
+    void getTopperListReturnsException() {
+        when(classService.getAllClasses()).thenReturn(new ArrayList<>());
+        assertThrows(NotFoundException.class,()->resultsService.getToppersList("2023-2024"));
+    }
 }
