@@ -42,10 +42,7 @@ public class Subject {
         this.maxTestMarks=maxTestMarks;
     }
 
-    public Subject()
-    {
-
-    }
+    public Subject() {}
 
     @Override
     public String toString() {

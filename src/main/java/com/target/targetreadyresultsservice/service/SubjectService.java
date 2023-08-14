@@ -57,8 +57,7 @@ public class SubjectService {
             return subjectRepository.save(subject);
         }
     }
-    public List<Subject> getSubjects()
-    {
+    public List<Subject> getSubjects() {
         log.info("fetching all the subjects");
         List<Subject> subjects=subjectRepository.findAll();
         if(subjects.isEmpty())
