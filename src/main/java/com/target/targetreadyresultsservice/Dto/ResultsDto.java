@@ -3,7 +3,7 @@ package com.target.targetreadyresultsservice.Dto;
 import com.target.targetreadyresultsservice.model.Marks;
 
 import java.util.List;
-
+//for leaderboard and Toppers List
 public class ResultsDto {
     public String resultsCode;
 
