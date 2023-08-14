@@ -39,6 +39,8 @@ public class StudentService {
 
     public void setStudentInfo(Student student) {
         try {
+            long count = studentRepository.count()+1;
+            student.setStudentId("Student"+count);
             Student s = studentRepository.save(student);
             log.info("Student added is - {}",s);
         } catch (Exception e) {
