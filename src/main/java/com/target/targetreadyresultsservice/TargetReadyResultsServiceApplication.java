@@ -9,6 +9,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 public class TargetReadyResultsServiceApplication {
 
     public static void main(String[] args) {
+
         SpringApplication.run(TargetReadyResultsServiceApplication.class, args);
     }
 
